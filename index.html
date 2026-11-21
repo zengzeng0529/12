@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>濟州島冬雪之旅 ⛄❄️</title>
+    <title>濟州島雪景之旅 ⛄❄️</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
@@ -16,15 +16,32 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
     <style>
+        :root {
+            --snow-bg: #EBEFF5;
+            --ice-card: #FFFFFF;
+            --ice-tint: #C9DBEF;
+            --sky-mid: #B6CFE7;
+            --slate-mist: #BEC3D2;
+            --cool-grey: #B6B7C0;
+            --warm-stone: #CDC7C6;
+            --dust-grey: #ADABAD;
+            --periwinkle: #9BA5B9;
+            --deep-slate: #8790A4;
+            --ink-main: #4A5264;
+            --ink-sub: #768096;
+        }
+
         body {
             font-family: 'Zen Maru Gothic', 'Comic Sans MS', sans-serif;
-            background-color: #EEF7FF;
-            background-image: radial-gradient(#BAE6FD 1.6px, transparent 1.6px), radial-gradient(#FFFFFF 2px, transparent 2px);
+            background-color: var(--snow-bg);
+            background-image: radial-gradient(var(--sky-mid) 1.5px, transparent 1.5px), radial-gradient(#FFFFFF 2px, transparent 2px);
             background-size: 32px 32px;
             background-position: 0 0, 16px 16px;
+            color: var(--ink-main);
             -webkit-tap-highlight-color: transparent;
             overflow-x: hidden;
         }
+
         .snow-layer {
             position: fixed;
             inset: 0;
@@ -32,47 +49,52 @@
             z-index: 30;
             overflow: hidden;
         }
+
         .snowflake {
             position: absolute;
-            top: -20px;
-            color: rgba(255, 255, 255, 0.92);
-            text-shadow: 0 0 6px rgba(125, 211, 252, 0.85);
+            top: -24px;
+            color: #FFFFFF;
+            text-shadow: 0 1px 4px rgba(135, 144, 164, 0.55);
             animation: snowfall linear infinite;
         }
+
         @keyframes snowfall {
-            0% { transform: translateY(-20px) translateX(0px) rotate(0deg); opacity: 0.9; }
-            50% { transform: translateY(50vh) translateX(14px) rotate(180deg); opacity: 1; }
-            100% { transform: translateY(105vh) translateX(-10px) rotate(360deg); opacity: 0.6; }
+            0% { transform: translateY(-24px) translateX(0px) rotate(0deg); opacity: 0.92; }
+            50% { transform: translateY(50vh) translateX(12px) rotate(180deg); opacity: 1; }
+            100% { transform: translateY(105vh) translateX(-12px) rotate(360deg); opacity: 0.55; }
         }
+
         .handbook-card {
             border-radius: 24px;
-            border: 2.5px solid #BAE6FD;
-            box-shadow: 4px 5px 0px #CFE8FA;
-            background-color: #FFFFFF;
+            border: 2.5px solid var(--slate-mist);
+            box-shadow: 4px 5px 0px var(--ice-tint);
+            background-color: var(--ice-card);
             position: relative;
         }
+
         .washi-tape {
             position: absolute;
             top: -12px;
             left: 24px;
             z-index: 10;
-            background: rgba(125, 211, 252, 0.95);
+            background: var(--sky-mid);
             padding: 2px 14px;
             font-size: 10px;
             font-weight: 700;
-            color: #0C4A6E;
-            box-shadow: 1px 2px 3px rgba(14, 116, 144, 0.08);
-            border-left: 3px dashed #38BDF8;
-            border-right: 3px dashed #38BDF8;
+            color: #3D475C;
+            box-shadow: 1px 2px 3px rgba(135, 144, 164, 0.14);
+            border-left: 3px dashed var(--deep-slate);
+            border-right: 3px dashed var(--deep-slate);
         }
+
         .ticket-notch-left, .ticket-notch-right {
             content: '';
             position: absolute;
             top: 50%;
             width: 14px;
             height: 14px;
-            background-color: #EEF7FF;
-            border: 2.5px solid #BAE6FD;
+            background-color: var(--snow-bg);
+            border: 2.5px solid var(--slate-mist);
             border-radius: 50%;
             transform: translateY(-50%);
         }
@@ -80,8 +102,9 @@
         .ticket-notch-right { right: -9px; clip-path: inset(0 50% 0 0); }
 
         .float-nav-shadow {
-            box-shadow: 0 -4px 20px rgba(2, 132, 199, 0.08), 0 10px 25px rgba(2, 132, 199, 0.14);
+            box-shadow: 0 -4px 20px rgba(135, 144, 164, 0.12), 0 10px 25px rgba(135, 144, 164, 0.2);
         }
+
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -89,44 +112,46 @@
             touch-action: none;
             user-select: none;
         }
+
         .shopping-grid { position: relative; }
         .shopping-item-card {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             touch-action: none;
         }
         .shopping-item-card.is-dragging {
-            opacity: 0.7;
+            opacity: 0.75;
             transform: scale(1.05);
             z-index: 50;
-            box-shadow: 0 10px 20px rgba(2, 132, 199, 0.18);
-            border-color: #38BDF8;
+            box-shadow: 0 10px 20px rgba(135, 144, 164, 0.25);
+            border-color: var(--deep-slate);
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased select-none">
+<body class="antialiased select-none">
 
 <div class="snow-layer" aria-hidden="true">
     <span v-for="flake in snowflakes" :key="flake.id" class="snowflake" :style="flake.style">❄</span>
 </div>
 
-<div id="app" class="max-w-md mx-auto bg-[#F7FBFF] min-h-screen shadow-2xl relative flex flex-col border-x-4 border-[#CBE7FA] pb-36">
+<div id="app" class="max-w-md mx-auto bg-[#F5F8FC] min-h-screen shadow-2xl relative flex flex-col border-x-4 border-[#C9DBEF] pb-44">
 
     <div class="absolute top-4 right-4 z-40">
-        <button @click="copyShareLink" class="bg-sky-400 hover:bg-sky-500 text-white w-11 h-11 rounded-full flex items-center justify-center transform active:scale-95 transition cursor-pointer border-2 border-white shadow-md">
+        <button @click="copyShareLink" class="bg-[#8790A4] hover:bg-[#9BA5B9] text-white w-11 h-11 rounded-full flex items-center justify-center transform active:scale-95 transition cursor-pointer border-2 border-white shadow-md">
             <i class="fa-solid fa-share-nodes text-sm"></i>
         </button>
     </div>
 
-    <div class="w-full h-[250px] relative overflow-hidden bg-gradient-to-br from-sky-200 via-sky-100 to-white">
-        <img src="IMG_2980.jpeg" alt="Jeju Winter Banner" class="w-full h-full object-cover" onerror="this.style.display='none'">
-        <div class="absolute inset-0 bg-gradient-to-t from-sky-950/65 via-sky-900/20 to-sky-100/30"></div>
+    <!-- 頂部雪景橫幅 -->
+    <div class="w-full h-[250px] relative overflow-hidden bg-gradient-to-br from-[#C9DBEF] via-[#EBEFF5] to-[#9BA5B9]">
+        <img src="IMG_2980.jpeg" alt="Jeju Snow Banner" class="w-full h-full object-cover" onerror="this.style.display='none'">
+        <div class="absolute inset-0 bg-gradient-to-t from-[#4A5264]/75 via-[#8790A4]/25 to-[#EBEFF5]/20"></div>
 
         <div class="absolute bottom-5 left-5 right-5 text-white">
             <div class="flex items-center gap-2">
-                <input type="text" v-model="tripTitle" @change="updateCloudData" class="bg-transparent font-bold text-xl border-b-2 border-dashed border-white/60 focus:outline-none focus:border-sky-200 w-full drop-shadow-md text-white">
+                <input type="text" v-model="tripTitle" @change="updateCloudData" class="bg-transparent font-bold text-xl border-b-2 border-dashed border-white/60 focus:outline-none focus:border-[#C9DBEF] w-full drop-shadow-md text-white">
                 <i class="fa-solid fa-pen text-xs opacity-80"></i>
             </div>
-            <p class="text-[11px] text-sky-100 mt-1 font-medium">⛄ 1/3–1/6 濟州島冬雪家族遊 ❄️🧊</p>
+            <p class="text-[11px] text-[#EBEFF5] mt-1 font-medium">⛄ 1/3–1/6 濟州島雪景下雪家族遊 ❄️🏔️</p>
         </div>
     </div>
 
@@ -136,108 +161,108 @@
         <div v-if="currentTab === 'schedule'" class="space-y-4">
 
             <div class="flex gap-2 overflow-x-auto pb-2 hide-scrollbar snap-x">
-                <button v-for="(day, index) in days" :key="index" @click="selectedDayIndex = index" :class="selectedDayIndex === index ? 'bg-sky-400 text-white border-sky-400 scale-105 shadow-sm' : 'bg-white text-slate-700 border-[#CBE7FA]'" class="flex flex-col items-center justify-center min-w-[68px] h-[74px] rounded-2xl border-2 snap-center transition duration-200 cursor-pointer">
-                    <span class="text-[10px] font-bold uppercase tracking-wider" :class="selectedDayIndex === index ? 'text-sky-100' : 'text-sky-500'">{{ day.week }}</span>
+                <button v-for="(day, index) in days" :key="index" @click="selectedDayIndex = index" :class="selectedDayIndex === index ? 'bg-[#8790A4] text-white border-[#8790A4] scale-105 shadow-sm' : 'bg-white text-[#4A5264] border-[#BEC3D2]'" class="flex flex-col items-center justify-center min-w-[68px] h-[74px] rounded-2xl border-2 snap-center transition duration-200 cursor-pointer">
+                    <span class="text-[10px] font-bold uppercase tracking-wider" :class="selectedDayIndex === index ? 'text-[#EBEFF5]' : 'text-[#9BA5B9]'">{{ day.week }}</span>
                     <span class="text-sm font-bold mt-0.5 leading-tight">{{ day.date }}</span>
                 </button>
             </div>
 
             <!-- Open-Meteo 天氣卡片（現在氣溫 + 未來 5 天高低溫） -->
-            <div class="bg-gradient-to-br from-white via-[#F0F9FF] to-[#E0F2FE] text-slate-700 p-4 rounded-2xl shadow-sm border-2 border-[#BAE6FD] space-y-3">
+            <div class="bg-gradient-to-br from-white via-[#EBEFF5] to-[#C9DBEF]/70 text-[#4A5264] p-4 rounded-2xl shadow-sm border-2 border-[#BEC3D2] space-y-3">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="text-3xl drop-shadow-sm flex flex-col items-center">
                             <span>{{ weatherData.icon }}</span>
-                            <span class="text-[10px] mt-0.5 text-sky-500 font-bold">⛄❄</span>
+                            <span class="text-[10px] mt-0.5 text-[#8790A4] font-bold">⛄❄</span>
                         </div>
                         <div>
-                            <div class="font-bold text-sm tracking-wide text-slate-800 flex items-center gap-1.5">
+                            <div class="font-bold text-sm tracking-wide text-[#4A5264] flex items-center gap-1.5">
                                 <span>濟州島</span>
-                                <span class="text-[11px] font-normal text-sky-600">⛄ 雪人守護中</span>
-                                <button @click="fetchJejuWeather" class="text-[10px] bg-white px-2 py-0.5 rounded-full border border-sky-200 text-sky-600 hover:bg-sky-50 cursor-pointer">
+                                <span class="text-[11px] font-normal text-[#768096]">⛄ 雪景守護中</span>
+                                <button @click="fetchJejuWeather" class="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#BEC3D2] text-[#4A5264] hover:bg-[#EBEFF5] cursor-pointer">
                                     <i class="fa-solid fa-rotate-right"></i> 更新
                                 </button>
                             </div>
-                            <div class="text-[11px] text-sky-800/80 mt-0.5 font-medium">{{ weatherData.description }}</div>
+                            <div class="text-[11px] text-[#768096] mt-0.5 font-medium">{{ weatherData.description }}</div>
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="text-2xl font-bold tracking-tighter text-sky-700">{{ weatherData.temp }}°C</div>
-                        <div class="text-[10px] text-slate-500 font-medium mt-0.5">體感 {{ weatherData.feelsLike }}°C</div>
+                        <div class="text-2xl font-bold tracking-tighter text-[#4A5264]">{{ weatherData.temp }}°C</div>
+                        <div class="text-[10px] text-[#768096] font-medium mt-0.5">體感 {{ weatherData.feelsLike }}°C</div>
                     </div>
                 </div>
 
-                <div v-if="weatherData.forecast && weatherData.forecast.length > 0" class="pt-2.5 border-t border-dashed border-sky-200">
-                    <div class="text-[10px] font-bold text-sky-700 mb-1.5">❄️ 未來 5 天高低溫預報</div>
+                <div v-if="weatherData.forecast && weatherData.forecast.length > 0" class="pt-2.5 border-t border-dashed border-[#B6CFE7]">
+                    <div class="text-[10px] font-bold text-[#4A5264] mb-1.5">❄️ 未來 5 天高低溫預報</div>
                     <div class="grid grid-cols-5 gap-1.5 text-center">
-                        <div v-for="f in weatherData.forecast" :key="f.date" class="bg-white/90 rounded-xl p-1.5 border border-sky-100">
-                            <div class="text-[10px] font-bold text-slate-600">{{ f.label }}</div>
+                        <div v-for="f in weatherData.forecast" :key="f.date" class="bg-white/95 rounded-xl p-1.5 border border-[#C9DBEF]">
+                            <div class="text-[10px] font-bold text-[#4A5264]">{{ f.label }}</div>
                             <div class="text-base my-0.5">{{ f.icon }}</div>
-                            <div class="text-[10px] font-bold text-rose-500">{{ f.max }}°</div>
-                            <div class="text-[10px] font-bold text-sky-600">{{ f.min }}°</div>
+                            <div class="text-[10px] font-bold text-[#8790A4]">高 {{ f.max }}°</div>
+                            <div class="text-[10px] font-bold text-[#9BA5B9]">低 {{ f.min }}°</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="space-y-4 mt-1">
-                <div v-if="currentDayEvents.length === 0" class="text-center py-10 text-sky-400 text-xs font-bold border-2 border-dashed border-sky-200 rounded-2xl bg-white/70">
+                <div v-if="currentDayEvents.length === 0" class="text-center py-10 text-[#9BA5B9] text-xs font-bold border-2 border-dashed border-[#BEC3D2] rounded-2xl bg-white/75">
                     今天還沒有安排行程，點擊右下角「＋」開始新增吧！⛄
                 </div>
 
                 <div v-for="(event, eIdx) in currentDayEvents" :key="event.id" class="relative">
-                    <div v-if="eIdx === 0 && selectedDayIndex > 0 && event.category !== '航班'" class="mb-3 flex items-center justify-center gap-1.5 text-[11px] bg-sky-50 text-sky-800 py-1.5 px-4 rounded-full border border-sky-200 w-fit mx-auto font-bold">
-                        <i class="fa-solid fa-hotel text-sky-500"></i> 起點：從前一日住宿飯店出發計算交通
+                    <div v-if="eIdx === 0 && selectedDayIndex > 0 && event.category !== '航班'" class="mb-3 flex items-center justify-center gap-1.5 text-[11px] bg-[#EBEFF5] text-[#4A5264] py-1.5 px-4 rounded-full border border-[#BEC3D2] w-fit mx-auto font-bold">
+                        <i class="fa-solid fa-hotel text-[#8790A4]"></i> 起點：從前一日住宿飯店出發計算交通
                     </div>
 
-                    <div v-if="eIdx === 0 && (selectedDayIndex === 0 || selectedDayIndex === days.length - 1) && event.category === '航班'" class="handbook-card border-sky-300 bg-gradient-to-br from-sky-50/70 via-white to-blue-50/50 p-4 pt-6">
+                    <div v-if="eIdx === 0 && (selectedDayIndex === 0 || selectedDayIndex === days.length - 1) && event.category === '航班'" class="handbook-card border-[#9BA5B9] bg-gradient-to-br from-[#EBEFF5]/80 via-white to-[#C9DBEF]/40 p-4 pt-6">
                         <div class="washi-tape">FLIGHT INFO ✈️</div>
-                        <div class="flex justify-between items-center border-b-2 border-dashed border-sky-200 pb-2 mb-3">
-                            <span class="text-xs font-bold text-sky-700 bg-sky-100 px-2.5 py-0.5 rounded-md">
+                        <div class="flex justify-between items-center border-b-2 border-dashed border-[#BEC3D2] pb-2 mb-3">
+                            <span class="text-xs font-bold text-[#4A5264] bg-[#C9DBEF] px-2.5 py-0.5 rounded-md">
                                 <i class="fa-solid fa-plane-arrival"></i> {{ selectedDayIndex === 0 ? '第一天首站航班資訊' : '最後一天回程航班資訊' }}
                             </span>
-                            <span class="text-xs font-bold text-slate-500">編號: {{ event.flightNo || (selectedDayIndex === 0 ? flightInfo.outbound.code : flightInfo.inbound.code) }}</span>
+                            <span class="text-xs font-bold text-[#768096]">編號: {{ event.flightNo || (selectedDayIndex === 0 ? flightInfo.outbound.code : flightInfo.inbound.code) }}</span>
                         </div>
                         <div class="flex justify-between items-center text-center py-2">
                             <div>
-                                <div class="font-bold text-xl text-slate-800">{{ selectedDayIndex === 0 ? flightInfo.outbound.fromCode : flightInfo.inbound.fromCode }}</div>
-                                <div class="text-[10px] text-slate-400 font-bold">{{ selectedDayIndex === 0 ? flightInfo.outbound.fromName : flightInfo.inbound.fromName }}</div>
-                                <div class="text-xs font-bold text-sky-600 mt-0.5">{{ selectedDayIndex === 0 ? flightInfo.outbound.depTime : flightInfo.inbound.depTime }}</div>
+                                <div class="font-bold text-xl text-[#4A5264]">{{ selectedDayIndex === 0 ? flightInfo.outbound.fromCode : flightInfo.inbound.fromCode }}</div>
+                                <div class="text-[10px] text-[#9BA5B9] font-bold">{{ selectedDayIndex === 0 ? flightInfo.outbound.fromName : flightInfo.inbound.fromName }}</div>
+                                <div class="text-xs font-bold text-[#8790A4] mt-0.5">{{ selectedDayIndex === 0 ? flightInfo.outbound.depTime : flightInfo.inbound.depTime }}</div>
                             </div>
                             <div class="flex-1 flex flex-col items-center mx-2">
-                                <span class="text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-full mb-1">
+                                <span class="text-[10px] font-bold text-[#4A5264] bg-[#EBEFF5] border border-[#BEC3D2] px-2 py-0.5 rounded-full mb-1">
                                     {{ selectedDayIndex === 0 ? flightInfo.outbound.duration : flightInfo.inbound.duration }}
                                 </span>
-                                <div class="w-full border-t-2 border-dashed border-sky-300 relative flex justify-center">
-                                    <i class="fa-solid fa-plane text-sky-500 bg-white px-1 absolute -top-2"></i>
+                                <div class="w-full border-t-2 border-dashed border-[#9BA5B9] relative flex justify-center">
+                                    <i class="fa-solid fa-plane text-[#8790A4] bg-white px-1 absolute -top-2"></i>
                                 </div>
                             </div>
                             <div>
-                                <div class="font-bold text-xl text-slate-800">{{ selectedDayIndex === 0 ? flightInfo.outbound.toCode : flightInfo.inbound.toCode }}</div>
-                                <div class="text-[10px] text-slate-400 font-bold">{{ selectedDayIndex === 0 ? flightInfo.outbound.toName : flightInfo.inbound.toName }}</div>
-                                <div class="text-xs font-bold text-teal-600 mt-0.5">{{ selectedDayIndex === 0 ? flightInfo.outbound.arrTime : flightInfo.inbound.arrTime }}</div>
+                                <div class="font-bold text-xl text-[#4A5264]">{{ selectedDayIndex === 0 ? flightInfo.outbound.toCode : flightInfo.inbound.toCode }}</div>
+                                <div class="text-[10px] text-[#9BA5B9] font-bold">{{ selectedDayIndex === 0 ? flightInfo.outbound.toName : flightInfo.inbound.toName }}</div>
+                                <div class="text-xs font-bold text-[#768096] mt-0.5">{{ selectedDayIndex === 0 ? flightInfo.outbound.arrTime : flightInfo.inbound.arrTime }}</div>
                             </div>
                         </div>
-                        <div class="mt-3 pt-2 border-t border-dashed border-sky-200 flex justify-between items-center">
-                            <span class="text-[11px] text-slate-500 font-medium whitespace-pre-wrap">備註: {{ event.note }}</span>
+                        <div class="mt-3 pt-2 border-t border-dashed border-[#BEC3D2] flex justify-between items-center">
+                            <span class="text-[11px] text-[#768096] font-medium whitespace-pre-wrap">備註: {{ event.note }}</span>
                             <div class="flex gap-2">
-                                <button @click="openEditModal(event, eIdx)" class="text-[11px] text-sky-500 font-bold cursor-pointer"><i class="fa-solid fa-pen"></i> 編輯</button>
-                                <a :href="'https://map.naver.com/v5/search/' + encodeURIComponent('濟州國際機場')" target="_blank" class="text-[11px] text-sky-700 font-bold"><i class="fa-solid fa-location-arrow"></i> Naver Map</a>
+                                <button @click="openEditModal(event, eIdx)" class="text-[11px] text-[#8790A4] font-bold cursor-pointer"><i class="fa-solid fa-pen"></i> 編輯</button>
+                                <a :href="'https://map.naver.com/v5/search/' + encodeURIComponent('濟州國際機場')" target="_blank" class="text-[11px] text-[#4A5264] font-bold"><i class="fa-solid fa-location-arrow"></i> Naver Map</a>
                             </div>
                         </div>
                     </div>
 
                     <div v-else class="handbook-card p-4 bg-white pt-6">
                         <div class="absolute top-2 right-3 flex items-center gap-2 z-20">
-                            <button @click="moveEvent(eIdx, -1)" :disabled="eIdx === 0" class="text-slate-300 hover:text-sky-500 disabled:opacity-20 cursor-pointer text-xs"><i class="fa-solid fa-arrow-up"></i></button>
-                            <button @click="moveEvent(eIdx, 1)" :disabled="eIdx === currentDayEvents.length - 1" class="text-slate-300 hover:text-sky-500 disabled:opacity-20 cursor-pointer text-xs"><i class="fa-solid fa-arrow-down"></i></button>
-                            <button @click="openEditModal(event, eIdx)" class="text-sky-500 hover:text-sky-700 cursor-pointer text-xs ml-1"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button @click="moveEvent(eIdx, -1)" :disabled="eIdx === 0" class="text-[#B6B7C0] hover:text-[#8790A4] disabled:opacity-25 cursor-pointer text-xs"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button @click="moveEvent(eIdx, 1)" :disabled="eIdx === currentDayEvents.length - 1" class="text-[#B6B7C0] hover:text-[#8790A4] disabled:opacity-25 cursor-pointer text-xs"><i class="fa-solid fa-arrow-down"></i></button>
+                            <button @click="openEditModal(event, eIdx)" class="text-[#8790A4] hover:text-[#4A5264] cursor-pointer text-xs ml-1"><i class="fa-solid fa-pen-to-square"></i></button>
                         </div>
 
                         <div class="absolute left-0 top-6 w-1.5 h-8 rounded-r-md" :class="getCategoryBg(event.category)"></div>
 
                         <div class="flex gap-3 items-start">
-                            <div class="w-24 h-24 bg-sky-50 rounded-xl overflow-hidden flex-shrink-0 border border-sky-200 flex items-center justify-center relative shadow-inner">
+                            <div class="w-24 h-24 bg-[#EBEFF5] rounded-xl overflow-hidden flex-shrink-0 border border-[#BEC3D2] flex items-center justify-center relative shadow-inner">
                                 <img v-if="event.image" :src="event.image" class="w-full h-full object-cover">
                                 <span v-else class="text-3xl">{{ getCategoryEmoji(event.category) }}</span>
                             </div>
@@ -247,212 +272,205 @@
                                     <span class="text-[9px] font-bold text-white px-1.5 py-0.5 rounded" :class="getCategoryBg(event.category)">
                                         {{ event.category }}
                                     </span>
-                                    <span class="text-xs text-slate-400 font-bold"><i class="fa-regular fa-clock"></i> {{ event.time }}</span>
+                                    <span class="text-xs text-[#9BA5B9] font-bold"><i class="fa-regular fa-clock"></i> {{ event.time }}</span>
                                 </div>
-                                <h4 class="font-bold text-sm text-slate-900 mt-1.5 break-words line-clamp-2 leading-snug">{{ event.name }}</h4>
+                                <h4 class="font-bold text-sm text-[#4A5264] mt-1.5 break-words line-clamp-2 leading-snug">{{ event.name }}</h4>
 
-                                <div class="flex flex-wrap gap-x-2.5 mt-1.5 text-[11px] text-slate-500">
-                                    <span v-if="event.hours && ['景點','住宿','美食','購物'].includes(event.category)"><i class="fa-regular fa-clock text-sky-500"></i> {{ event.hours }}</span>
-                                    <span v-if="event.ticket && event.category === '景點'" class="text-sky-700 font-bold"><i class="fa-solid fa-ticket"></i> {{ event.ticket }}</span>
+                                <div class="flex flex-wrap gap-x-2.5 mt-1.5 text-[11px] text-[#768096]">
+                                    <span v-if="event.hours && ['景點','住宿','美食','購物'].includes(event.category)"><i class="fa-regular fa-clock text-[#8790A4]"></i> {{ event.hours }}</span>
+                                    <span v-if="event.ticket && event.category === '景點'" class="text-[#4A5264] font-bold"><i class="fa-solid fa-ticket"></i> {{ event.ticket }}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <p v-if="event.note" class="text-[11px] bg-sky-50/80 text-slate-600 p-2 rounded-xl mt-2.5 border-l-4 border-sky-300 font-medium whitespace-pre-wrap">
+                        <p v-if="event.note" class="text-[11px] bg-[#EBEFF5]/80 text-[#4A5264] p-2 rounded-xl mt-2.5 border-l-4 border-[#9BA5B9] font-medium whitespace-pre-wrap">
                             {{ event.note }}
                         </p>
 
-                        <div class="mt-2.5 pt-2.5 border-t border-dashed border-sky-100">
-                            <a :href="'https://map.naver.com/v5/search/' + encodeURIComponent(event.name)" target="_blank" class="block w-full bg-sky-50 text-sky-700 font-bold py-1.5 rounded-xl text-center text-[11px] border border-sky-200"><i class="fa-solid fa-map-location-dot"></i> Naver Map</a>
+                        <div class="mt-2.5 pt-2.5 border-t border-dashed border-[#EBEFF5]">
+                            <a :href="'https://map.naver.com/v5/search/' + encodeURIComponent(event.name)" target="_blank" class="block w-full bg-[#EBEFF5] text-[#4A5264] font-bold py-1.5 rounded-xl text-center text-[11px] border border-[#BEC3D2]"><i class="fa-solid fa-map-location-dot"></i> Naver Map</a>
                         </div>
                     </div>
 
                     <div v-if="eIdx < currentDayEvents.length - 1" class="my-2 flex items-center justify-center gap-3">
-                        <div class="h-5 border-l-2 border-dashed border-sky-300"></div>
-                        <div class="bg-white text-slate-700 px-3 py-1 rounded-full text-[11px] flex items-center gap-1.5 border border-sky-200 shadow-xs">
-                            <select v-model="event.transitMode" @change="updateCloudData" class="bg-transparent focus:outline-none font-bold text-sky-700 cursor-pointer text-[11px]">
+                        <div class="h-5 border-l-2 border-dashed border-[#9BA5B9]"></div>
+                        <div class="bg-white text-[#4A5264] px-3 py-1 rounded-full text-[11px] flex items-center gap-1.5 border border-[#BEC3D2] shadow-xs">
+                            <select v-model="event.transitMode" @change="updateCloudData" class="bg-transparent focus:outline-none font-bold text-[#4A5264] cursor-pointer text-[11px]">
                                 <option value="drive">🚗 車子</option>
                                 <option value="walk">🚶 走路</option>
                                 <option value="transit">🚌 公車</option>
                             </select>
-                            <input type="text" v-model="event.transitTime" @change="updateCloudData" class="w-16 bg-transparent text-center border-b border-sky-300 font-bold focus:outline-none text-sky-600" placeholder="15 分鐘">
+                            <input type="text" v-model="event.transitTime" @change="updateCloudData" class="w-16 bg-transparent text-center border-b border-[#9BA5B9] font-bold focus:outline-none text-[#8790A4]" placeholder="15 分鐘">
                         </div>
-                        <div class="h-5 border-l-2 border-dashed border-sky-300"></div>
+                        <div class="h-5 border-l-2 border-dashed border-[#9BA5B9]"></div>
                     </div>
                 </div>
             </div>
 
-            <button @click="openAddModal" class="fixed bottom-24 right-6 bg-sky-400 hover:bg-sky-500 text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg">
+            <button @click="openAddModal" class="fixed bottom-24 right-6 bg-[#8790A4] hover:bg-[#9BA5B9] text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg">
                 <i class="fa-solid fa-plus text-xl"></i>
             </button>
         </div>
 
-        <!-- 資訊 TAB -->
+        <!-- 資訊 TAB（還原原本排版，點選格子可編輯並儲存，匯率點選跳出數字鍵盤） -->
         <div v-if="currentTab === 'info'" class="space-y-4">
-            <!-- 放大匯率換算 + 算盤 -->
             <div class="handbook-card p-4 pt-6">
-                <div class="washi-tape">EXCHANGE RATE & CALC 🧮</div>
-                <div class="flex justify-between items-center mt-1 mb-2">
-                    <span class="text-[11px] font-bold text-sky-700">匯率基準：1 TWD ≈ 42 KRW（台幣自動無條件進位）</span>
-                    <button @click="showCalculator = !showCalculator" class="text-[11px] bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold px-2.5 py-1 rounded-xl cursor-pointer transition">
-                        <i class="fa-solid fa-calculator"></i> {{ showCalculator ? '收合算盤' : '打開算盤' }}
+                <div class="washi-tape">EXCHANGE RATE 🪙</div>
+                <div class="grid grid-cols-2 gap-3 mt-1">
+                    <div>
+                        <label class="text-[11px] text-[#768096] font-bold block mb-1">輸入外幣 (韓幣 KRW)</label>
+                        <input
+                            type="text"
+                            inputmode="none"
+                            readonly
+                            :value="calcKrw !== null && calcKrw !== '' ? calcKrw : ''"
+                            @click="openKeypad('krw')"
+                            :class="activeKeypadField === 'krw' ? 'border-[#8790A4] ring-2 ring-[#C9DBEF]' : 'border-[#BEC3D2]'"
+                            class="w-full bg-[#EBEFF5]/70 border-2 rounded-2xl px-3.5 py-3 text-base font-bold text-[#4A5264] focus:outline-none cursor-pointer"
+                            placeholder="₩ 0"
+                        >
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-[#768096] font-bold block mb-1">自動換算台幣 (TWD)</label>
+                        <input
+                            type="text"
+                            inputmode="none"
+                            readonly
+                            :value="calcTwd !== null && calcTwd !== '' ? calcTwd : ''"
+                            @click="openKeypad('twd')"
+                            :class="activeKeypadField === 'twd' ? 'border-[#8790A4] ring-2 ring-[#C9DBEF]' : 'border-[#BEC3D2]'"
+                            class="w-full bg-[#EBEFF5]/70 border-2 rounded-2xl px-3.5 py-3 text-base font-bold text-[#4A5264] focus:outline-none cursor-pointer"
+                            placeholder="$ 0"
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- 航班資訊明細：維持原本雙卡排版，點選進入編輯／儲存 -->
+            <div class="space-y-2">
+                <div class="flex justify-between items-center pl-1">
+                    <h3 class="font-bold text-[#4A5264] text-xs flex items-center gap-1.5"><i class="fa-solid fa-plane text-[#8790A4]"></i> 航班資訊明細</h3>
+                    <button @click="toggleEditFlights" class="text-[11px] font-bold px-2.5 py-1 rounded-xl border border-[#BEC3D2] bg-white text-[#4A5264] hover:bg-[#EBEFF5] cursor-pointer">
+                        <i class="fa-solid" :class="editingFlights ? 'fa-check' : 'fa-pen'"></i> {{ editingFlights ? '儲存航班' : '編輯航班' }}
                     </button>
                 </div>
-                <div class="grid grid-cols-1 gap-3">
-                    <div>
-                        <label class="text-xs text-sky-700 font-bold block mb-1">輸入外幣 (韓幣 KRW)</label>
-                        <input type="number" v-model="calcKrw" @input="convertCurrency('krw')" class="w-full bg-[#F0F9FF] border-2 border-sky-300 rounded-2xl px-4 py-3 text-lg font-bold text-slate-800 focus:outline-none focus:border-sky-500" placeholder="₩ 輸入韓幣金額">
-                    </div>
-                    <div>
-                        <label class="text-xs text-sky-700 font-bold block mb-1">自動換算台幣 (TWD · 無條件進位)</label>
-                        <input type="number" v-model="calcTwd" @input="convertCurrency('twd')" class="w-full bg-[#F0F9FF] border-2 border-sky-300 rounded-2xl px-4 py-3 text-lg font-bold text-sky-700 focus:outline-none focus:border-sky-500" placeholder="$ 台幣金額">
-                    </div>
-                </div>
 
-                <div v-if="showCalculator" class="mt-3 pt-3 border-t-2 border-dashed border-sky-200 space-y-2">
-                    <div class="bg-sky-950 text-sky-100 rounded-2xl px-3.5 py-2.5 text-right font-mono text-base font-bold tracking-wider">
-                        {{ calcExpr || '0' }}
-                    </div>
-                    <div class="grid grid-cols-4 gap-1.5 text-xs font-bold">
-                        <button @click="calcPress('C')" class="bg-rose-100 text-rose-700 py-2.5 rounded-xl cursor-pointer">C</button>
-                        <button @click="calcPress('DEL')" class="bg-sky-100 text-sky-800 py-2.5 rounded-xl cursor-pointer">⌫</button>
-                        <button @click="calcPress('/')" class="bg-sky-200 text-sky-900 py-2.5 rounded-xl cursor-pointer">÷</button>
-                        <button @click="calcPress('*')" class="bg-sky-200 text-sky-900 py-2.5 rounded-xl cursor-pointer">×</button>
-
-                        <button @click="calcPress('7')" class="bg-white border border-sky-200 py-2.5 rounded-xl cursor-pointer">7</button>
-                        <button @click="calcPress('8')" class="bg-white border border-sky-200 py-2.5 rounded-xl cursor-pointer">8</button>
-                        <button @click="calcPress('9')" class="bg-white border border-sky-200 py-2.5 rounded-xl cursor-pointer">9</button>
-                        <button @click="calcPress('-')" class="bg-sky-200 text-sky-900 py-2.5 rounded-xl cursor-pointer">-</button>
-
-                        <button @click="calcPress('4')" class="bg-white border border-sky-200 py-2.5 rounded-xl cursor-pointer">4</button>
-                        <button @click="calcPress('5')" class="bg-white border border-sky-200 py-2.5 rounded-xl cursor-pointer">5</button>
-                        <button @click="calcPress('6')" class="bg-white border border-sky-200 py-2.5 rounded-xl cursor-pointer">6</button>
-                        <button @click="calcPress('+')" class="bg-sky-200 text-sky-900 py-2.5 rounded-xl cursor-pointer">+</button>
-
-                        <button @click="calcPress('1')" class="bg-white border border-sky-200 py-2.5 rounded-xl cursor-pointer">1</button>
-                        <button @click="calcPress('2')" class="bg-white border border-sky-200 py-2.5 rounded-xl cursor-pointer">2</button>
-                        <button @click="calcPress('3')" class="bg-white border border-sky-200 py-2.5 rounded-xl cursor-pointer">3</button>
-                        <button @click="calcPress('=')" class="bg-sky-500 text-white py-2.5 rounded-xl cursor-pointer">=</button>
-
-                        <button @click="calcPress('0')" class="col-span-2 bg-white border border-sky-200 py-2.5 rounded-xl cursor-pointer">0</button>
-                        <button @click="calcPress('00')" class="bg-white border border-sky-200 py-2.5 rounded-xl cursor-pointer">00</button>
-                        <button @click="applyCalcToKrw" class="bg-teal-500 text-white py-2.5 rounded-xl cursor-pointer">填入韓幣</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 可編輯航班資訊 -->
-            <div class="space-y-2">
-                <h3 class="font-bold text-slate-800 text-xs pl-1 flex items-center gap-1.5"><i class="fa-solid fa-plane text-sky-500"></i> 航班資訊明細（可直接編輯並儲存）</h3>
-                <div class="grid grid-cols-1 gap-3">
-                    <div class="handbook-card p-3.5 bg-gradient-to-br from-sky-50/60 to-white space-y-2 text-xs">
-                        <div class="flex justify-between items-center border-b border-dashed border-sky-200 pb-1.5">
-                            <span class="font-bold text-sky-700">🛫 去程航班</span>
-                            <input type="text" v-model="flightInfo.outbound.date" @change="updateCloudData" class="w-24 bg-sky-50 border border-sky-200 rounded-lg px-2 py-0.5 text-right font-bold text-sky-700">
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- 去程卡片 -->
+                    <div class="handbook-card p-3 bg-gradient-to-br from-[#EBEFF5]/70 to-white relative overflow-hidden">
+                        <div class="ticket-notch-left"></div><div class="ticket-notch-right"></div>
+                        <div class="text-[10px] font-bold text-[#4A5264] border-b border-dashed border-[#BEC3D2] pb-1 mb-1.5 flex justify-between items-center">
+                            <span>🛫 去程航班</span>
+                            <input v-if="editingFlights" type="text" v-model="flightInfo.outbound.date" class="w-12 bg-white border border-[#BEC3D2] rounded px-1 text-right text-[10px]">
+                            <span v-else>{{ flightInfo.outbound.date }}</span>
                         </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block">航班編號</label>
-                                <input type="text" v-model="flightInfo.outbound.code" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold">
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block">出發 / 抵達代碼</label>
-                                <input type="text" v-model="flightInfo.outbound.route" @change="syncOutboundRoute" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold">
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block">飛行時間</label>
-                                <input type="text" v-model="flightInfo.outbound.duration" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold">
-                            </div>
+                        <div v-if="!editingFlights" @click="editingFlights = true" class="text-center text-xs space-y-0.5 cursor-pointer">
+                            <div class="font-bold text-[#768096] text-[10px]">航班: {{ flightInfo.outbound.code }}</div>
+                            <div class="font-bold text-[#4A5264]">{{ flightInfo.outbound.fromCode }} ➔ {{ flightInfo.outbound.toCode }}</div>
+                            <div class="text-[10px] text-[#9BA5B9]">起飛 {{ flightInfo.outbound.depTime }} / 抵達 {{ flightInfo.outbound.arrTime }}</div>
+                            <div class="text-[9px] bg-[#C9DBEF] text-[#4A5264] px-1.5 py-0.5 rounded-full inline-block font-bold">總飛行時間: {{ flightInfo.outbound.duration }}</div>
                         </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block">起飛時間</label>
-                                <input type="text" v-model="flightInfo.outbound.depTime" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold">
+                        <div v-else class="space-y-1.5 text-[11px]">
+                            <input type="text" v-model="flightInfo.outbound.code" placeholder="航班編號" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-2 py-1 font-bold">
+                            <div class="grid grid-cols-2 gap-1">
+                                <input type="text" v-model="flightInfo.outbound.fromCode" placeholder="出發地" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-1.5 py-1 font-bold">
+                                <input type="text" v-model="flightInfo.outbound.toCode" placeholder="抵達地" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-1.5 py-1 font-bold">
                             </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block">抵達時間</label>
-                                <input type="text" v-model="flightInfo.outbound.arrTime" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold">
+                            <div class="grid grid-cols-2 gap-1">
+                                <input type="text" v-model="flightInfo.outbound.depTime" placeholder="起飛" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-1.5 py-1">
+                                <input type="text" v-model="flightInfo.outbound.arrTime" placeholder="抵達" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-1.5 py-1">
                             </div>
+                            <input type="text" v-model="flightInfo.outbound.duration" placeholder="飛行時間" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-2 py-1">
                         </div>
                     </div>
 
-                    <div class="handbook-card p-3.5 bg-gradient-to-br from-blue-50/50 to-white space-y-2 text-xs">
-                        <div class="flex justify-between items-center border-b border-dashed border-sky-200 pb-1.5">
-                            <span class="font-bold text-teal-700">🛬 回程航班</span>
-                            <input type="text" v-model="flightInfo.inbound.date" @change="updateCloudData" class="w-24 bg-sky-50 border border-sky-200 rounded-lg px-2 py-0.5 text-right font-bold text-teal-700">
+                    <!-- 回程卡片 -->
+                    <div class="handbook-card p-3 bg-gradient-to-br from-[#C9DBEF]/40 to-white relative overflow-hidden">
+                        <div class="ticket-notch-left"></div><div class="ticket-notch-right"></div>
+                        <div class="text-[10px] font-bold text-[#4A5264] border-b border-dashed border-[#BEC3D2] pb-1 mb-1.5 flex justify-between items-center">
+                            <span>🛬 回程航班</span>
+                            <input v-if="editingFlights" type="text" v-model="flightInfo.inbound.date" class="w-12 bg-white border border-[#BEC3D2] rounded px-1 text-right text-[10px]">
+                            <span v-else>{{ flightInfo.inbound.date }}</span>
                         </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block">航班編號</label>
-                                <input type="text" v-model="flightInfo.inbound.code" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold">
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block">出發 / 抵達代碼</label>
-                                <input type="text" v-model="flightInfo.inbound.route" @change="syncInboundRoute" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold">
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block">飛行時間</label>
-                                <input type="text" v-model="flightInfo.inbound.duration" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold">
-                            </div>
+                        <div v-if="!editingFlights" @click="editingFlights = true" class="text-center text-xs space-y-0.5 cursor-pointer">
+                            <div class="font-bold text-[#768096] text-[10px]">航班: {{ flightInfo.inbound.code }}</div>
+                            <div class="font-bold text-[#4A5264]">{{ flightInfo.inbound.fromCode }} ➔ {{ flightInfo.inbound.toCode }}</div>
+                            <div class="text-[10px] text-[#9BA5B9]">起飛 {{ flightInfo.inbound.depTime }} / 抵達 {{ flightInfo.inbound.arrTime }}</div>
+                            <div class="text-[9px] bg-[#EBEFF5] border border-[#BEC3D2] text-[#4A5264] px-1.5 py-0.5 rounded-full inline-block font-bold">總飛行時間: {{ flightInfo.inbound.duration }}</div>
                         </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block">起飛時間</label>
-                                <input type="text" v-model="flightInfo.inbound.depTime" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold">
+                        <div v-else class="space-y-1.5 text-[11px]">
+                            <input type="text" v-model="flightInfo.inbound.code" placeholder="航班編號" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-2 py-1 font-bold">
+                            <div class="grid grid-cols-2 gap-1">
+                                <input type="text" v-model="flightInfo.inbound.fromCode" placeholder="出發地" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-1.5 py-1 font-bold">
+                                <input type="text" v-model="flightInfo.inbound.toCode" placeholder="抵達地" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-1.5 py-1 font-bold">
                             </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 font-bold block">抵達時間</label>
-                                <input type="text" v-model="flightInfo.inbound.arrTime" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold">
+                            <div class="grid grid-cols-2 gap-1">
+                                <input type="text" v-model="flightInfo.inbound.depTime" placeholder="起飛" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-1.5 py-1">
+                                <input type="text" v-model="flightInfo.inbound.arrTime" placeholder="抵達" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-1.5 py-1">
                             </div>
+                            <input type="text" v-model="flightInfo.inbound.duration" placeholder="飛行時間" class="w-full bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-2 py-1">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 可編輯租車資訊 -->
+            <!-- 租車資訊：維持原本排版，點選進入編輯／儲存 -->
             <div class="handbook-card p-4 pt-6 bg-white">
-                <div class="washi-tape bg-sky-400 text-white">RENTAL CAR INFO 🚗</div>
-                <div class="text-xs space-y-2.5 mt-1 font-medium">
-                    <div>
-                        <label class="text-[10px] text-slate-400 font-bold block mb-0.5">租車公司</label>
-                        <input type="text" v-model="rentalInfo.company" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold focus:outline-none">
+                <div class="washi-tape">RENTAL CAR INFO 🚗</div>
+                <div class="flex justify-end mb-1">
+                    <button @click="toggleEditRental" class="text-[11px] font-bold px-2.5 py-0.5 rounded-lg border border-[#BEC3D2] bg-[#EBEFF5]/70 text-[#4A5264] hover:bg-[#C9DBEF] cursor-pointer">
+                        <i class="fa-solid" :class="editingRental ? 'fa-check' : 'fa-pen'"></i> {{ editingRental ? '儲存' : '編輯' }}
+                    </button>
+                </div>
+
+                <div v-if="!editingRental" @click="editingRental = true" class="text-xs space-y-2 font-medium cursor-pointer">
+                    <div class="flex justify-between gap-2"><span>租車公司：</span><span class="font-bold text-right">{{ rentalInfo.company }}</span></div>
+                    <div class="flex justify-between gap-2"><span>車型款式：</span><span class="text-[#768096] font-bold text-right">{{ rentalInfo.carModel }}</span></div>
+                    <div class="flex justify-between gap-2"><span>取還時間：</span><span class="text-[#768096] font-bold text-right">{{ rentalInfo.period }}</span></div>
+                    <div class="flex justify-between gap-2"><span>訂單號碼：</span><span class="text-[#8790A4] font-bold text-right">{{ rentalInfo.orderId }}</span></div>
+                </div>
+                <div v-else class="text-xs space-y-2 font-medium">
+                    <div class="flex justify-between items-center gap-2">
+                        <span class="whitespace-nowrap">租車公司：</span>
+                        <input type="text" v-model="rentalInfo.company" class="flex-1 bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-2 py-1 font-bold text-right">
                     </div>
-                    <div>
-                        <label class="text-[10px] text-slate-400 font-bold block mb-0.5">車型款式</label>
-                        <input type="text" v-model="rentalInfo.carModel" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold focus:outline-none">
+                    <div class="flex justify-between items-center gap-2">
+                        <span class="whitespace-nowrap">車型款式：</span>
+                        <input type="text" v-model="rentalInfo.carModel" class="flex-1 bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-2 py-1 font-bold text-right">
                     </div>
-                    <div>
-                        <label class="text-[10px] text-slate-400 font-bold block mb-0.5">取還時間</label>
-                        <input type="text" v-model="rentalInfo.period" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold focus:outline-none">
+                    <div class="flex justify-between items-center gap-2">
+                        <span class="whitespace-nowrap">取還時間：</span>
+                        <input type="text" v-model="rentalInfo.period" class="flex-1 bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-2 py-1 font-bold text-right">
                     </div>
-                    <div>
-                        <label class="text-[10px] text-slate-400 font-bold block mb-0.5">訂單號碼</label>
-                        <input type="text" v-model="rentalInfo.orderId" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold text-sky-700 focus:outline-none">
-                    </div>
-                    <div class="flex gap-2 pt-1">
-                        <button @click="updateCloudData" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white font-bold py-1.5 rounded-xl text-[11px] cursor-pointer transition">
-                            <i class="fa-solid fa-floppy-disk"></i> 儲存租車資訊
-                        </button>
-                        <a :href="'https://map.naver.com/v5/search/' + encodeURIComponent(rentalInfo.company || '濟州租車')" target="_blank" class="flex-1 bg-sky-50 text-sky-700 font-bold py-1.5 rounded-xl text-center text-[11px] border border-sky-200">
-                            <i class="fa-solid fa-location-arrow"></i> Naver Map
-                        </a>
+                    <div class="flex justify-between items-center gap-2">
+                        <span class="whitespace-nowrap">訂單號碼：</span>
+                        <input type="text" v-model="rentalInfo.orderId" class="flex-1 bg-[#EBEFF5] border border-[#BEC3D2] rounded-lg px-2 py-1 font-bold text-right text-[#8790A4]">
                     </div>
                 </div>
+
+                <a :href="'https://map.naver.com/v5/search/' + encodeURIComponent(rentalInfo.company || '濟州租車')" target="_blank" class="block w-full bg-[#EBEFF5] text-[#4A5264] font-bold py-1.5 rounded-xl text-center text-[11px] border border-[#BEC3D2] mt-3">
+                    <i class="fa-solid fa-location-arrow"></i> Naver Map
+                </a>
             </div>
 
-            <!-- 住宿飯店資訊 -->
+            <!-- 住宿飯店資訊：維持原本排版，點選格子可編輯並儲存 -->
             <div class="space-y-3">
                 <div class="flex justify-between items-center pl-1">
-                    <h3 class="font-bold text-slate-800 text-xs flex items-center gap-1.5"><i class="fa-solid fa-hotel text-sky-500"></i> 住宿飯店資訊</h3>
+                    <h3 class="font-bold text-[#4A5264] text-xs flex items-center gap-1.5"><i class="fa-solid fa-hotel text-[#8790A4]"></i> 住宿飯店資訊</h3>
                 </div>
 
                 <div v-for="(hotel, hIdx) in hotels" :key="hIdx" class="handbook-card p-4 space-y-2.5 bg-white">
-                    <div class="text-xs font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md w-fit">⛄ 第 {{ hIdx + 1 }} 天住宿</div>
+                    <div class="flex justify-between items-center">
+                        <div class="text-xs font-bold text-[#4A5264] bg-[#EBEFF5] px-2 py-0.5 rounded-md w-fit">⛄ 第 {{ hIdx + 1 }} 天住宿</div>
+                        <button @click="toggleHotelEdit(hIdx)" class="text-[11px] font-bold px-2.5 py-0.5 rounded-lg border border-[#BEC3D2] bg-white text-[#4A5264] hover:bg-[#EBEFF5] cursor-pointer">
+                            <i class="fa-solid" :class="editingHotelIdx === hIdx ? 'fa-check' : 'fa-pen'"></i> {{ editingHotelIdx === hIdx ? '儲存' : '編輯' }}
+                        </button>
+                    </div>
 
-                    <div class="w-full h-44 bg-[#F0F9FF] rounded-xl flex items-center justify-center text-slate-400 font-bold overflow-hidden border-2 border-dashed border-sky-200 relative shadow-inner">
+                    <div class="w-full h-44 bg-[#EBEFF5] rounded-xl flex items-center justify-center text-[#9BA5B9] font-bold overflow-hidden border-2 border-dashed border-[#BEC3D2] relative shadow-inner">
                         <img v-if="hotel.img" :src="hotel.img" class="w-full h-full object-cover">
                         <div v-else class="text-center p-4">
-                            <i class="fa-solid fa-image text-2xl mb-1 text-sky-300"></i>
+                            <i class="fa-solid fa-image text-2xl mb-1 text-[#9BA5B9]"></i>
                             <div class="text-[11px]">上傳飯店精選大圖 📸</div>
                         </div>
                         <input type="file" accept="image/*" @change="triggerCropModal($event, hIdx, 'hotel')" class="absolute inset-0 opacity-0 cursor-pointer">
@@ -460,65 +478,65 @@
 
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                            <label class="text-[10px] text-slate-400 font-bold block mb-0.5">飯店名稱</label>
-                            <input type="text" v-model="hotel.name" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 font-bold focus:outline-none">
+                            <label class="text-[10px] text-[#9BA5B9] font-bold block mb-0.5">飯店名稱</label>
+                            <input type="text" v-model="hotel.name" @focus="editingHotelIdx = hIdx" @change="updateCloudData" class="w-full bg-[#EBEFF5]/70 border border-[#BEC3D2] rounded-lg p-1.5 font-bold focus:outline-none">
                         </div>
                         <div>
-                            <label class="text-[10px] text-slate-400 font-bold block mb-0.5">電話號碼</label>
-                            <input type="text" v-model="hotel.phone" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 focus:outline-none">
+                            <label class="text-[10px] text-[#9BA5B9] font-bold block mb-0.5">電話號碼</label>
+                            <input type="text" v-model="hotel.phone" @focus="editingHotelIdx = hIdx" @change="updateCloudData" class="w-full bg-[#EBEFF5]/70 border border-[#BEC3D2] rounded-lg p-1.5 focus:outline-none">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                            <label class="text-[10px] text-slate-400 font-bold block mb-0.5">Check-In 日期時間</label>
-                            <input type="text" v-model="hotel.checkIn" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 focus:outline-none">
+                            <label class="text-[10px] text-[#9BA5B9] font-bold block mb-0.5">Check-In 日期時間</label>
+                            <input type="text" v-model="hotel.checkIn" @focus="editingHotelIdx = hIdx" @change="updateCloudData" class="w-full bg-[#EBEFF5]/70 border border-[#BEC3D2] rounded-lg p-1.5 focus:outline-none" placeholder="例: 1/3 15:00">
                         </div>
                         <div>
-                            <label class="text-[10px] text-slate-400 font-bold block mb-0.5">Check-Out 日期時間</label>
-                            <input type="text" v-model="hotel.checkOut" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 focus:outline-none">
+                            <label class="text-[10px] text-[#9BA5B9] font-bold block mb-0.5">Check-Out 日期時間</label>
+                            <input type="text" v-model="hotel.checkOut" @focus="editingHotelIdx = hIdx" @change="updateCloudData" class="w-full bg-[#EBEFF5]/70 border border-[#BEC3D2] rounded-lg p-1.5 focus:outline-none" placeholder="例: 1/4 11:00">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div class="col-span-2">
-                            <label class="text-[10px] text-slate-400 font-bold block mb-0.5">飯店完整地址</label>
-                            <input type="text" v-model="hotel.address" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 focus:outline-none">
+                            <label class="text-[10px] text-[#9BA5B9] font-bold block mb-0.5">飯店完整地址</label>
+                            <input type="text" v-model="hotel.address" @focus="editingHotelIdx = hIdx" @change="updateCloudData" class="w-full bg-[#EBEFF5]/70 border border-[#BEC3D2] rounded-lg p-1.5 focus:outline-none" placeholder="請填寫韓文或英文地名地址">
                         </div>
                         <div class="col-span-2">
-                            <label class="text-[10px] text-slate-400 font-bold block mb-0.5">訂單編號</label>
-                            <input type="text" v-model="hotel.orderId" @change="updateCloudData" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 focus:outline-none">
+                            <label class="text-[10px] text-[#9BA5B9] font-bold block mb-0.5">訂單編號</label>
+                            <input type="text" v-model="hotel.orderId" @focus="editingHotelIdx = hIdx" @change="updateCloudData" class="w-full bg-[#EBEFF5]/70 border border-[#BEC3D2] rounded-lg p-1.5 focus:outline-none">
                         </div>
                     </div>
 
                     <div class="text-xs">
-                        <label class="text-[10px] text-slate-400 font-bold block mb-0.5">備註說明 📝</label>
-                        <textarea v-model="hotel.note" @input="autoResize($event); updateCloudData();" ref="infoHotelNotes" class="w-full bg-[#F0F9FF] border border-sky-200 rounded-lg p-1.5 focus:outline-none resize-none overflow-hidden min-h-[42px]"></textarea>
+                        <label class="text-[10px] text-[#9BA5B9] font-bold block mb-0.5">備註說明 📝</label>
+                        <textarea v-model="hotel.note" @focus="editingHotelIdx = hIdx" @input="autoResize($event); updateCloudData();" ref="infoHotelNotes" class="w-full bg-[#EBEFF5]/70 border border-[#BEC3D2] rounded-lg p-1.5 focus:outline-none resize-none overflow-hidden min-h-[42px]" placeholder="輸入房型、早餐資訊或特別需求..."></textarea>
                     </div>
 
                     <div class="pt-1.5 font-bold">
-                        <a :href="'https://map.naver.com/v5/search/' + encodeURIComponent(hotel.address || hotel.name || '濟州島')" target="_blank" class="block w-full bg-sky-50 text-sky-700 border border-sky-200 py-1.5 rounded-xl text-center text-xs hover:bg-sky-100 transition shadow-xs">
+                        <a :href="'https://map.naver.com/v5/search/' + encodeURIComponent(hotel.address || hotel.name || '濟州島')" target="_blank" class="block w-full bg-[#EBEFF5] text-[#4A5264] border border-[#BEC3D2] py-1.5 rounded-xl text-center text-xs hover:bg-[#C9DBEF] transition shadow-xs">
                             <i class="fa-solid fa-map-location-dot"></i> 前往 {{ hotel.name || 'Naver Map' }} 導航
                         </a>
                     </div>
                 </div>
             </div>
 
-            <div class="handbook-card p-3 bg-rose-50/90 border-rose-200">
-                <div class="text-xs font-bold text-rose-800 mb-1.5 flex items-center gap-1">
-                    <i class="fa-solid fa-star-of-life text-rose-500 animate-pulse"></i> 🚨 濟州島緊急醫療與救援快捷撥號
+            <div class="handbook-card p-3 bg-[#CDC7C6]/45 border-[#ADABAD]">
+                <div class="text-xs font-bold text-[#4A5264] mb-1.5 flex items-center gap-1">
+                    <i class="fa-solid fa-star-of-life text-[#8790A4] animate-pulse"></i> 🚨 濟州島緊急醫療與救援快捷撥號
                 </div>
                 <div class="grid grid-cols-3 gap-2 text-center text-[11px] font-bold">
-                    <a href="tel:112" class="bg-white p-1.5 rounded-lg border border-rose-100 block hover:bg-rose-100">警察局: <span class="text-rose-600">112</span></a>
-                    <a href="tel:119" class="bg-white p-1.5 rounded-lg border border-rose-100 block hover:bg-rose-100">救護/消防: <span class="text-rose-600">119</span></a>
-                    <a href="tel:1330" class="bg-white p-1.5 rounded-lg border border-rose-100 block hover:bg-rose-100">觀光諮詢: <span class="text-sky-700">1330</span></a>
+                    <a href="tel:112" class="bg-white p-1.5 rounded-lg border border-[#BEC3D2] block hover:bg-[#EBEFF5]">警察局: <span class="text-[#4A5264]">112</span></a>
+                    <a href="tel:119" class="bg-white p-1.5 rounded-lg border border-[#BEC3D2] block hover:bg-[#EBEFF5]">救護/消防: <span class="text-[#4A5264]">119</span></a>
+                    <a href="tel:1330" class="bg-white p-1.5 rounded-lg border border-[#BEC3D2] block hover:bg-[#EBEFF5]">觀光諮詢: <span class="text-[#8790A4]">1330</span></a>
                 </div>
             </div>
         </div>
 
         <!-- 購物清單 TAB -->
         <div v-if="currentTab === 'shopping'" class="space-y-4">
-            <div class="text-center text-[11px] text-sky-700 font-bold bg-sky-50 py-1 rounded-xl border border-sky-200">
+            <div class="text-center text-[11px] text-[#4A5264] font-bold bg-[#EBEFF5] py-1 rounded-xl border border-[#BEC3D2]">
                 💡 提示：長按整個商品小卡片即可上下自由拖曳調整排序哦！
             </div>
 
@@ -531,14 +549,14 @@
                      @touchend="handleShoppingTouchEnd($event)"
                      :class="['shopping-item-card', 'handbook-card', 'overflow-hidden', 'bg-white', 'flex', 'flex-col', 'relative', draggingShoppingIndex === sIdx ? 'is-dragging' : '']">
 
-                    <button @click="deleteShoppingItem(sIdx)" class="absolute top-2 right-2 w-5 h-5 bg-slate-900/60 text-white rounded-full flex items-center justify-center text-[10px] cursor-pointer hover:bg-rose-500 z-30 transition">
+                    <button @click="deleteShoppingItem(sIdx)" class="absolute top-2 right-2 w-5 h-5 bg-[#4A5264]/75 text-white rounded-full flex items-center justify-center text-[10px] cursor-pointer hover:bg-[#8790A4] z-30 transition">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
 
-                    <div class="w-full h-32 bg-[#F0F9FF] overflow-hidden border-b-2 border-dashed border-sky-200 flex items-center justify-center relative shadow-inner group flex-shrink-0">
+                    <div class="w-full h-32 bg-[#EBEFF5] overflow-hidden border-b-2 border-dashed border-[#BEC3D2] flex items-center justify-center relative shadow-inner group flex-shrink-0">
                         <img v-if="item.image" :src="item.image" class="w-full h-full object-cover object-center transition duration-300 group-hover:scale-105 pointer-events-none">
-                        <div v-else class="text-center text-slate-400 p-2 pointer-events-none">
-                            <i class="fa-solid fa-camera text-xl mb-1 text-sky-300"></i>
+                        <div v-else class="text-center text-[#9BA5B9] p-2 pointer-events-none">
+                            <i class="fa-solid fa-camera text-xl mb-1 text-[#9BA5B9]"></i>
                             <div class="text-[10px] font-bold">上傳商品照片</div>
                         </div>
 
@@ -548,99 +566,102 @@
                     </div>
 
                     <div class="p-2.5 flex flex-col justify-between flex-1 gap-2">
-                        <input type="text" v-model="item.name" @change="updateCloudData" class="w-full text-xs font-bold bg-sky-50/60 p-1.5 rounded-lg focus:outline-none border border-transparent focus:border-sky-300 text-slate-800" placeholder="⛄ 商品名稱...">
+                        <input type="text" v-model="item.name" @change="updateCloudData" class="w-full text-xs font-bold bg-[#EBEFF5]/60 p-1.5 rounded-lg focus:outline-none border border-transparent focus:border-[#9BA5B9] text-[#4A5264]" placeholder="⛄ 商品名稱...">
                         <div class="flex items-center justify-center">
-                            <label class="flex items-center justify-center gap-1.5 text-[10px] font-bold cursor-pointer select-none w-full py-1 rounded-xl transition-all duration-300" :class="item.purchased ? 'bg-slate-800 text-sky-200 line-through decoration-sky-400 decoration-2 shadow-inner' : 'bg-sky-50 text-sky-700 border border-sky-200'">
-                                <input type="checkbox" v-model="item.purchased" @change="updateCloudData" class="w-3 h-3 rounded text-sky-500 border-slate-300 focus:ring-0 cursor-pointer accent-sky-400">
+                            <label class="flex items-center justify-center gap-1.5 text-[10px] font-bold cursor-pointer select-none w-full py-1 rounded-xl transition-all duration-300" :class="item.purchased ? 'bg-[#4A5264] text-[#EBEFF5] line-through decoration-[#C9DBEF] decoration-2 shadow-inner' : 'bg-[#EBEFF5] text-[#4A5264] border border-[#BEC3D2]'">
+                                <input type="checkbox" v-model="item.purchased" @change="updateCloudData" class="w-3 h-3 rounded text-[#8790A4] border-[#BEC3D2] focus:ring-0 cursor-pointer accent-[#8790A4]">
                                 <span>已購入</span>
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
-            <button @click="addShoppingItem" class="fixed bottom-24 right-6 bg-sky-400 hover:bg-sky-500 text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg">
+            <button @click="addShoppingItem" class="fixed bottom-24 right-6 bg-[#8790A4] hover:bg-[#9BA5B9] text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg">
                 <i class="fa-solid fa-plus text-xl"></i>
             </button>
         </div>
 
         <!-- 花費 TAB -->
         <div v-if="currentTab === 'expenses'" class="space-y-4">
-            <div class="bg-gradient-to-br from-sky-400 via-sky-500 to-cyan-500 text-white p-5 rounded-3xl text-center shadow-md border-2 border-white">
+            <div class="bg-gradient-to-br from-[#8790A4] via-[#9BA5B9] to-[#B6CFE7] text-white p-5 rounded-3xl text-center shadow-md border-2 border-white">
                 <div class="text-[10px] font-bold tracking-widest opacity-95">目前累積總花費 (台幣 · 無條件進位) ⛄</div>
                 <div class="text-3xl font-bold mt-0.5">NT$ {{ formatNumber(totalTwd) }}</div>
-                <div class="text-xs opacity-85 mt-0.5">韓幣總額: ₩{{ formatNumber(totalKrw) }}</div>
+                <div class="text-xs opacity-90 mt-0.5">韓幣總額: ₩{{ formatNumber(totalKrw) }}</div>
             </div>
-            <div :class="settlementDone ? 'bg-slate-900 text-sky-200 border-slate-950 shadow-inner' : 'bg-white border-sky-200 text-slate-800'" class="handbook-card p-4 transition-colors duration-300">
-                <h3 class="font-bold text-xs flex items-center gap-1 mb-2.5" :class="settlementDone ? 'text-sky-300' : 'text-slate-800'">
-                    <i class="fa-solid fa-wand-magic-sparkles text-sky-400"></i> 智慧精簡拆帳結算列表 (不計公費)
+
+            <div :class="settlementDone ? 'bg-[#4A5264] text-[#EBEFF5] border-[#4A5264] shadow-inner' : 'bg-white border-[#BEC3D2] text-[#4A5264]'" class="handbook-card p-4 transition-colors duration-300">
+                <h3 class="font-bold text-xs flex items-center gap-1 mb-2.5" :class="settlementDone ? 'text-[#C9DBEF]' : 'text-[#4A5264]'">
+                    <i class="fa-solid fa-wand-magic-sparkles text-[#8790A4]"></i> 智慧精簡拆帳結算列表 (不計公費)
                 </h3>
-                <div v-if="computedSettlements.length === 0" class="text-center text-xs text-slate-400 py-3 font-bold">目前帳目已平衡 ❄️</div>
+                <div v-if="computedSettlements.length === 0" class="text-center text-xs text-[#9BA5B9] py-3 font-bold">目前帳目已平衡 ❄️</div>
                 <ul v-else class="space-y-2 text-xs">
-                    <li v-for="(settle, sIdx) in computedSettlements" :key="sIdx" class="flex items-center justify-between border-b pb-1.5 border-sky-100">
-                        <div class="flex items-center gap-2" :class="{'line-through text-slate-400 opacity-40': settle.paid}">
-                            <input type="checkbox" v-model="settle.paid" @change="toggleSettlementPaid(sIdx)" :disabled="settlementDone" class="w-4 h-4 rounded text-sky-500 cursor-pointer">
-                            <span class="font-bold">{{ settle.from }}</span> ➔ 給 <span class="text-sky-600 font-bold">{{ settle.to }}</span>
+                    <li v-for="(settle, sIdx) in computedSettlements" :key="sIdx" class="flex items-center justify-between border-b pb-1.5 border-[#EBEFF5]">
+                        <div class="flex items-center gap-2" :class="{'line-through text-[#9BA5B9] opacity-50': settle.paid}">
+                            <input type="checkbox" v-model="settle.paid" @change="toggleSettlementPaid(sIdx)" :disabled="settlementDone" class="w-4 h-4 rounded text-[#8790A4] cursor-pointer">
+                            <span class="font-bold">{{ settle.from }}</span> ➔ 給 <span class="text-[#8790A4] font-bold">{{ settle.to }}</span>
                         </div>
-                        <div class="font-bold text-sm" :class="settle.paid ? 'line-through text-slate-500' : 'text-sky-700'">NT$ {{ Math.ceil(settle.amount) }}</div>
+                        <div class="font-bold text-sm" :class="settle.paid ? 'line-through text-[#9BA5B9]' : 'text-[#4A5264]'">NT$ {{ Math.ceil(settle.amount) }}</div>
                     </li>
                 </ul>
             </div>
+
             <div class="space-y-2">
-                <div v-for="exp in sortedExpenses" :key="exp.id" class="bg-white border-2 border-sky-200 rounded-2xl p-3 flex justify-between items-start">
+                <div v-for="exp in sortedExpenses" :key="exp.id" class="bg-white border-2 border-[#BEC3D2] rounded-2xl p-3 flex justify-between items-start">
                     <div class="space-y-1">
                         <div class="flex items-center gap-1.5">
-                            <span class="text-[9px] px-1.5 py-0.5 rounded font-bold text-white bg-sky-400">{{ exp.category }}</span>
-                            <span class="text-xs font-bold">{{ exp.name }}</span>
-                            <span class="text-[9px] px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 font-medium">{{ exp.payMethod }}</span>
+                            <span class="text-[9px] px-1.5 py-0.5 rounded font-bold text-white bg-[#8790A4]">{{ exp.category }}</span>
+                            <span class="text-xs font-bold text-[#4A5264]">{{ exp.name }}</span>
+                            <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#EBEFF5] text-[#768096] font-medium">{{ exp.payMethod }}</span>
                         </div>
-                        <div class="text-[10px] text-slate-400">📅 {{ exp.date }} · 代墊: <span class="font-bold text-sky-700">{{ exp.payer }}</span></div>
-                        <div class="text-[10px] text-sky-800 bg-sky-50 px-2 py-0.5 rounded-lg w-fit font-bold">👥 分攤: {{ exp.shares.join(', ') }}</div>
+                        <div class="text-[10px] text-[#9BA5B9]">📅 {{ exp.date }} · 代墊: <span class="font-bold text-[#4A5264]">{{ exp.payer }}</span></div>
+                        <div class="text-[10px] text-[#4A5264] bg-[#EBEFF5] px-2 py-0.5 rounded-lg w-fit font-bold">👥 分攤: {{ exp.shares.join(', ') }}</div>
                     </div>
                     <div class="text-right flex flex-col items-end gap-2">
-                        <button @click="deleteExpenseItem(exp.id)" class="text-slate-300 hover:text-rose-500 text-xs cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                        <button @click="deleteExpenseItem(exp.id)" class="text-[#B6B7C0] hover:text-[#4A5264] text-xs cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                         <div>
-                            <div class="font-bold text-xs text-slate-800">NT$ {{ Math.ceil(exp.twd) }}</div>
-                            <div class="text-[9px] text-slate-400">₩{{ exp.krw }}</div>
+                            <div class="font-bold text-xs text-[#4A5264]">NT$ {{ Math.ceil(exp.twd) }}</div>
+                            <div class="text-[9px] text-[#9BA5B9]">₩{{ exp.krw }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <button @click="openExpenseModal" class="fixed bottom-24 right-6 bg-sky-400 hover:bg-sky-500 text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg"><i class="fa-solid fa-plus text-xl"></i></button>
+            <button @click="openExpenseModal" class="fixed bottom-24 right-6 bg-[#8790A4] hover:bg-[#9BA5B9] text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg"><i class="fa-solid fa-plus text-xl"></i></button>
         </div>
 
         <!-- 行李清單 TAB -->
         <div v-if="currentTab === 'luggage'" class="space-y-4">
-            <div class="handbook-card p-4 bg-sky-50/90 border-sky-300 pt-6">
-                <div class="washi-tape bg-rose-500 text-white">⚠️ KOREA REGULATION</div>
-                <h4 class="font-bold text-xs text-slate-900 mb-1.5 mt-1 flex items-center gap-1">
-                    <i class="fa-solid fa-shield-halved text-rose-500"></i> 韓國旅遊最新入境規範與提醒
+            <div class="handbook-card p-4 bg-[#EBEFF5]/90 border-[#9BA5B9] pt-6">
+                <div class="washi-tape">⚠️ KOREA REGULATION</div>
+                <h4 class="font-bold text-xs text-[#4A5264] mb-1.5 mt-1 flex items-center gap-1">
+                    <i class="fa-solid fa-shield-halved text-[#8790A4]"></i> 韓國旅遊最新入境規範與提醒
                 </h4>
-                <ul class="text-[11px] text-slate-700 space-y-1.5 list-disc pl-4 font-medium">
-                    <li><strong class="text-rose-700">禁帶肉製品：</strong>含豬/牛/雞肉、肉乾、泡麵肉塊嚴禁入境。</li>
-                    <li><strong>行動電源：</strong><strong class="text-sky-800">一律嚴禁托運</strong>，必須隨身登機。</li>
+                <ul class="text-[11px] text-[#4A5264] space-y-1.5 list-disc pl-4 font-medium">
+                    <li><strong>禁帶肉製品：</strong>含豬/牛/雞肉、肉乾、泡麵肉塊嚴禁入境。</li>
+                    <li><strong>行動電源：</strong><strong>一律嚴禁托運</strong>，必須隨身登機。</li>
                 </ul>
             </div>
+
             <div v-for="cat in ['隨身背包', '手提行李', '托運行李']" :key="cat" class="handbook-card p-4">
                 <div class="flex justify-between items-center mb-3">
-                    <h4 class="font-bold text-xs flex items-center gap-1.5">
-                        <i class="fa-solid" :class="cat === '隨身背包' ? 'fa-bag-shopping text-sky-500' : (cat === '手提行李' ? 'fa-suitcase text-cyan-500' : 'fa-plane-departure text-blue-500')"></i>
+                    <h4 class="font-bold text-xs flex items-center gap-1.5 text-[#4A5264]">
+                        <i class="fa-solid" :class="cat === '隨身背包' ? 'fa-bag-shopping text-[#8790A4]' : (cat === '手提行李' ? 'fa-suitcase text-[#9BA5B9]' : 'fa-plane-departure text-[#768096]')"></i>
                         {{ cat }}
                     </h4>
-                    <button @click="addLuggageItem(cat)" class="text-[10px] bg-sky-50 text-sky-700 font-bold px-2 py-0.5 rounded-md border border-sky-200 cursor-pointer"><i class="fa-solid fa-plus"></i> 新增項目</button>
+                    <button @click="addLuggageItem(cat)" class="text-[10px] bg-[#EBEFF5] text-[#4A5264] font-bold px-2 py-0.5 rounded-md border border-[#BEC3D2] cursor-pointer"><i class="fa-solid fa-plus"></i> 新增項目</button>
                 </div>
                 <div class="space-y-2">
-                    <div v-for="lug in getLuggageByCategory(cat)" :key="lug.id" class="flex items-center justify-between bg-sky-50/40 p-2 rounded-xl text-xs border border-sky-100">
+                    <div v-for="lug in getLuggageByCategory(cat)" :key="lug.id" class="flex items-center justify-between bg-[#EBEFF5]/50 p-2 rounded-xl text-xs border border-[#C9DBEF]">
                         <div class="flex items-center gap-2 flex-1">
-                            <input type="checkbox" v-model="lug.checked" @change="updateCloudData" class="w-4 h-4 rounded text-sky-500 cursor-pointer">
-                            <input type="text" v-model="lug.name" @change="updateCloudData" class="bg-transparent font-bold text-slate-800 focus:outline-none w-full" placeholder="要帶些什麼？">
+                            <input type="checkbox" v-model="lug.checked" @change="updateCloudData" class="w-4 h-4 rounded text-[#8790A4] cursor-pointer">
+                            <input type="text" v-model="lug.name" @change="updateCloudData" class="bg-transparent font-bold text-[#4A5264] focus:outline-none w-full" placeholder="要帶些什麼？">
                         </div>
                         <div class="flex items-center gap-2">
-                            <div class="flex items-center bg-white border border-sky-200 rounded-lg text-[11px]">
-                                <button @click="lug.qty > 1 ? (lug.qty--, updateCloudData()) : null" class="px-1.5 py-0.5 font-bold text-sky-500 cursor-pointer">-</button>
-                                <span class="px-1 font-bold text-slate-800 min-w-[12px] text-center">{{ lug.qty }}</span>
-                                <button @click="lug.qty++, updateCloudData()" class="px-1.5 py-0.5 font-bold text-sky-500 cursor-pointer">+</button>
+                            <div class="flex items-center bg-white border border-[#BEC3D2] rounded-lg text-[11px]">
+                                <button @click="lug.qty > 1 ? (lug.qty--, updateCloudData()) : null" class="px-1.5 py-0.5 font-bold text-[#8790A4] cursor-pointer">-</button>
+                                <span class="px-1 font-bold text-[#4A5264] min-w-[12px] text-center">{{ lug.qty }}</span>
+                                <button @click="lug.qty++, updateCloudData()" class="px-1.5 py-0.5 font-bold text-[#8790A4] cursor-pointer">+</button>
                             </div>
-                            <button @click="deleteLuggageItem(lug.id)" class="text-slate-300 hover:text-rose-500 cursor-pointer"><i class="fa-solid fa-trash text-xs"></i></button>
+                            <button @click="deleteLuggageItem(lug.id)" class="text-[#B6B7C0] hover:text-[#4A5264] cursor-pointer"><i class="fa-solid fa-trash text-xs"></i></button>
                         </div>
                     </div>
                 </div>
@@ -649,142 +670,156 @@
 
     </main>
 
+    <!-- 點選匯率欄位跳出的數字鍵盤 -->
+    <div v-if="currentTab === 'info' && activeKeypadField" class="fixed bottom-24 left-4 right-4 max-w-sm mx-auto bg-white/98 backdrop-blur-md p-3 rounded-[24px] border-2 border-[#9BA5B9] shadow-2xl z-40 space-y-2">
+        <div class="flex justify-between items-center text-[11px] font-bold text-[#4A5264] px-1">
+            <span>{{ activeKeypadField === 'krw' ? '輸入韓幣 (KRW)' : '輸入台幣 (TWD)' }}</span>
+            <button @click="activeKeypadField = null" class="text-[#8790A4] hover:text-[#4A5264] cursor-pointer">完成並收合 <i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5 text-sm font-bold text-[#4A5264]">
+            <button v-for="n in ['1','2','3','4','5','6','7','8','9']" :key="n" @click="pressNumPad(n)" class="bg-[#EBEFF5] hover:bg-[#C9DBEF] py-2.5 rounded-xl cursor-pointer active:scale-95 transition">{{ n }}</button>
+            <button @click="pressNumPad('C')" class="bg-[#CDC7C6]/60 hover:bg-[#CDC7C6] py-2.5 rounded-xl cursor-pointer active:scale-95 transition">清除</button>
+            <button @click="pressNumPad('0')" class="bg-[#EBEFF5] hover:bg-[#C9DBEF] py-2.5 rounded-xl cursor-pointer active:scale-95 transition">0</button>
+            <button @click="pressNumPad('DEL')" class="bg-[#C9DBEF] hover:bg-[#B6CFE7] py-2.5 rounded-xl cursor-pointer active:scale-95 transition">⌫</button>
+        </div>
+    </div>
+
     <!-- 底部導覽列 -->
-    <div class="fixed bottom-4 left-4 right-4 max-w-sm mx-auto bg-white/95 backdrop-blur-md p-2 rounded-[24px] border-2 border-sky-200 flex justify-around items-center z-40 float-nav-shadow">
-        <button @click="currentTab = 'schedule'" :class="currentTab === 'schedule' ? 'bg-sky-400 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
+    <div class="fixed bottom-4 left-4 right-4 max-w-sm mx-auto bg-white/95 backdrop-blur-md p-2 rounded-[24px] border-2 border-[#BEC3D2] flex justify-around items-center z-40 float-nav-shadow">
+        <button @click="currentTab = 'schedule'; activeKeypadField = null" :class="currentTab === 'schedule' ? 'bg-[#8790A4] text-white scale-105' : 'text-[#768096]'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
             <i class="fa-solid fa-location-dot text-sm"></i><span class="text-[10px]">行程</span>
         </button>
-        <button @click="currentTab = 'info'" :class="currentTab === 'info' ? 'bg-sky-400 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
+        <button @click="currentTab = 'info'" :class="currentTab === 'info' ? 'bg-[#8790A4] text-white scale-105' : 'text-[#768096]'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
             <i class="fa-solid fa-circle-info text-sm"></i><span class="text-[10px]">資訊</span>
         </button>
-        <button @click="currentTab = 'shopping'" :class="currentTab === 'shopping' ? 'bg-sky-400 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
+        <button @click="currentTab = 'shopping'; activeKeypadField = null" :class="currentTab === 'shopping' ? 'bg-[#8790A4] text-white scale-105' : 'text-[#768096]'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
             <i class="fa-solid fa-basket-shopping text-sm"></i><span class="text-[10px]">購物清單</span>
         </button>
-        <button @click="currentTab = 'expenses'" :class="currentTab === 'expenses' ? 'bg-sky-400 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
+        <button @click="currentTab = 'expenses'; activeKeypadField = null" :class="currentTab === 'expenses' ? 'bg-[#8790A4] text-white scale-105' : 'text-[#768096]'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
             <i class="fa-solid fa-coins text-sm"></i><span class="text-[10px]">花費</span>
         </button>
-        <button @click="currentTab = 'luggage'" :class="currentTab === 'luggage' ? 'bg-sky-400 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
+        <button @click="currentTab = 'luggage'; activeKeypadField = null" :class="currentTab === 'luggage' ? 'bg-[#8790A4] text-white scale-105' : 'text-[#768096]'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
             <i class="fa-solid fa-suitcase text-sm"></i><span class="text-[10px]">行李清單</span>
         </button>
     </div>
 
     <!-- 新增/編輯行程 Modal -->
-    <div v-if="modalOpen" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
-        <div class="bg-white rounded-[32px] w-full max-w-sm p-5 border-4 border-sky-200 shadow-xl max-h-[85vh] overflow-y-auto space-y-3 text-xs">
-            <h3 class="font-bold text-sm text-slate-800">⛄ {{ isEditMode ? '編輯行程項目' : '新增全新行程' }}</h3>
+    <div v-if="modalOpen" class="fixed inset-0 bg-[#4A5264]/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-[32px] w-full max-w-sm p-5 border-4 border-[#BEC3D2] shadow-xl max-h-[85vh] overflow-y-auto space-y-3 text-xs">
+            <h3 class="font-bold text-sm text-[#4A5264]">⛄ {{ isEditMode ? '編輯行程項目' : '新增全新行程' }}</h3>
             <div class="space-y-2">
-                <div><label class="block font-bold text-slate-500">調整日期</label>
-                    <select v-model="formEvent.targetDayIndex" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none text-sky-700">
+                <div><label class="block font-bold text-[#768096]">調整日期</label>
+                    <select v-model="formEvent.targetDayIndex" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none text-[#4A5264]">
                         <option v-for="(day, dIdx) in days" :key="dIdx" :value="dIdx">
                             Day {{ dIdx + 1 }} ({{ day.date }} {{ day.week }})
                         </option>
                     </select>
                 </div>
-                <div><label class="block font-bold text-slate-500">分類欄</label>
-                    <select v-model="formEvent.category" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none">
+                <div><label class="block font-bold text-[#768096]">分類欄</label>
+                    <select v-model="formEvent.category" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none">
                         <option>景點</option><option>住宿</option><option>美食</option><option>購物</option><option>航班</option><option>其他</option>
                     </select>
                 </div>
-                <div><label class="block font-bold text-slate-500">名稱</label><input type="text" v-model="formEvent.name" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none"></div>
-                <div><label class="block font-bold text-slate-500">抵達時間</label><input type="time" v-model="formEvent.time" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none"></div>
+                <div><label class="block font-bold text-[#768096]">名稱</label><input type="text" v-model="formEvent.name" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
+                <div><label class="block font-bold text-[#768096]">抵達時間</label><input type="time" v-model="formEvent.time" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
                 <div v-if="['景點','住宿','美食','購物'].includes(formEvent.category)">
-                    <label class="block font-bold text-slate-500">營業時間</label>
-                    <input type="text" v-model="formEvent.hours" placeholder="例如: 09:00 - 18:00" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none">
+                    <label class="block font-bold text-[#768096]">營業時間</label>
+                    <input type="text" v-model="formEvent.hours" placeholder="例如: 09:00 - 18:00" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none">
                 </div>
                 <div v-if="formEvent.category === '景點'">
-                    <label class="block font-bold text-slate-500">門票資訊</label>
-                    <input type="text" v-model="formEvent.ticket" placeholder="例如: 免費 / ₩15,000" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none">
+                    <label class="block font-bold text-[#768096]">門票資訊</label>
+                    <input type="text" v-model="formEvent.ticket" placeholder="例如: 免費 / ₩15,000" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-500">特色 & 備註</label>
-                    <textarea v-model="formEvent.note" @input="autoResize($event)" ref="modalNotes" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl focus:outline-none resize-none overflow-hidden min-h-[42px]"></textarea>
+                    <label class="block font-bold text-[#768096]">特色 & 備註</label>
+                    <textarea v-model="formEvent.note" @input="autoResize($event)" ref="modalNotes" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl focus:outline-none resize-none overflow-hidden min-h-[42px]"></textarea>
                 </div>
-                <div><label class="block font-bold text-slate-500">上傳卡片圖片</label>
-                    <div class="relative bg-[#F0F9FF] border-2 border-dashed border-sky-200 rounded-xl p-2.5 text-center text-slate-400 cursor-pointer">
-                        <span v-if="formEvent.image" class="text-sky-700 font-bold">📸 卡片相片載入成功</span><span v-else>📸 點擊拍照或上傳裁剪</span>
+                <div><label class="block font-bold text-[#768096]">上傳卡片圖片</label>
+                    <div class="relative bg-[#EBEFF5] border-2 border-dashed border-[#BEC3D2] rounded-xl p-2.5 text-center text-[#9BA5B9] cursor-pointer">
+                        <span v-if="formEvent.image" class="text-[#4A5264] font-bold">📸 卡片相片載入成功</span><span v-else>📸 點擊拍照或上傳裁剪</span>
                         <input type="file" accept="image/*" @change="triggerCropModal($event, editingIdx, 'schedule')" class="absolute inset-0 opacity-0 cursor-pointer">
                     </div>
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
-                <button v-if="isEditMode" @click="confirmDeleteEvent" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 px-3 rounded-xl transition cursor-pointer">刪除</button>
-                <button @click="modalOpen = false" class="bg-slate-100 text-slate-600 font-bold py-2 px-3 rounded-xl flex-1 cursor-pointer">取消</button>
-                <button @click="saveEvent" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-3 rounded-xl flex-1 cursor-pointer">儲存行程</button>
+                <button v-if="isEditMode" @click="confirmDeleteEvent" class="bg-[#ADABAD] hover:bg-[#8790A4] text-white font-bold py-2 px-3 rounded-xl transition cursor-pointer">刪除</button>
+                <button @click="modalOpen = false" class="bg-[#EBEFF5] text-[#4A5264] font-bold py-2 px-3 rounded-xl flex-1 cursor-pointer">取消</button>
+                <button @click="saveEvent" class="bg-[#8790A4] hover:bg-[#9BA5B9] text-white font-bold py-2 px-3 rounded-xl flex-1 cursor-pointer">儲存行程</button>
             </div>
         </div>
     </div>
 
     <!-- 新增花費 Modal -->
-    <div v-if="expenseModalOpen" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
-        <div class="bg-white rounded-[32px] w-full max-w-sm p-5 border-4 border-sky-200 shadow-xl space-y-3 text-xs">
-            <h3 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-coins text-sky-500"></i> 新增旅遊花費紀錄</h3>
+    <div v-if="expenseModalOpen" class="fixed inset-0 bg-[#4A5264]/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-[32px] w-full max-w-sm p-5 border-4 border-[#BEC3D2] shadow-xl space-y-3 text-xs">
+            <h3 class="font-bold text-sm text-[#4A5264]"><i class="fa-solid fa-coins text-[#8790A4]"></i> 新增旅遊花費紀錄</h3>
             <div class="space-y-2">
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block font-bold text-slate-500">類別</label>
-                        <select v-model="formExpense.category" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none">
+                        <label class="block font-bold text-[#768096]">類別</label>
+                        <select v-model="formExpense.category" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none">
                             <option>交通</option><option>飲食</option><option>住宿</option><option>門票</option><option>購物</option><option>其他</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-500">日期</label>
-                        <input type="date" v-model="formExpense.date" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none">
+                        <label class="block font-bold text-[#768096]">日期</label>
+                        <input type="date" v-model="formExpense.date" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none">
                     </div>
                 </div>
-                <div><label class="block font-bold text-slate-500">名稱</label><input type="text" v-model="formExpense.name" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none"></div>
+                <div><label class="block font-bold text-[#768096]">名稱</label><input type="text" v-model="formExpense.name" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
                 <div class="grid grid-cols-2 gap-2">
-                    <div><label class="block font-bold text-slate-500">金額 (韓幣 KRW)</label><input type="number" v-model="formExpense.krw" @input="syncExpenseCurrency('krw')" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none"></div>
-                    <div><label class="block font-bold text-slate-500">台幣 (無條件進位)</label><input type="number" v-model="formExpense.twd" @input="syncExpenseCurrency('twd')" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none"></div>
+                    <div><label class="block font-bold text-[#768096]">金額 (韓幣 KRW)</label><input type="number" v-model="formExpense.krw" @input="syncExpenseCurrency('krw')" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
+                    <div><label class="block font-bold text-[#768096]">台幣 (無條件進位)</label><input type="number" v-model="formExpense.twd" @input="syncExpenseCurrency('twd')" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block font-bold text-slate-500">付款方式</label>
-                        <select v-model="formExpense.payMethod" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none">
+                        <label class="block font-bold text-[#768096]">付款方式</label>
+                        <select v-model="formExpense.payMethod" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none">
                             <option>現金</option><option>信用卡</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-500">誰付款</label>
-                        <select v-model="formExpense.payer" class="w-full bg-[#F0F9FF] border-2 border-sky-200 p-2 rounded-xl font-bold focus:outline-none">
+                        <label class="block font-bold text-[#768096]">誰付款</label>
+                        <select v-model="formExpense.payer" class="w-full bg-[#EBEFF5] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none">
                             <option v-for="mem in familyMembers" :key="mem">{{ mem }}</option>
                             <option>公費</option>
                         </select>
                     </div>
                 </div>
-                <div><label class="block font-bold text-slate-500">分攤成員</label>
-                    <div class="grid grid-cols-2 gap-1.5 bg-[#F0F9FF] p-2.5 rounded-xl border border-sky-200">
-                        <label v-for="mem in familyMembers" :key="mem" class="flex items-center gap-1.5 font-bold text-slate-700 cursor-pointer">
-                            <input type="checkbox" :value="mem" v-model="formExpense.shares" class="w-4 h-4 text-sky-500"> {{ mem }}
+                <div><label class="block font-bold text-[#768096]">分攤成員</label>
+                    <div class="grid grid-cols-2 gap-1.5 bg-[#EBEFF5] p-2.5 rounded-xl border border-[#BEC3D2]">
+                        <label v-for="mem in familyMembers" :key="mem" class="flex items-center gap-1.5 font-bold text-[#4A5264] cursor-pointer">
+                            <input type="checkbox" :value="mem" v-model="formExpense.shares" class="w-4 h-4 text-[#8790A4]"> {{ mem }}
                         </label>
                     </div>
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
-                <button @click="expenseModalOpen = false" class="bg-slate-100 text-slate-600 font-bold py-2 px-4 rounded-xl flex-1 cursor-pointer">取消</button>
-                <button @click="saveExpenseItem" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-xl flex-1 cursor-pointer">儲存記帳</button>
+                <button @click="expenseModalOpen = false" class="bg-[#EBEFF5] text-[#4A5264] font-bold py-2 px-4 rounded-xl flex-1 cursor-pointer">取消</button>
+                <button @click="saveExpenseItem" class="bg-[#8790A4] hover:bg-[#9BA5B9] text-white font-bold py-2 px-4 rounded-xl flex-1 cursor-pointer">儲存記帳</button>
             </div>
         </div>
     </div>
 
     <!-- 裁切 Modal -->
-    <div v-if="cropModalOpen" class="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-white rounded-[32px] w-full max-w-sm p-5 border-4 border-sky-200 shadow-2xl flex flex-col items-center space-y-4">
-            <div class="w-full flex justify-between items-center border-b pb-2 border-sky-100">
-                <h3 class="font-bold text-sm text-slate-800 flex items-center gap-1"><i class="fa-solid fa-scissors text-sky-500"></i> 調整照片適配位置</h3>
-                <span class="text-[10px] text-slate-400 bg-sky-50 px-2 py-0.5 rounded-full font-bold">可單指拖曳 / 雙指縮放</span>
+    <div v-if="cropModalOpen" class="fixed inset-0 bg-[#4A5264]/80 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white rounded-[32px] w-full max-w-sm p-5 border-4 border-[#BEC3D2] shadow-2xl flex flex-col items-center space-y-4">
+            <div class="w-full flex justify-between items-center border-b pb-2 border-[#EBEFF5]">
+                <h3 class="font-bold text-sm text-[#4A5264] flex items-center gap-1"><i class="fa-solid fa-scissors text-[#8790A4]"></i> 調整照片適配位置</h3>
+                <span class="text-[10px] text-[#768096] bg-[#EBEFF5] px-2 py-0.5 rounded-full font-bold">可單指拖曳 / 雙指縮放</span>
             </div>
-            <div id="cropArea" :class="cropModuleType === 'hotel' ? 'w-full h-44' : 'w-64 h-64'" class="bg-sky-50 rounded-2xl overflow-hidden relative border-2 border-sky-200 shadow-inner crop-area" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag" @mouseleave="endDrag" @touchstart="startDrag" @touchmove="onDrag" @touchend="endDrag">
+            <div id="cropArea" :class="cropModuleType === 'hotel' ? 'w-full h-44' : 'w-64 h-64'" class="bg-[#EBEFF5] rounded-2xl overflow-hidden relative border-2 border-[#BEC3D2] shadow-inner crop-area" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag" @mouseleave="endDrag" @touchstart="startDrag" @touchmove="onDrag" @touchend="endDrag">
                 <img :src="cropSourceUrl" :style="cropImageStyle" class="absolute max-w-none origin-center pointer-events-none">
-                <div class="absolute inset-0 border-2 border-dashed border-sky-400/70 rounded-2xl pointer-events-none m-1"></div>
+                <div class="absolute inset-0 border-2 border-dashed border-[#8790A4]/70 rounded-2xl pointer-events-none m-1"></div>
             </div>
-            <div class="flex gap-4 items-center bg-[#F0F9FF] px-4 py-2 rounded-2xl border border-sky-200">
-                <button @click="changeScale(-0.1)" class="w-8 h-8 rounded-full bg-white border border-sky-300 flex items-center justify-center text-sky-700 active:scale-90 font-bold text-base shadow-xs cursor-pointer"><i class="fa-solid fa-minus"></i></button>
-                <span class="text-[11px] font-bold text-slate-500 w-12 text-center">縮放比例</span>
-                <button @click="changeScale(0.1)" class="w-8 h-8 rounded-full bg-white border border-sky-300 flex items-center justify-center text-sky-700 active:scale-90 font-bold text-base shadow-xs cursor-pointer"><i class="fa-solid fa-plus"></i></button>
+            <div class="flex gap-4 items-center bg-[#EBEFF5] px-4 py-2 rounded-2xl border border-[#BEC3D2]">
+                <button @click="changeScale(-0.1)" class="w-8 h-8 rounded-full bg-white border border-[#BEC3D2] flex items-center justify-center text-[#4A5264] active:scale-90 font-bold text-base shadow-xs cursor-pointer"><i class="fa-solid fa-minus"></i></button>
+                <span class="text-[11px] font-bold text-[#768096] w-12 text-center">縮放比例</span>
+                <button @click="changeScale(0.1)" class="w-8 h-8 rounded-full bg-white border border-[#BEC3D2] flex items-center justify-center text-[#4A5264] active:scale-90 font-bold text-base shadow-xs cursor-pointer"><i class="fa-solid fa-plus"></i></button>
             </div>
             <div class="w-full flex gap-2 pt-2 text-xs font-bold">
-                <button @click="cropModalOpen = false" class="bg-slate-100 text-slate-600 py-2.5 px-4 rounded-xl flex-1 cursor-pointer">取消</button>
-                <button @click="executeCrop" class="bg-sky-500 text-white py-2.5 px-4 rounded-xl flex-1 shadow-md hover:bg-sky-600 cursor-pointer"><i class="fa-solid fa-check"></i> 完成裁切</button>
+                <button @click="cropModalOpen = false" class="bg-[#EBEFF5] text-[#4A5264] py-2.5 px-4 rounded-xl flex-1 cursor-pointer">取消</button>
+                <button @click="executeCrop" class="bg-[#8790A4] text-white py-2.5 px-4 rounded-xl flex-1 shadow-md hover:bg-[#9BA5B9] cursor-pointer"><i class="fa-solid fa-check"></i> 完成裁切</button>
             </div>
         </div>
     </div>
@@ -806,18 +841,21 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const docRef = db.collection("trips").doc("jeju_winter_family_1_3_1_6");
+const docRef = db.collection("trips").doc("jeju_snow_family_1_3_1_6");
 
 createApp({
     setup() {
         const familyMembers = ['曾曾', '美津', '品翰', '小絜', '美玲'];
         const currentTab = ref('schedule');
-        const tripTitle = ref('濟州島冬雪之旅 ⛄');
+        const tripTitle = ref('濟州島雪景之旅 ⛄');
         const selectedDayIndex = ref(0);
         const calcKrw = ref(null);
         const calcTwd = ref(null);
-        const showCalculator = ref(false);
-        const calcExpr = ref('');
+        const activeKeypadField = ref(null);
+
+        const editingFlights = ref(false);
+        const editingRental = ref(false);
+        const editingHotelIdx = ref(null);
 
         const draggingShoppingIndex = ref(null);
         let longPressTimer = null;
@@ -869,7 +907,7 @@ createApp({
 
         const mapMeteoCode = (code) => {
             if (code >= 71 && code <= 77 || code === 85 || code === 86) {
-                return { icon: '❄️', desc: '冬日飄雪 · 雪景超夢幻' };
+                return { icon: '❄️', desc: '冬日下雪 · 雪景超夢幻' };
             }
             if (code >= 95) {
                 return { icon: '⛈️', desc: '雷雨天氣 · 留意行程調整' };
@@ -878,7 +916,7 @@ createApp({
                 return { icon: '🌧️', desc: '有雨天氣 · 記得攜帶雨具' };
             }
             if (code === 0) {
-                return { icon: '☀️', desc: '晴朗冬日 · 適合賞景拍照' };
+                return { icon: '☀️', desc: '晴朗雪景 · 適合賞景拍照' };
             }
             if (code === 1 || code === 2) {
                 return { icon: '⛅', desc: '晴時多雲 · 氣溫偏涼請保暖' };
@@ -917,9 +955,9 @@ createApp({
                 };
             } catch (err) {
                 weatherData.value = {
-                    temp: '4',
-                    feelsLike: '0',
-                    description: '冬日冷空氣 · 記得穿厚外套與手套',
+                    temp: '3',
+                    feelsLike: '-1',
+                    description: '冬日下雪 · 記得穿厚外套與手套',
                     icon: '❄️',
                     forecast: []
                 };
@@ -937,46 +975,26 @@ createApp({
             outbound: {
                 date: '1/3',
                 code: 'IT 670',
-                route: 'KHH ➔ CJU',
                 fromCode: 'KHH',
                 fromName: '小港機場',
                 toCode: 'CJU',
                 toName: '濟州機場',
                 depTime: '15:50',
                 arrTime: '18:50',
-                duration: '飛行 2 小時'
+                duration: '2小時'
             },
             inbound: {
                 date: '1/6',
                 code: 'IT 675',
-                route: 'CJU ➔ KHH',
                 fromCode: 'CJU',
                 fromName: '濟州機場',
                 toCode: 'KHH',
                 toName: '小港機場',
                 depTime: '10:50',
                 arrTime: '12:15',
-                duration: '飛行 2 小時 15 分鐘'
+                duration: '2小時15分鐘'
             }
         });
-
-        const syncOutboundRoute = () => {
-            const parts = (flightInfo.value.outbound.route || '').split(/➔|->|\//).map(s => s.trim()).filter(Boolean);
-            if (parts.length >= 2) {
-                flightInfo.value.outbound.fromCode = parts[0];
-                flightInfo.value.outbound.toCode = parts[1];
-            }
-            updateCloudData();
-        };
-
-        const syncInboundRoute = () => {
-            const parts = (flightInfo.value.inbound.route || '').split(/➔|->|\//).map(s => s.trim()).filter(Boolean);
-            if (parts.length >= 2) {
-                flightInfo.value.inbound.fromCode = parts[0];
-                flightInfo.value.inbound.toCode = parts[1];
-            }
-            updateCloudData();
-        };
 
         const rentalInfo = ref({
             company: '樂天租車濟州 (Lotte Rent-a-Car)',
@@ -985,7 +1003,33 @@ createApp({
             orderId: 'LT-20260103-0106'
         });
 
-        // 自動估算景點到景點開車時間
+        const toggleEditFlights = () => {
+            if (editingFlights.value) {
+                editingFlights.value = false;
+                updateCloudData();
+            } else {
+                editingFlights.value = true;
+            }
+        };
+
+        const toggleEditRental = () => {
+            if (editingRental.value) {
+                editingRental.value = false;
+                updateCloudData();
+            } else {
+                editingRental.value = true;
+            }
+        };
+
+        const toggleHotelEdit = (hIdx) => {
+            if (editingHotelIdx.value === hIdx) {
+                editingHotelIdx.value = null;
+                updateCloudData();
+            } else {
+                editingHotelIdx.value = hIdx;
+            }
+        };
+
         const estimateDriveMinutes = (fromEvent, toEvent) => {
             const a = (fromEvent?.name || '').toLowerCase();
             const b = (toEvent?.name || '').toLowerCase();
@@ -1033,9 +1077,9 @@ createApp({
         };
 
         const defaultHotels = [
-            { name: '濟州冬雪市區飯店 (Day 1)', orderId: '', checkIn: '1/3 15:00', checkOut: '1/4 11:00', phone: '', address: '濟州市', img: '', note: '' },
+            { name: '濟州雪景市區飯店 (Day 1)', orderId: '', checkIn: '1/3 15:00', checkOut: '1/4 11:00', phone: '', address: '濟州市', img: '', note: '' },
             { name: '濟州舒適旅宿 (Day 2)', orderId: '', checkIn: '1/4 15:00', checkOut: '1/5 11:00', phone: '', address: '濟州特別自治道', img: '', note: '' },
-            { name: '濟州海景／山景住宿 (Day 3)', orderId: '', checkIn: '1/5 15:00', checkOut: '1/6 10:00', phone: '', address: '濟州特別自治道', img: '', note: '' }
+            { name: '濟州冬日住宿 (Day 3)', orderId: '', checkIn: '1/5 15:00', checkOut: '1/6 10:00', phone: '', address: '濟州特別自治道', img: '', note: '' }
         ];
 
         const dayEvents = ref(JSON.parse(JSON.stringify(defaultDayEvents)));
@@ -1353,7 +1397,6 @@ createApp({
             }
         };
 
-        // 韓幣轉台幣小數點一律無條件進位
         const convertCurrency = (type) => {
             if (type === 'krw') {
                 const val = Number(calcKrw.value);
@@ -1361,6 +1404,35 @@ createApp({
             } else if (type === 'twd') {
                 const val = Number(calcTwd.value);
                 calcKrw.value = val > 0 ? Math.round(val * 42) : null;
+            }
+        };
+
+        const openKeypad = (field) => {
+            activeKeypadField.value = field;
+        };
+
+        const pressNumPad = (key) => {
+            const isKrw = activeKeypadField.value === 'krw';
+            let currentStr = isKrw
+                ? (calcKrw.value !== null && calcKrw.value !== '' ? String(calcKrw.value) : '')
+                : (calcTwd.value !== null && calcTwd.value !== '' ? String(calcTwd.value) : '');
+
+            if (key === 'C') {
+                currentStr = '';
+            } else if (key === 'DEL') {
+                currentStr = currentStr.slice(0, -1);
+            } else {
+                if (currentStr.length < 10) {
+                    currentStr = currentStr === '0' ? key : currentStr + key;
+                }
+            }
+
+            if (isKrw) {
+                calcKrw.value = currentStr === '' ? null : Number(currentStr);
+                convertCurrency('krw');
+            } else {
+                calcTwd.value = currentStr === '' ? null : Number(currentStr);
+                convertCurrency('twd');
             }
         };
 
@@ -1374,46 +1446,12 @@ createApp({
             }
         };
 
-        const calcPress = (key) => {
-            if (key === 'C') {
-                calcExpr.value = '';
-                return;
-            }
-            if (key === 'DEL') {
-                calcExpr.value = calcExpr.value.slice(0, -1);
-                return;
-            }
-            if (key === '=') {
-                try {
-                    const sanitized = calcExpr.value.replace(/[^0-9+\-*/.]/g, '');
-                    if (!sanitized) return;
-                    const res = Function('"use strict";return (' + sanitized + ')')();
-                    if (Number.isFinite(res)) {
-                        calcExpr.value = String(Math.round(res * 100) / 100);
-                    }
-                } catch {
-                    calcExpr.value = '0';
-                }
-                return;
-            }
-            calcExpr.value += key;
-        };
-
-        const applyCalcToKrw = () => {
-            calcPress('=');
-            const num = Number(calcExpr.value);
-            if (!Number.isNaN(num) && num > 0) {
-                calcKrw.value = Math.round(num);
-                convertCurrency('krw');
-            }
-        };
-
         const getLuggageByCategory = (cat) => luggageItems.value.filter(l => l.category === cat);
         const addLuggageItem = (cat) => { luggageItems.value.push({ id: Date.now(), category: cat, name: '', qty: 1, checked: false }); updateCloudData(); };
         const deleteLuggageItem = (id) => { luggageItems.value = luggageItems.value.filter(l => l.id !== id); updateCloudData(); };
 
         const getCategoryEmoji = (cat) => ({ '景點': '⛄', '住宿': '🏨', '美食': '🍲', '購物': '🛍️', '航班': '✈️', '其他': '❄️' }[cat] || '📍');
-        const getCategoryBg = (cat) => ({ '景點': 'bg-sky-500', '住宿': 'bg-cyan-500', '美食': 'bg-blue-500', '購物': 'bg-indigo-400', '航班': 'bg-sky-600', '其他': 'bg-slate-400' }[cat] || 'bg-slate-400');
+        const getCategoryBg = (cat) => ({ '景點': 'bg-[#8790A4]', '住宿': 'bg-[#9BA5B9]', '美食': 'bg-[#768096]', '購物': 'bg-[#ADABAD]', '航班': 'bg-[#4A5264]', '其他': 'bg-[#B6B7C0]' }[cat] || 'bg-[#9BA5B9]');
         const formatNumber = (num) => Math.ceil(Number(num || 0)).toLocaleString();
 
         onMounted(() => {
@@ -1424,7 +1462,10 @@ createApp({
                     if (parsed.tripTitle) tripTitle.value = parsed.tripTitle;
                     if (parsed.dayEvents) dayEvents.value = parsed.dayEvents;
                     if (parsed.hotels) hotels.value = parsed.hotels;
-                    if (parsed.flightInfo) flightInfo.value = { ...flightInfo.value, ...parsed.flightInfo };
+                    if (parsed.flightInfo) {
+                        flightInfo.value.outbound = { ...flightInfo.value.outbound, ...(parsed.flightInfo.outbound || {}) };
+                        flightInfo.value.inbound = { ...flightInfo.value.inbound, ...(parsed.flightInfo.inbound || {}) };
+                    }
                     if (parsed.rentalInfo) rentalInfo.value = { ...rentalInfo.value, ...parsed.rentalInfo };
                     if (parsed.shoppingList) shoppingList.value = parsed.shoppingList;
                     if (parsed.expenses) expenses.value = parsed.expenses;
@@ -1439,12 +1480,13 @@ createApp({
 
         return {
             familyMembers, snowflakes, currentTab, tripTitle, selectedDayIndex, days, dayEvents, hotels,
-            flightInfo, rentalInfo, shoppingList, expenses, luggageItems,
-            calcKrw, calcTwd, showCalculator, calcExpr, calcPress, applyCalcToKrw,
+            flightInfo, rentalInfo, editingFlights, editingRental, editingHotelIdx,
+            toggleEditFlights, toggleEditRental, toggleHotelEdit,
+            shoppingList, expenses, luggageItems,
+            calcKrw, calcTwd, activeKeypadField, openKeypad, pressNumPad,
             modalOpen, isEditMode, formEvent, expenseModalOpen, formExpense, currentDayEvents,
             sortedExpenses, totalTwd, totalKrw, computedSettlements, settlementDone, editingIdx, weatherData,
             draggingShoppingIndex, modalNotes, infoHotelNotes, autoResize, fetchJejuWeather,
-            syncOutboundRoute, syncInboundRoute,
             openAddModal, openEditModal, saveEvent, confirmDeleteEvent, moveEvent,
             addShoppingItem, deleteShoppingItem, handleShoppingTouchStart, handleShoppingTouchMove, handleShoppingTouchEnd,
             openExpenseModal, saveExpenseItem, deleteExpenseItem, convertCurrency, syncExpenseCurrency,
