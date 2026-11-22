@@ -127,7 +127,7 @@
         </button>
     </div>
 
-    <!-- 頂部雪景橫幅（已移除左上角字樣；點選右下角筆圖示可改名稱並一同更換／調整照片） -->
+    <!-- 頂部雪景橫幅 -->
     <div class="w-full h-[310px] relative overflow-hidden bg-[#D7ECFC] border-b-2 border-[#B6CFE7]">
         <img :src="bannerImage || defaultBannerImage" alt="濟州島雪景橫幅" class="w-full h-full object-cover object-center">
 
@@ -139,7 +139,7 @@
                     <input type="file" accept="image/*" @change="triggerCropModal($event, 0, 'banner')" class="hidden">
                 </label>
             </div>
-            <p class="text-[11px] text-sky-100 mt-0.5 font-medium">⛄ 1/3–1/6 濟州島 ❄️🏔️</p>
+            <p class="text-[11px] text-sky-100 mt-0.5 font-medium">⛄ 1/3–1/6 濟州島雪景下雪家族遊 ❄️🏔️</p>
         </div>
     </div>
 
@@ -280,15 +280,18 @@
                         </div>
                     </div>
 
+                    <!-- 點選開車或走路自動算出移動時間 -->
                     <div v-if="eIdx < currentDayEvents.length - 1" class="my-2 flex items-center justify-center gap-3">
                         <div class="h-5 border-l-2 border-dashed border-[#B6CFE7]"></div>
                         <div class="bg-white text-[#38465C] px-3 py-1 rounded-full text-[11px] flex items-center gap-1.5 border border-[#BEC3D2] shadow-xs">
-                            <select v-model="event.transitMode" @change="updateCloudData" class="bg-transparent focus:outline-none font-bold text-sky-800 cursor-pointer text-[11px]">
-                                <option value="drive">🚗 車子</option>
+                            <select v-model="event.transitMode" @change="onTransitModeChange(eIdx)" class="bg-transparent focus:outline-none font-bold text-sky-800 cursor-pointer text-[11px]">
+                                <option value="drive">🚗 開車</option>
                                 <option value="walk">🚶 走路</option>
-                                <option value="transit">🚌 公車</option>
                             </select>
-                            <input type="text" v-model="event.transitTime" @change="updateCloudData" class="w-16 bg-transparent text-center border-b border-sky-400 font-bold focus:outline-none text-orange-500" placeholder="15 分鐘">
+                            <input type="text" v-model="event.transitTime" @change="updateCloudData" class="w-20 bg-transparent text-center border-b border-sky-400 font-bold focus:outline-none text-orange-500" placeholder="計算中...">
+                            <button @click="recalculateSegment(eIdx)" title="重新試算路線時間" class="text-sky-600 hover:text-sky-800 cursor-pointer text-[10px]">
+                                <i class="fa-solid fa-route"></i>
+                            </button>
                         </div>
                         <div class="h-5 border-l-2 border-dashed border-[#B6CFE7]"></div>
                     </div>
@@ -571,10 +574,10 @@
             </button>
         </div>
 
-        <!-- 花費 TAB（參考首圖粉藍雪天＋柑橘暖橙＋雪白＋深海藍配色） -->
+        <!-- 花費 TAB -->
         <div v-if="currentTab === 'expenses'" class="space-y-4">
             <div class="bg-gradient-to-b from-[#D7ECFC] to-[#EBF5FF] text-[#38465C] border-2 border-[#B6CFE7] p-5 rounded-3xl text-center shadow-sm">
-                <div class="inline-block text-[10px] font-bold tracking-wider bg-white text-sky-800 border border-[#B6CFE7] px-3 py-0.5 rounded-full">目前累積總花費 (台幣) ⛄</div>
+                <div class="inline-block text-[10px] font-bold tracking-wider bg-white text-sky-800 border border-[#B6CFE7] px-3 py-0.5 rounded-full">目前累積總花費 (台幣 · 無條件進位) ⛄</div>
                 <div class="text-3xl font-bold mt-2 text-[#E87A3E]">NT$ {{ formatNumber(totalTwd) }}</div>
                 <div class="text-xs text-sky-800 font-bold mt-1.5 bg-white/85 border border-[#C9DBEF] inline-block px-3 py-0.5 rounded-full">韓幣總額: ₩{{ formatNumber(totalKrw) }}</div>
             </div>
@@ -819,6 +822,28 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const docRef = db.collection("trips").doc("jeju_snow_family_1_3_1_6");
 
+// 濟州島常見景點／租車／機場／美食地點座標表
+const JEJU_PLACES = [
+    { keys: ['sukseongdo', '宿營島', '숙성도'], lat: 33.4988, lng: 126.5335 },
+    { keys: ['樂天租車', '롯데렌터카', '租車'], lat: 33.5042, lng: 126.4945 },
+    { keys: ['濟州機場', 'cju', '제주국제공항', '機場'], lat: 33.5113, lng: 126.4930 },
+    { keys: ['9.81', '981park'], lat: 33.3976, lng: 126.3575 },
+    { keys: ['sulloc', '雪綠茶', '오설록'], lat: 33.3059, lng: 126.2895 },
+    { keys: ['umu', '우무'], lat: 33.4892, lng: 126.4258 },
+    { keys: ['牛島', '우도'], lat: 33.5059, lng: 126.9511 },
+    { keys: ['城山日出峰', '성산일출봉'], lat: 33.4584, lng: 126.9425 },
+    { keys: ['月汀里', 'woljeong', '월정리'], lat: 33.5562, lng: 126.7959 },
+    { keys: ['wolgo', '월고집'], lat: 33.5567, lng: 126.7972 },
+    { keys: ['偶來市場', '올레시장', '西歸浦'], lat: 33.2494, lng: 126.5646 },
+    { keys: ['東門市場', '동문시장'], lat: 33.5126, lng: 126.5282 },
+    { keys: ['倫敦貝果', 'london bagel', '런던베이글'], lat: 33.5322, lng: 126.6416 },
+    { keys: ['涯月', '애월'], lat: 33.4622, lng: 126.3106 },
+    { keys: ['翰林', '한림'], lat: 33.4148, lng: 126.2695 },
+    { keys: ['鹹德', '함덕'], lat: 33.5432, lng: 126.6693 },
+    { keys: ['濟州市', '제주시'], lat: 33.4996, lng: 126.5312 },
+    { keys: ['西歸浦市', '서귀포시'], lat: 33.2541, lng: 126.5601 }
+];
+
 createApp({
     setup() {
         const familyMembers = ['曾曾', '美津', '品翰', '小絜', '美玲'];
@@ -978,11 +1003,9 @@ createApp({
         })();
 
         const bannerImage = ref('');
-
         const editingFlights = ref(false);
         const editingRental = ref(false);
         const editingHotelIdx = ref(null);
-
         const draggingShoppingIndex = ref(null);
         let longPressTimer = null;
         let isLongPressed = false;
@@ -1156,7 +1179,97 @@ createApp({
             }
         };
 
-        const estimateDriveMinutes = (fromEvent, toEvent) => {
+        // 座標與路線時間計算
+        const coordCache = {};
+
+        const haversineKm = (a, b) => {
+            const R = 6371;
+            const dLat = (b.lat - a.lat) * Math.PI / 180;
+            const dLng = (b.lng - a.lng) * Math.PI / 180;
+            const x = Math.sin(dLat / 2) ** 2 +
+                Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+        };
+
+        const formatMinutesLabel = (mins) => {
+            const total = Math.max(1, Math.round(mins));
+            if (total >= 60) {
+                const h = Math.floor(total / 60);
+                const m = total % 60;
+                return m > 0 ? `${h} 小時 ${m} 分鐘` : `${h} 小時`;
+            }
+            return `${total} 分鐘`;
+        };
+
+        const resolvePlaceCoords = async (placeName) => {
+            const raw = (placeName || '').trim();
+            if (!raw) return null;
+            const lower = raw.toLowerCase();
+
+            for (const p of JEJU_PLACES) {
+                if (p.keys.some(k => lower.includes(k.toLowerCase()))) {
+                    return { lat: p.lat, lng: p.lng };
+                }
+            }
+
+            if (coordCache[lower]) return coordCache[lower];
+
+            try {
+                const q = encodeURIComponent(raw.includes('濟州') || raw.includes('Jeju') ? raw : `${raw} 濟州`);
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 3000);
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${q}`, {
+                    signal: controller.signal
+                });
+                clearTimeout(timer);
+                if (res.ok) {
+                    const list = await res.json();
+                    if (Array.isArray(list) && list.length > 0) {
+                        const pt = { lat: parseFloat(list[0].lat), lng: parseFloat(list[0].lon) };
+                        coordCache[lower] = pt;
+                        return pt;
+                    }
+                }
+            } catch (_) {}
+
+            return null;
+        };
+
+        const computeTravelDuration = async (fromEvent, toEvent, mode = 'drive') => {
+            const ptA = await resolvePlaceCoords(fromEvent?.name);
+            const ptB = await resolvePlaceCoords(toEvent?.name);
+
+            if (ptA && ptB) {
+                if (mode === 'drive') {
+                    try {
+                        const controller = new AbortController();
+                        const timer = setTimeout(() => controller.abort(), 3500);
+                        const url = `https://router.project-osrm.org/route/v1/driving/${ptA.lng},${ptA.lat};${ptB.lng},${ptB.lat}?overview=false`;
+                        const res = await fetch(url, { signal: controller.signal });
+                        clearTimeout(timer);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.routes && data.routes[0] && typeof data.routes[0].duration === 'number') {
+                                // 加入濟州島市區／停車與路口緩衝約 1.18 倍
+                                const driveMins = (data.routes[0].duration / 60) * 1.18;
+                                return formatMinutesLabel(driveMins);
+                            }
+                        }
+                    } catch (_) {}
+                }
+
+                const straightKm = haversineKm(ptA, ptB);
+                if (mode === 'walk') {
+                    // 步行道路係數約 1.25，平均時速 4.5 km/h
+                    const walkMins = (straightKm * 1.25 / 4.5) * 60;
+                    return formatMinutesLabel(walkMins);
+                } else {
+                    // 開車道路係數約 1.32，平均時速 38 km/h
+                    const driveMins = (straightKm * 1.32 / 38) * 60 + 5;
+                    return formatMinutesLabel(driveMins);
+                }
+            }
+
             const a = (fromEvent?.name || '').toLowerCase();
             const b = (toEvent?.name || '').toLowerCase();
             const isEastA = /城山|牛島|涉地可支|月汀里|鹹德/.test(a);
@@ -1166,34 +1279,48 @@ createApp({
             const isSouthA = /西歸浦|中文|天地淵|正房|偶來/.test(a);
             const isSouthB = /西歸浦|中文|天地淵|正房|偶來/.test(b);
 
-            const zonesA = [isEastA, isWestA, isSouthA].filter(Boolean).length;
-            const zonesB = [isEastB, isWestB, isSouthB].filter(Boolean).length;
-
-            if (zonesA > 0 && zonesB > 0) {
-                if ((isEastA && isEastB) || (isWestA && isWestB) || (isSouthA && isSouthB)) {
-                    return '20 分鐘';
-                }
-                return '55 分鐘';
+            let baseDrive = 22;
+            if ((isEastA && isWestB) || (isWestA && isEastB) || (isEastA && isSouthB) || (isSouthA && isEastB) || (isWestA && isSouthB) || (isSouthA && isWestB)) {
+                baseDrive = 55;
+            } else if ((isEastA && isEastB) || (isWestA && isWestB) || (isSouthA && isSouthB)) {
+                baseDrive = 18;
             }
-            if (toEvent?.category === '住宿') return '30 分鐘';
-            return '25 分鐘';
+
+            if (mode === 'walk') {
+                return formatMinutesLabel(baseDrive * 4.5);
+            }
+            return formatMinutesLabel(baseDrive);
         };
 
-        const recalculateDayDriveTimes = (dayIdx) => {
+        const recalculateSegment = async (eIdx, shouldSave = true) => {
+            const list = dayEvents.value[selectedDayIndex.value];
+            if (!Array.isArray(list) || eIdx < 0 || eIdx >= list.length - 1) return;
+            const currentEv = list[eIdx];
+            const nextEv = list[eIdx + 1];
+            const mode = currentEv.transitMode || 'drive';
+            currentEv.transitTime = '計算中...';
+            currentEv.transitTime = await computeTravelDuration(currentEv, nextEv, mode);
+            if (shouldSave) updateCloudData();
+        };
+
+        const onTransitModeChange = async (eIdx) => {
+            await recalculateSegment(eIdx, true);
+        };
+
+        const recalculateDayDriveTimes = async (dayIdx, shouldSave = false) => {
             const list = dayEvents.value[dayIdx];
             if (!Array.isArray(list) || list.length < 2) return;
             for (let i = 0; i < list.length - 1; i++) {
                 if (!list[i].transitMode) list[i].transitMode = 'drive';
-                if (list[i].transitMode === 'drive') {
-                    list[i].transitTime = estimateDriveMinutes(list[i], list[i + 1]);
-                }
+                list[i].transitTime = await computeTravelDuration(list[i], list[i + 1], list[i].transitMode);
             }
+            if (shouldSave) updateCloudData();
         };
 
         const defaultDayEvents = {
             0: [
-                { id: 101, category: '航班', name: '小港機場KHH ➔ 濟州機場CJU', time: '15:50', note: '1/3 出發', transitMode: 'drive', transitTime: '25 分鐘', image: '', hours: '', ticket: '', flightNo: 'IT 670' },
-                { id: 102, category: '其他', name: '濟州租車取車', time: '19:40', note: '辦理租車手續', transitMode: 'drive', transitTime: '25 分鐘', image: '', hours: '', ticket: '' }
+                { id: 101, category: '航班', name: '小港機場KHH ➔ 濟州機場CJU', time: '15:50', note: '1/3 出發', transitMode: 'drive', transitTime: '15 分鐘', image: '', hours: '', ticket: '', flightNo: 'IT 670' },
+                { id: 102, category: '其他', name: '濟州租車取車', time: '19:40', note: '辦理租車手續', transitMode: 'drive', transitTime: '20 分鐘', image: '', hours: '', ticket: '' }
             ],
             1: [],
             2: [],
@@ -1332,7 +1459,7 @@ createApp({
             triggerAllResizes();
         };
 
-        const saveEvent = () => {
+        const saveEvent = async () => {
             const targetDay = formEvent.value.targetDayIndex;
             if (!dayEvents.value[targetDay]) dayEvents.value[targetDay] = [];
 
@@ -1351,28 +1478,28 @@ createApp({
             }
 
             dayEvents.value[targetDay].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-            recalculateDayDriveTimes(targetDay);
+            await recalculateDayDriveTimes(targetDay, false);
             modalOpen.value = false;
             updateCloudData();
         };
 
-        const confirmDeleteEvent = () => {
+        const confirmDeleteEvent = async () => {
             if (confirm("🚨 確定要刪除這筆行程項目嗎？")) {
                 dayEvents.value[selectedDayIndex.value].splice(editingIdx.value, 1);
-                recalculateDayDriveTimes(selectedDayIndex.value);
+                await recalculateDayDriveTimes(selectedDayIndex.value, false);
                 modalOpen.value = false;
                 updateCloudData();
             }
         };
 
-        const moveEvent = (eIdx, step) => {
+        const moveEvent = async (eIdx, step) => {
             const target = eIdx + step;
             const arr = dayEvents.value[selectedDayIndex.value];
             if (target >= 0 && target < arr.length) {
                 const temp = arr[eIdx];
                 arr[eIdx] = arr[target];
                 arr[target] = temp;
-                recalculateDayDriveTimes(selectedDayIndex.value);
+                await recalculateDayDriveTimes(selectedDayIndex.value, false);
                 updateCloudData();
             }
         };
@@ -1591,6 +1718,7 @@ createApp({
             modalOpen, isEditMode, formEvent, expenseModalOpen, formExpense, currentDayEvents,
             sortedExpenses, totalTwd, totalKrw, computedSettlements, settlementDone, editingIdx, weatherData,
             draggingShoppingIndex, modalNotes, infoHotelNotes, autoResize, fetchJejuWeather,
+            onTransitModeChange, recalculateSegment,
             openAddModal, openEditModal, saveEvent, confirmDeleteEvent, moveEvent,
             addShoppingItem, deleteShoppingItem, handleShoppingTouchStart, handleShoppingTouchMove, handleShoppingTouchEnd,
             openExpenseModal, saveExpenseItem, deleteExpenseItem, convertCurrency, syncExpenseCurrency,
