@@ -127,21 +127,17 @@
         </button>
     </div>
 
-    <!-- 頂部雪景橫幅（支援點選上傳圖片並調整大小，保留原圖內容） -->
-    <div class="w-full h-[310px] relative overflow-hidden bg-[#D7ECFC] border-b-2 border-[#B6CFE7] group">
+    <!-- 頂部雪景橫幅（已移除左上角字樣；點選右下角筆圖示可改名稱並一同更換／調整照片） -->
+    <div class="w-full h-[310px] relative overflow-hidden bg-[#D7ECFC] border-b-2 border-[#B6CFE7]">
         <img :src="bannerImage || defaultBannerImage" alt="濟州島雪景橫幅" class="w-full h-full object-cover object-center">
-
-        <!-- 點選更換並調整橫幅圖片按鈕 -->
-        <label class="absolute top-4 left-4 z-40 bg-white/90 hover:bg-white text-[#38465C] px-3 py-1.5 rounded-full text-[11px] font-bold border-2 border-[#B6CFE7] shadow-sm flex items-center gap-1.5 cursor-pointer transition">
-            <i class="fa-solid fa-sliders text-sky-600"></i>
-            <span>換圖 / 調大小</span>
-            <input type="file" accept="image/*" @change="triggerCropModal($event, 0, 'banner')" class="hidden">
-        </label>
 
         <div class="absolute inset-x-0 bottom-0 bg-[#273852]/65 px-5 py-2.5 text-white">
             <div class="flex items-center gap-2">
-                <input type="text" v-model="tripTitle" @change="updateCloudData" class="bg-transparent font-bold text-lg border-b-2 border-dashed border-white/70 focus:outline-none focus:border-sky-300 w-full text-white">
-                <i class="fa-solid fa-pen text-xs opacity-85"></i>
+                <input ref="titleInputRef" type="text" v-model="tripTitle" @change="updateCloudData" class="bg-transparent font-bold text-lg border-b-2 border-dashed border-white/70 focus:outline-none focus:border-sky-300 w-full text-white">
+                <label @click="focusTitleInput" title="更改名稱並更換照片" class="cursor-pointer flex items-center justify-center w-7 h-7 rounded-full hover:bg-white/15 transition flex-shrink-0">
+                    <i class="fa-solid fa-pen text-xs opacity-90"></i>
+                    <input type="file" accept="image/*" @change="triggerCropModal($event, 0, 'banner')" class="hidden">
+                </label>
             </div>
             <p class="text-[11px] text-sky-100 mt-0.5 font-medium">⛄ 1/3–1/6 濟州島雪景下雪家族遊 ❄️🏔️</p>
         </div>
@@ -159,7 +155,7 @@
                 </button>
             </div>
 
-            <!-- Open-Meteo 天氣卡片（大框框底色調整為柔和冰藍，5 天預報統一清爽色調） -->
+            <!-- Open-Meteo 天氣卡片 -->
             <div class="bg-[#EAF4FF] text-[#38465C] p-4 rounded-2xl shadow-sm border-2 border-[#B6CFE7] space-y-3">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -306,7 +302,6 @@
 
         <!-- 資訊 TAB -->
         <div v-if="currentTab === 'info'" class="space-y-4">
-            <!-- 匯率換算：使用原生數字鍵盤，點選後直接喚起手機數字鍵盤不跳掉 -->
             <div class="handbook-card p-4 pt-6 bg-white">
                 <div class="washi-tape">EXCHANGE RATE 🪙</div>
                 <div class="grid grid-cols-2 gap-3 mt-1">
@@ -555,7 +550,13 @@
                     </div>
 
                     <div class="p-2.5 flex flex-col justify-between flex-1 gap-2">
-                        <input type="text" v-model="item.name" @change="updateCloudData" class="w-full text-xs font-bold bg-[#F7FBFF] p-1.5 rounded-lg focus:outline-none border border-[#C9DBEF] focus:border-sky-400 text-[#38465C]" placeholder="⛄ 商品名稱...">
+                        <div class="flex items-center gap-1 bg-[#F7FBFF] pr-1.5 rounded-lg border border-[#C9DBEF] focus-within:border-sky-400">
+                            <input type="text" v-model="item.name" @change="updateCloudData" class="w-full text-xs font-bold bg-transparent p-1.5 focus:outline-none text-[#38465C]" placeholder="⛄ 商品名稱...">
+                            <label title="更改商品照片" class="text-sky-600 hover:text-sky-800 cursor-pointer text-[11px] px-1">
+                                <i class="fa-solid fa-pen"></i>
+                                <input type="file" accept="image/*" @change="triggerCropModal($event, sIdx, 'shopping')" class="hidden">
+                            </label>
+                        </div>
                         <div class="flex items-center justify-center">
                             <label class="flex items-center justify-center gap-1.5 text-[10px] font-bold cursor-pointer select-none w-full py-1 rounded-xl transition-all duration-300" :class="item.purchased ? 'bg-emerald-500 text-white line-through decoration-white decoration-2 shadow-inner' : 'bg-[#EBF4FF] text-sky-800 border border-[#B6CFE7]'">
                                 <input type="checkbox" v-model="item.purchased" @change="updateCloudData" class="w-3 h-3 rounded text-sky-500 border-slate-300 focus:ring-0 cursor-pointer accent-sky-500">
@@ -570,26 +571,26 @@
             </button>
         </div>
 
-        <!-- 花費 TAB（重點跳色強化） -->
+        <!-- 花費 TAB（參考首圖粉藍雪天＋柑橘暖橙＋雪白＋深海藍配色） -->
         <div v-if="currentTab === 'expenses'" class="space-y-4">
-            <div class="bg-gradient-to-br from-sky-500 to-indigo-600 text-white border-2 border-sky-300 p-5 rounded-3xl text-center shadow-md">
-                <div class="inline-block text-[10px] font-bold tracking-wider bg-amber-300 text-amber-950 px-3 py-0.5 rounded-full">目前累積總花費 (台幣 · 無條件進位) ⛄</div>
-                <div class="text-3xl font-bold mt-2 text-amber-200 drop-shadow-xs">NT$ {{ formatNumber(totalTwd) }}</div>
-                <div class="text-xs text-sky-100 font-bold mt-1 bg-white/15 inline-block px-3 py-0.5 rounded-full">韓幣總額: ₩{{ formatNumber(totalKrw) }}</div>
+            <div class="bg-gradient-to-b from-[#D7ECFC] to-[#EBF5FF] text-[#38465C] border-2 border-[#B6CFE7] p-5 rounded-3xl text-center shadow-sm">
+                <div class="inline-block text-[10px] font-bold tracking-wider bg-white text-sky-800 border border-[#B6CFE7] px-3 py-0.5 rounded-full">目前累積總花費 (台幣 · 無條件進位) ⛄</div>
+                <div class="text-3xl font-bold mt-2 text-[#E87A3E]">NT$ {{ formatNumber(totalTwd) }}</div>
+                <div class="text-xs text-sky-800 font-bold mt-1.5 bg-white/85 border border-[#C9DBEF] inline-block px-3 py-0.5 rounded-full">韓幣總額: ₩{{ formatNumber(totalKrw) }}</div>
             </div>
 
-            <div :class="settlementDone ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-white border-amber-300 text-[#38465C]'" class="handbook-card p-4 transition-colors duration-300">
-                <h3 class="font-bold text-xs flex items-center gap-1.5 mb-2.5 text-orange-600">
-                    <i class="fa-solid fa-wand-magic-sparkles text-orange-500"></i> 智慧精簡拆帳結算列表 (不計公費)
+            <div :class="settlementDone ? 'bg-[#E8F6EF] text-emerald-800 border-emerald-300' : 'bg-white border-[#B6CFE7] text-[#38465C]'" class="handbook-card p-4 transition-colors duration-300">
+                <h3 class="font-bold text-xs flex items-center gap-1.5 mb-2.5 text-[#E87A3E]">
+                    <i class="fa-solid fa-wand-magic-sparkles text-[#F49A3E]"></i> 智慧精簡拆帳結算列表 (不計公費)
                 </h3>
-                <div v-if="computedSettlements.length === 0" class="text-center text-xs text-emerald-600 py-3 font-bold">目前帳目已平衡 ❄️</div>
+                <div v-if="computedSettlements.length === 0" class="text-center text-xs text-sky-700 py-3 font-bold">目前帳目已平衡 ❄️</div>
                 <ul v-else class="space-y-2 text-xs">
-                    <li v-for="(settle, sIdx) in computedSettlements" :key="sIdx" class="flex items-center justify-between bg-[#F7FBFF] px-3 py-2 rounded-xl border border-[#C9DBEF]">
+                    <li v-for="(settle, sIdx) in computedSettlements" :key="sIdx" class="flex items-center justify-between bg-[#F2F8FF] px-3 py-2 rounded-xl border border-[#C9DBEF]">
                         <div class="flex items-center gap-2" :class="{'line-through text-slate-400 opacity-50': settle.paid}">
                             <input type="checkbox" v-model="settle.paid" @change="toggleSettlementPaid(sIdx)" :disabled="settlementDone" class="w-4 h-4 rounded text-sky-500 cursor-pointer">
-                            <span class="font-bold text-sky-700">{{ settle.from }}</span> ➔ 給 <span class="text-rose-500 font-bold">{{ settle.to }}</span>
+                            <span class="font-bold text-sky-800">{{ settle.from }}</span> ➔ 給 <span class="text-[#E87A3E] font-bold">{{ settle.to }}</span>
                         </div>
-                        <div class="font-bold text-sm px-2 py-0.5 rounded-lg" :class="settle.paid ? 'line-through text-slate-400 bg-slate-100' : 'text-amber-700 bg-amber-100'">NT$ {{ Math.ceil(settle.amount) }}</div>
+                        <div class="font-bold text-sm px-2.5 py-0.5 rounded-lg" :class="settle.paid ? 'line-through text-slate-400 bg-slate-100' : 'text-[#38465C] bg-[#FFE8D1] border border-[#F8C696]'">NT$ {{ Math.ceil(settle.amount) }}</div>
                     </li>
                 </ul>
             </div>
@@ -600,21 +601,21 @@
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="text-[9px] px-1.5 py-0.5 rounded font-bold text-white" :class="getExpenseBadgeBg(exp.category)">{{ exp.category }}</span>
                             <span class="text-xs font-bold text-[#38465C]">{{ exp.name }}</span>
-                            <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">{{ exp.payMethod }}</span>
+                            <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#EBF4FF] text-sky-800 border border-[#C9DBEF] font-bold">{{ exp.payMethod }}</span>
                         </div>
-                        <div class="text-[10px] text-slate-500 font-medium">📅 {{ exp.date }} · 代墊: <span class="font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">{{ exp.payer }}</span></div>
-                        <div class="text-[10px] text-emerald-800 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-lg w-fit font-bold">👥 分攤: {{ exp.shares.join(', ') }}</div>
+                        <div class="text-[10px] text-slate-500 font-medium">📅 {{ exp.date }} · 代墊: <span class="font-bold text-sky-800 bg-[#EBF4FF] px-1.5 py-0.5 rounded">{{ exp.payer }}</span></div>
+                        <div class="text-[10px] text-[#38465C] bg-[#FFF4E8] border border-[#F8C696] px-2 py-0.5 rounded-lg w-fit font-bold">👥 分攤: {{ exp.shares.join(', ') }}</div>
                     </div>
                     <div class="text-right flex flex-col items-end gap-2">
                         <button @click="deleteExpenseItem(exp.id)" class="text-slate-300 hover:text-rose-500 text-xs cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                         <div>
-                            <div class="font-bold text-sm text-rose-500">NT$ {{ Math.ceil(exp.twd) }}</div>
-                            <div class="text-[10px] text-orange-600 font-bold">₩{{ formatNumber(exp.krw) }}</div>
+                            <div class="font-bold text-sm text-[#E87A3E]">NT$ {{ Math.ceil(exp.twd) }}</div>
+                            <div class="text-[10px] text-sky-700 font-bold">₩{{ formatNumber(exp.krw) }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <button @click="openExpenseModal" class="fixed bottom-24 right-6 bg-rose-500 hover:bg-rose-600 text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg"><i class="fa-solid fa-plus text-xl"></i></button>
+            <button @click="openExpenseModal" class="fixed bottom-24 right-6 bg-[#F49A3E] hover:bg-[#E38629] text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg"><i class="fa-solid fa-plus text-xl"></i></button>
         </div>
 
         <!-- 行李清單 TAB -->
@@ -709,9 +710,9 @@
                     <label class="block font-bold text-slate-500">特色 & 備註</label>
                     <textarea v-model="formEvent.note" @input="autoResize($event)" ref="modalNotes" class="w-full bg-[#F7FBFF] border-2 border-[#BEC3D2] p-2 rounded-xl focus:outline-none resize-none overflow-hidden min-h-[42px]"></textarea>
                 </div>
-                <div><label class="block font-bold text-slate-500">上傳卡片圖片</label>
+                <div><label class="block font-bold text-slate-500">上傳/更改卡片圖片</label>
                     <div class="relative bg-[#F7FBFF] border-2 border-dashed border-[#C9DBEF] rounded-xl p-2.5 text-center text-slate-400 cursor-pointer">
-                        <span v-if="formEvent.image" class="text-emerald-600 font-bold">📸 卡片相片載入成功</span><span v-else>📸 點擊拍照或上傳裁剪</span>
+                        <span v-if="formEvent.image" class="text-emerald-600 font-bold">📸 卡片相片載入成功（點選可重新調整）</span><span v-else>📸 點擊拍照或上傳裁剪</span>
                         <input type="file" accept="image/*" @change="triggerCropModal($event, editingIdx, 'schedule')" class="absolute inset-0 opacity-0 cursor-pointer">
                     </div>
                 </div>
@@ -776,7 +777,7 @@
         </div>
     </div>
 
-    <!-- 裁切 Modal（支援橫幅、飯店、卡片、購物清單調整大小） -->
+    <!-- 裁切 Modal -->
     <div v-if="cropModalOpen" class="fixed inset-0 bg-[#273852]/80 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-[32px] w-full max-w-sm p-5 border-4 border-[#B6CFE7] shadow-2xl flex flex-col items-center space-y-4">
             <div class="w-full flex justify-between items-center border-b pb-2 border-[#C9DBEF]">
@@ -823,11 +824,17 @@ createApp({
         const familyMembers = ['曾曾', '美津', '品翰', '小絜', '美玲'];
         const currentTab = ref('schedule');
         const tripTitle = ref('濟州島雪景之旅 ⛄');
+        const titleInputRef = ref(null);
         const selectedDayIndex = ref(0);
         const calcKrw = ref(null);
         const calcTwd = ref(null);
 
-        // 內建原圖插畫 Data URL（與原圖完全一致且免外部檔案）
+        const focusTitleInput = () => {
+            nextTick(() => {
+                if (titleInputRef.value) titleInputRef.value.focus();
+            });
+        };
+
         const defaultBannerImage = (() => {
             const c = document.createElement('canvas');
             c.width = 768;
@@ -839,7 +846,6 @@ createApp({
             ctx.fillStyle = sky;
             ctx.fillRect(0, 0, 768, 340);
 
-            // 飄雪
             ctx.fillStyle = 'rgba(255,255,255,0.85)';
             for (let i = 0; i < 45; i++) {
                 const x = (i * 53) % 768;
@@ -850,7 +856,6 @@ createApp({
                 ctx.fill();
             }
 
-            // JEJU 標題
             ctx.save();
             ctx.font = '800 72px "Zen Maru Gothic", sans-serif';
             ctx.textAlign = 'center';
@@ -874,7 +879,6 @@ createApp({
             ctx.fillText('JEJU ISLAND', 18, 36);
             ctx.restore();
 
-            // 右上柑橘與紙飛機
             ctx.fillStyle = '#F3993D';
             ctx.beginPath();
             ctx.arc(585, 128, 22, 0, Math.PI * 2);
@@ -886,7 +890,6 @@ createApp({
             ctx.quadraticCurveTo(592, 92, 602, 96);
             ctx.stroke();
 
-            // 雪地與公路
             ctx.fillStyle = '#EEF7FF';
             ctx.beginPath();
             ctx.moveTo(0, 310);
@@ -914,7 +917,6 @@ createApp({
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // 燈塔
             ctx.fillStyle = '#E86A58';
             ctx.beginPath();
             ctx.moveTo(618, 225);
@@ -927,7 +929,6 @@ createApp({
             ctx.fillRect(612, 255, 46, 16);
             ctx.fillRect(608, 292, 54, 16);
 
-            // 前景雪堆與兩隻小熊
             ctx.fillStyle = '#FFFFFF';
             ctx.beginPath();
             ctx.moveTo(0, 435);
@@ -937,7 +938,6 @@ createApp({
             ctx.closePath();
             ctx.fill();
 
-            // 左熊
             ctx.fillStyle = '#433E42';
             ctx.beginPath();
             ctx.arc(155, 355, 18, 0, Math.PI * 2);
@@ -958,7 +958,6 @@ createApp({
             ctx.arc(222, 404, 5, 0, Math.PI * 2);
             ctx.fill();
 
-            // 右熊＋黃帽
             ctx.fillStyle = '#B8876C';
             ctx.beginPath();
             ctx.arc(495, 375, 16, 0, Math.PI * 2);
@@ -1555,7 +1554,7 @@ createApp({
 
         const getCategoryEmoji = (cat) => ({ '景點': '⛄', '住宿': '🏨', '美食': '🍲', '購物': '🛍️', '航班': '✈️', '其他': '❄️' }[cat] || '📍');
         const getCategoryBg = (cat) => ({ '景點': 'bg-sky-500', '住宿': 'bg-emerald-500', '美食': 'bg-orange-400', '購物': 'bg-pink-400', '航班': 'bg-indigo-500', '其他': 'bg-amber-400' }[cat] || 'bg-sky-500');
-        const getExpenseBadgeBg = (cat) => ({ '交通': 'bg-sky-500', '飲食': 'bg-orange-500', '住宿': 'bg-indigo-500', '門票': 'bg-emerald-500', '購物': 'bg-rose-500', '其他': 'bg-amber-500' }[cat] || 'bg-sky-500');
+        const getExpenseBadgeBg = (cat) => ({ '交通': 'bg-[#5B9BD5]', '飲食': 'bg-[#F49A3E]', '住宿': 'bg-[#6D97C2]', '門票': 'bg-[#76AE8B]', '購物': 'bg-[#F28C7E]', '其他': 'bg-[#E5A94C]' }[cat] || 'bg-[#5B9BD5]');
         const formatNumber = (num) => Math.ceil(Number(num || 0)).toLocaleString();
 
         onMounted(() => {
@@ -1584,7 +1583,7 @@ createApp({
         });
 
         return {
-            familyMembers, snowflakes, currentTab, tripTitle, defaultBannerImage, bannerImage, selectedDayIndex, days, dayEvents, hotels,
+            familyMembers, snowflakes, currentTab, tripTitle, titleInputRef, focusTitleInput, defaultBannerImage, bannerImage, selectedDayIndex, days, dayEvents, hotels,
             flightInfo, rentalInfo, editingFlights, editingRental, editingHotelIdx,
             toggleEditFlights, toggleEditRental, toggleHotelEdit,
             shoppingList, expenses, luggageItems,
