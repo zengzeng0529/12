@@ -280,18 +280,21 @@
                         </div>
                     </div>
 
-                    <!-- 點選開車或走路自動算出移動時間 -->
-                    <div v-if="eIdx < currentDayEvents.length - 1" class="my-2 flex items-center justify-center gap-3">
+                    <!-- 點選開車或走路自動算出移動時間 + 一鍵開 Naver Map 路線 -->
+                    <div v-if="eIdx < currentDayEvents.length - 1" class="my-2 flex items-center justify-center gap-2">
                         <div class="h-5 border-l-2 border-dashed border-[#B6CFE7]"></div>
                         <div class="bg-white text-[#38465C] px-3 py-1 rounded-full text-[11px] flex items-center gap-1.5 border border-[#BEC3D2] shadow-xs">
                             <select v-model="event.transitMode" @change="onTransitModeChange(eIdx)" class="bg-transparent focus:outline-none font-bold text-sky-800 cursor-pointer text-[11px]">
                                 <option value="drive">🚗 開車</option>
                                 <option value="walk">🚶 走路</option>
                             </select>
-                            <input type="text" v-model="event.transitTime" @change="updateCloudData" class="w-20 bg-transparent text-center border-b border-sky-400 font-bold focus:outline-none text-orange-500" placeholder="計算中...">
-                            <button @click="recalculateSegment(eIdx)" title="重新試算路線時間" class="text-sky-600 hover:text-sky-800 cursor-pointer text-[10px]">
-                                <i class="fa-solid fa-route"></i>
+                            <input type="text" v-model="event.transitTime" @change="updateCloudData" class="w-16 bg-transparent text-center border-b border-sky-400 font-bold focus:outline-none text-orange-500" placeholder="計算中...">
+                            <button @click="recalculateSegment(eIdx)" title="重新試算" class="text-sky-600 hover:text-sky-800 cursor-pointer text-[10px]">
+                                <i class="fa-solid fa-rotate-right"></i>
                             </button>
+                            <a :href="getNaverRouteUrl(event, currentDayEvents[eIdx + 1])" target="_blank" title="在 Naver Map 開啟此段路線" class="text-emerald-600 hover:text-emerald-800 font-bold text-[10px] pl-1 border-l border-[#C9DBEF]">
+                                Naver
+                            </a>
                         </div>
                         <div class="h-5 border-l-2 border-dashed border-[#B6CFE7]"></div>
                     </div>
@@ -822,11 +825,11 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const docRef = db.collection("trips").doc("jeju_snow_family_1_3_1_6");
 
-// 濟州島常見景點／租車／機場／美食地點座標表
+// 已依 Naver Map 實際位置校準的濟州島景點／租車／機場／美食座標表
 const JEJU_PLACES = [
-    { keys: ['sukseongdo', '宿營島', '숙성도'], lat: 33.4988, lng: 126.5335 },
-    { keys: ['樂天租車', '롯데렌터카', '租車'], lat: 33.5042, lng: 126.4945 },
-    { keys: ['濟州機場', 'cju', '제주국제공항', '機場'], lat: 33.5113, lng: 126.4930 },
+    { keys: ['sukseongdo', '宿營島', '숙성도'], lat: 33.4858, lng: 126.4892 },
+    { keys: ['乐天租车', '樂天租車', 'auto屋', '롯데렌터카', '租車'], lat: 33.5046, lng: 126.4958 },
+    { keys: ['濟州機場', '济州国际机场', 'cju', '제주국제공항', '機場'], lat: 33.5113, lng: 126.4930 },
     { keys: ['9.81', '981park'], lat: 33.3976, lng: 126.3575 },
     { keys: ['sulloc', '雪綠茶', '오설록'], lat: 33.3059, lng: 126.2895 },
     { keys: ['umu', '우무'], lat: 33.4892, lng: 126.4258 },
@@ -1179,7 +1182,6 @@ createApp({
             }
         };
 
-        // 座標與路線時間計算
         const coordCache = {};
 
         const haversineKm = (a, b) => {
@@ -1199,6 +1201,13 @@ createApp({
                 return m > 0 ? `${h} 小時 ${m} 分鐘` : `${h} 小時`;
             }
             return `${total} 分鐘`;
+        };
+
+        const getNaverRouteUrl = (fromEv, toEv) => {
+            const sName = encodeURIComponent(fromEv?.name || '起點');
+            const eName = encodeURIComponent(toEv?.name || '終點');
+            const menu = (fromEv?.transitMode === 'walk') ? 'walk' : 'car';
+            return `https://map.naver.com/v5/directions/${sName},0,0,0,0/${eName},0,0,0,0/-/${menu}`;
         };
 
         const resolvePlaceCoords = async (placeName) => {
@@ -1250,9 +1259,7 @@ createApp({
                         if (res.ok) {
                             const data = await res.json();
                             if (data.routes && data.routes[0] && typeof data.routes[0].duration === 'number') {
-                                // 加入濟州島市區／停車與路口緩衝約 1.18 倍
-                                const driveMins = (data.routes[0].duration / 60) * 1.18;
-                                return formatMinutesLabel(driveMins);
+                                return formatMinutesLabel(data.routes[0].duration / 60);
                             }
                         }
                     } catch (_) {}
@@ -1260,12 +1267,10 @@ createApp({
 
                 const straightKm = haversineKm(ptA, ptB);
                 if (mode === 'walk') {
-                    // 步行道路係數約 1.25，平均時速 4.5 km/h
                     const walkMins = (straightKm * 1.25 / 4.5) * 60;
                     return formatMinutesLabel(walkMins);
                 } else {
-                    // 開車道路係數約 1.32，平均時速 38 km/h
-                    const driveMins = (straightKm * 1.32 / 38) * 60 + 5;
+                    const driveMins = (straightKm * 1.3 / 35) * 60;
                     return formatMinutesLabel(driveMins);
                 }
             }
@@ -1279,11 +1284,11 @@ createApp({
             const isSouthA = /西歸浦|中文|天地淵|正房|偶來/.test(a);
             const isSouthB = /西歸浦|中文|天地淵|正房|偶來/.test(b);
 
-            let baseDrive = 22;
+            let baseDrive = 12;
             if ((isEastA && isWestB) || (isWestA && isEastB) || (isEastA && isSouthB) || (isSouthA && isEastB) || (isWestA && isSouthB) || (isSouthA && isWestB)) {
-                baseDrive = 55;
+                baseDrive = 50;
             } else if ((isEastA && isEastB) || (isWestA && isWestB) || (isSouthA && isSouthB)) {
-                baseDrive = 18;
+                baseDrive = 15;
             }
 
             if (mode === 'walk') {
@@ -1319,8 +1324,9 @@ createApp({
 
         const defaultDayEvents = {
             0: [
-                { id: 101, category: '航班', name: '小港機場KHH ➔ 濟州機場CJU', time: '15:50', note: '1/3 出發', transitMode: 'drive', transitTime: '15 分鐘', image: '', hours: '', ticket: '', flightNo: 'IT 670' },
-                { id: 102, category: '其他', name: '濟州租車取車', time: '19:40', note: '辦理租車手續', transitMode: 'drive', transitTime: '20 分鐘', image: '', hours: '', ticket: '' }
+                { id: 101, category: '航班', name: '小港機場KHH ➔ 濟州機場CJU', time: '15:50', note: '1/3 出發', transitMode: 'drive', transitTime: '10 分鐘', image: '', hours: '', ticket: '', flightNo: 'IT 670' },
+                { id: 102, category: '其他', name: '乐天租车济州Auto屋', time: '19:40', note: '辦理租車手續', transitMode: 'drive', transitTime: '12 分鐘', image: '', hours: '', ticket: '' },
+                { id: 103, category: '景點', name: 'Sukseongdo济州总店', time: '20:00', note: '晚餐烤黑豬肉', transitMode: 'drive', transitTime: '0 分鐘', image: '', hours: '', ticket: '' }
             ],
             1: [],
             2: [],
@@ -1345,7 +1351,7 @@ createApp({
         const modalOpen = ref(false);
         const isEditMode = ref(false);
         const editingIdx = ref(null);
-        const formEvent = ref({ category: '景點', name: '', time: '10:00', note: '', image: '', transitMode: 'drive', transitTime: '20 分鐘', hours: '', ticket: '', targetDayIndex: 0 });
+        const formEvent = ref({ category: '景點', name: '', time: '10:00', note: '', image: '', transitMode: 'drive', transitTime: '12 分鐘', hours: '', ticket: '', targetDayIndex: 0 });
 
         const expenseModalOpen = ref(false);
         const formExpense = ref({ category: '飲食', name: '', date: '2026-01-03', krw: null, twd: null, payer: '曾曾', shares: [...familyMembers], payMethod: '現金' });
@@ -1446,7 +1452,7 @@ createApp({
         const openAddModal = () => {
             isEditMode.value = false;
             editingIdx.value = null;
-            formEvent.value = { category: '景點', name: '', time: '10:00', note: '', image: '', transitMode: 'drive', transitTime: '20 分鐘', hours: '', ticket: '', targetDayIndex: selectedDayIndex.value };
+            formEvent.value = { category: '景點', name: '', time: '10:00', note: '', image: '', transitMode: 'drive', transitTime: '12 分鐘', hours: '', ticket: '', targetDayIndex: selectedDayIndex.value };
             modalOpen.value = true;
             triggerAllResizes();
         };
@@ -1718,7 +1724,7 @@ createApp({
             modalOpen, isEditMode, formEvent, expenseModalOpen, formExpense, currentDayEvents,
             sortedExpenses, totalTwd, totalKrw, computedSettlements, settlementDone, editingIdx, weatherData,
             draggingShoppingIndex, modalNotes, infoHotelNotes, autoResize, fetchJejuWeather,
-            onTransitModeChange, recalculateSegment,
+            onTransitModeChange, recalculateSegment, getNaverRouteUrl,
             openAddModal, openEditModal, saveEvent, confirmDeleteEvent, moveEvent,
             addShoppingItem, deleteShoppingItem, handleShoppingTouchStart, handleShoppingTouchMove, handleShoppingTouchEnd,
             openExpenseModal, saveExpenseItem, deleteExpenseItem, convertCurrency, syncExpenseCurrency,
