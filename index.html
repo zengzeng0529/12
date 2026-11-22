@@ -126,9 +126,144 @@
         </button>
     </div>
 
-    <!-- 頂部雪景插畫橫幅（適配尺寸並完整呈現圖面內容） -->
-    <div class="w-full h-[300px] relative overflow-hidden bg-[#D9ECFC] border-b-2 border-[#B6CFE7]">
-        <img src="image_937873.png" alt="JEJU welcome to JEJU ISLAND 雪景公路與可愛小熊插畫" class="w-full h-full object-cover object-center">
+    <!-- 頂部雪景插畫橫幅（內建完整插畫場景，免外部圖檔不會破圖） -->
+    <div class="w-full h-[300px] relative overflow-hidden bg-[#C7E3FA] border-b-2 border-[#B6CFE7]">
+        <svg viewBox="0 0 480 340" class="w-full h-full object-cover object-center" preserveAspectRatio="xMidYMid slice" aria-label="JEJU welcome to JEJU ISLAND 雪景公路與可愛小熊插畫">
+            <!-- 粉藍雪天漸層 -->
+            <defs>
+                <linearGradient id="jejuSkyGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#BEDDF9"/>
+                    <stop offset="100%" stop-color="#E7F3FF"/>
+                </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="480" height="340" fill="url(#jejuSkyGrad)"/>
+
+            <!-- 飄雪點點 -->
+            <g fill="#FFFFFF" opacity="0.9">
+                <circle cx="42" cy="36" r="3.5"/><circle cx="115" cy="24" r="2.5"/><circle cx="198" cy="42" r="3"/>
+                <circle cx="290" cy="26" r="2.5"/><circle cx="378" cy="38" r="3.5"/><circle cx="445" cy="58" r="2.5"/>
+                <circle cx="68" cy="96" r="2.5"/><circle cx="242" cy="98" r="3"/><circle cx="412" cy="115" r="3"/>
+                <circle cx="155" cy="148" r="2.5"/><circle cx="320" cy="142" r="2.5"/><circle cx="268" cy="212" r="3.5"/>
+            </g>
+
+            <!-- 紙飛機與虛線 -->
+            <path d="M362,62 C385,54 398,74 382,82 C368,88 368,66 396,52" fill="none" stroke="#85B3DC" stroke-width="2" stroke-dasharray="4,4" stroke-linecap="round"/>
+            <polygon points="396,42 426,38 408,58 403,49" fill="#8CC5F2" stroke="#6BA3D1" stroke-width="1.5" stroke-linejoin="round"/>
+
+            <!-- JEJU 彩色手寫字與 welcome to JEJU ISLAND -->
+            <g font-family="'Zen Maru Gothic', sans-serif" font-weight="800" text-anchor="middle">
+                <text x="235" y="96" font-size="48" letter-spacing="4">
+                    <tspan fill="#F4A24E">J</tspan>
+                    <tspan fill="#F39CA8">E</tspan>
+                    <tspan fill="#76AE8B">J</tspan>
+                    <tspan fill="#F8C65B">U</tspan>
+                </text>
+                <text x="242" y="122" font-size="18" fill="#6D97C2" transform="rotate(-7 242 122)">welcome to</text>
+                <text x="256" y="145" font-size="21" fill="#F28C7E" transform="rotate(-7 256 145)">JEJU ISLAND</text>
+            </g>
+
+            <!-- 柑橘小插畫 -->
+            <g transform="translate(362, 74)">
+                <circle cx="18" cy="20" r="14" fill="#F49A3E"/>
+                <path d="M18,6 C19,1 25,1 26,5" fill="none" stroke="#6B9E78" stroke-width="2.5" stroke-linecap="round"/>
+                <ellipse cx="25" cy="4" rx="5" ry="2.5" transform="rotate(-18 25 4)" fill="#7AB387"/>
+            </g>
+
+            <!-- 左側積雪樹林與山峰警示牌 -->
+            <g>
+                <circle cx="24" cy="140" r="24" fill="#A6C4DF"/><circle cx="14" cy="134" r="22" fill="#FFFFFF"/>
+                <circle cx="52" cy="148" r="26" fill="#9BBAD6"/><circle cx="44" cy="140" r="24" fill="#FFFFFF"/>
+                <circle cx="84" cy="158" r="22" fill="#9BBAD6"/><circle cx="76" cy="150" r="20" fill="#FFFFFF"/>
+                <circle cx="114" cy="166" r="18" fill="#9BBAD6"/><circle cx="108" cy="160" r="16" fill="#FFFFFF"/>
+
+                <!-- 三角山峰路牌 -->
+                <rect x="74" y="196" width="5" height="32" fill="#8C97A6"/>
+                <polygon points="76,166 56,202 96,202" fill="#EBF4FC" stroke="#7D8C9E" stroke-width="3.5" stroke-linejoin="round"/>
+                <polygon points="64,196 76,178 88,196" fill="#77AA88"/>
+                <polygon points="71,185 76,178 81,185" fill="#FFFFFF"/>
+            </g>
+
+            <!-- 右側紅白燈塔與雪叢 -->
+            <g>
+                <circle cx="424" cy="158" r="24" fill="#FFFFFF"/>
+                <circle cx="454" cy="164" r="22" fill="#FFFFFF"/>
+                <!-- 燈塔塔身 -->
+                <rect x="384" y="114" width="38" height="8" rx="3" fill="#FFFFFF" stroke="#8C97A6" stroke-width="2"/>
+                <rect x="389" y="122" width="28" height="20" fill="#B5D8F2" stroke="#8C97A6" stroke-width="2"/>
+                <path d="M388,114 C388,100 418,100 418,114 Z" fill="#E86A58" stroke="#8C97A6" stroke-width="2"/>
+                <polygon points="389,142 417,142 424,202 382,202" fill="#E86A58" stroke="#8C97A6" stroke-width="2" stroke-linejoin="round"/>
+                <polygon points="386,162 420,162 421,176 385,176" fill="#FFFFFF"/>
+                <polygon points="384,188 422,188 424,202 382,202" fill="#FFFFFF"/>
+                <!-- 燈光光束 -->
+                <polygon points="389,130 364,116 364,142" fill="#F9CA5D" opacity="0.85"/>
+                <polygon points="417,130 442,116 442,142" fill="#F9CA5D" opacity="0.85"/>
+            </g>
+
+            <!-- 遠方海平線與雪地山坡 -->
+            <rect x="140" y="176" width="250" height="22" fill="#93C5EB"/>
+            <path d="M0,192 Q150,180 270,194 Q380,204 480,192 L480,340 L0,340 Z" fill="#EFF7FF"/>
+
+            <!-- 蜿蜒雪景公路與黃虛線 -->
+            <path d="M235,192 C230,215 160,245 35,340 L295,340 C275,265 258,220 254,192 Z" fill="#7D8899"/>
+            <path d="M244,195 C239,225 215,275 185,340" fill="none" stroke="#F4C75E" stroke-width="4" stroke-dasharray="14,12" stroke-linecap="round"/>
+
+            <!-- 左側黑熊/海女熊探出雪堆 -->
+            <g transform="translate(56, 212)">
+                <circle cx="24" cy="14" r="12" fill="#433E42"/>
+                <circle cx="88" cy="14" r="12" fill="#433E42"/>
+                <!-- 頭燈帶 -->
+                <path d="M28,22 C38,6 74,6 84,22" fill="none" stroke="#E05A47" stroke-width="7" stroke-linecap="round"/>
+                <circle cx="56" cy="14" r="13" fill="#E05A47"/>
+                <circle cx="56" cy="14" r="9" fill="#F8D7D2"/>
+                <!-- 臉部 -->
+                <ellipse cx="56" cy="48" rx="36" ry="30" fill="#433E42"/>
+                <ellipse cx="56" cy="52" rx="26" ry="21" fill="#C48B6B"/>
+                <circle cx="44" cy="47" r="3.5" fill="#3B2D28"/>
+                <circle cx="68" cy="47" r="3.5" fill="#3B2D28"/>
+                <circle cx="38" cy="54" r="4.5" fill="#F29EA8" opacity="0.75"/>
+                <circle cx="74" cy="54" r="4.5" fill="#F29EA8" opacity="0.75"/>
+                <path d="M51,55 Q56,60 61,55" fill="none" stroke="#3B2D28" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- 雙手趴雪堆 -->
+                <ellipse cx="26" cy="76" rx="14" ry="8" fill="#433E42"/>
+                <ellipse cx="86" cy="76" rx="14" ry="8" fill="#433E42"/>
+            </g>
+
+            <!-- 粉紅小愛心 -->
+            <path d="M266,246 C262,241 255,244 258,250 C260,254 266,258 266,258 C266,258 272,254 274,250 C277,244 270,241 266,246 Z" fill="#F28B9C"/>
+            <path d="M254,264 C251,260 246,262 248,267 C250,270 254,273 254,273 C254,273 258,270 260,267 C262,262 257,260 254,264 Z" fill="#F28B9C"/>
+
+            <!-- 右側黃帽小熊探出雪堆 -->
+            <g transform="translate(310, 224)">
+                <circle cx="24" cy="18" r="11" fill="#A97B62"/>
+                <circle cx="88" cy="18" r="11" fill="#A97B62"/>
+                <ellipse cx="56" cy="46" rx="34" ry="28" fill="#B8876C"/>
+                <circle cx="44" cy="45" r="3.5" fill="#3B2D28"/>
+                <circle cx="68" cy="45" r="3.5" fill="#3B2D28"/>
+                <circle cx="38" cy="52" r="4.5" fill="#F29EA8" opacity="0.75"/>
+                <circle cx="74" cy="52" r="4.5" fill="#F29EA8" opacity="0.75"/>
+                <path d="M51,53 Q56,58 61,53" fill="none" stroke="#3B2D28" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- 柑橘造型黃帽 -->
+                <path d="M22,34 C24,10 88,10 90,34 C76,28 66,34 56,28 C46,34 36,28 22,34 Z" fill="#F7C548" stroke="#DDA528" stroke-width="2"/>
+                <line x1="56" y1="15" x2="58" y2="7" stroke="#5E8E68" stroke-width="3" stroke-linecap="round"/>
+                <ellipse cx="63" cy="8" rx="6" ry="3" transform="rotate(-18 63 8)" fill="#78AE82"/>
+                <!-- 雙手 -->
+                <ellipse cx="32" cy="70" rx="12" ry="7" fill="#B8876C"/>
+                <ellipse cx="82" cy="70" rx="12" ry="7" fill="#B8876C"/>
+            </g>
+
+            <!-- 前景積雪與柑橘 -->
+            <path d="M0,285 Q120,275 240,292 Q360,305 480,284 L480,340 L0,340 Z" fill="#FFFFFF"/>
+            <g transform="translate(18, 286)">
+                <circle cx="18" cy="18" r="13" fill="#F49A3E"/>
+                <path d="M18,5 C20,0 26,0 27,4" fill="none" stroke="#6B9E78" stroke-width="2.5" stroke-linecap="round"/>
+                <ellipse cx="26" cy="3" rx="5" ry="2.5" transform="rotate(-15 26 3)" fill="#7AB387"/>
+            </g>
+            <g transform="translate(242, 288)">
+                <circle cx="16" cy="16" r="12" fill="#F49A3E"/>
+                <path d="M16,4 C18,0 23,0 24,4" fill="none" stroke="#6B9E78" stroke-width="2.5" stroke-linecap="round"/>
+                <ellipse cx="23" cy="3" rx="4.5" ry="2.2" transform="rotate(-15 23 3)" fill="#7AB387"/>
+            </g>
+        </svg>
 
         <div class="absolute inset-x-0 bottom-0 bg-[#273852]/65 px-5 py-2.5 text-white">
             <div class="flex items-center gap-2">
