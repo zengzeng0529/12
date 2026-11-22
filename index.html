@@ -114,6 +114,78 @@
 </head>
 <body class="antialiased select-none">
 
+<!-- 可重複使用的可愛卡通貼紙插圖庫（參考圖風格） -->
+<svg width="0" height="0" class="hidden" aria-hidden="true">
+    <defs>
+        <!-- 1. 軟萌卡通風濟州石頭爺爺（頭頂積雪） -->
+        <g id="sticker-dolhareubang-snow">
+            <ellipse cx="44" cy="116" rx="28" ry="6" fill="#C9DBEF"/>
+            <!-- 身體與頭部輪廓（圓潤貼紙感） -->
+            <path d="M24,42 C24,22 33,15 44,15 C55,15 64,22 64,42 L68,108 C68,113 63,116 56,116 L32,116 C25,116 20,113 20,108 Z" fill="#B8BDC7" stroke="#8C93A0" stroke-width="2.5" stroke-linejoin="round"/>
+            <!-- 頭頂蓬鬆積雪 -->
+            <path d="M21,31 C21,17 31,10 44,10 C57,10 67,17 67,31 C62,28 57,33 51,29 C46,34 41,29 36,33 C30,29 25,33 21,31 Z" fill="#FFFFFF" stroke="#B6CFE7" stroke-width="2" stroke-linejoin="round"/>
+            <!-- 圓眼與小鼻 -->
+            <circle cx="35" cy="41" r="2.8" fill="#4A5260"/>
+            <circle cx="53" cy="41" r="2.8" fill="#4A5260"/>
+            <circle cx="44" cy="46" r="3.2" fill="#9AA1AE"/>
+            <!-- 雙手抱肚線條（參考圖手勢） -->
+            <path d="M29,76 C36,72 41,76 41,84 C41,91 34,94 28,90" fill="none" stroke="#8C93A0" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M59,76 C52,72 47,76 47,84 C47,91 54,94 60,90" fill="none" stroke="#8C93A0" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M35,88 L53,88" stroke="#8C93A0" stroke-width="2.4" stroke-linecap="round"/>
+        </g>
+
+        <!-- 2. 濟州柑橘貼紙 -->
+        <g id="sticker-hallabong">
+            <path d="M32,16 C35,10 42,10 44,15 C47,11 52,13 50,18" fill="none" stroke="#5EA876" stroke-width="3" stroke-linecap="round"/>
+            <ellipse cx="43" cy="14" rx="6" ry="3.5" transform="rotate(-20 43 14)" fill="#7BC48E"/>
+            <circle cx="32" cy="36" r="19" fill="#FFBE5C"/>
+            <circle cx="32" cy="36" r="19" fill="none" stroke="#F3A638" stroke-width="2"/>
+            <circle cx="26" cy="30" r="2.5" fill="#FFD38A" opacity="0.8"/>
+        </g>
+
+        <!-- 3. 濟州山茶花貼紙 -->
+        <g id="sticker-camellia">
+            <circle cx="32" cy="18" r="9" fill="#FF7B9C"/>
+            <circle cx="46" cy="28" r="9" fill="#FF6B8E"/>
+            <circle cx="41" cy="44" r="9" fill="#FF7B9C"/>
+            <circle cx="23" cy="44" r="9" fill="#FF6B8E"/>
+            <circle cx="18" cy="28" r="9" fill="#FF7B9C"/>
+            <circle cx="32" cy="32" r="8" fill="#FF9EB5"/>
+            <circle cx="32" cy="32" r="4" fill="#FFD166"/>
+        </g>
+
+        <!-- 4. 漢拏峰雪山貼紙 -->
+        <g id="sticker-hallasan">
+            <path d="M8,46 L26,16 L36,24 L46,16 L62,46 Z" fill="#67B98A" stroke="#4D9B6E" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M20,26 L26,16 L36,24 L46,16 L51,26 Q44,23 39,27 Q34,22 28,27 Z" fill="#FFFFFF"/>
+        </g>
+
+        <!-- 5. 濟州石牆小屋＋椰樹貼紙 -->
+        <g id="sticker-stonehouse">
+            <rect x="10" y="34" width="38" height="20" rx="5" fill="#B5BCC7" stroke="#8F97A5" stroke-width="2"/>
+            <path d="M8,35 L15,22 L43,22 L50,35 Z" fill="#F9D576" stroke="#E0B852" stroke-width="2" stroke-linejoin="round"/>
+            <rect x="24" y="42" width="8" height="12" rx="2" fill="#7D8594"/>
+            <path d="M56,54 L57,24" stroke="#8D6E63" stroke-width="3.5" stroke-linecap="round"/>
+            <ellipse cx="49" cy="22" rx="8" ry="3.5" transform="rotate(-25 49 22)" fill="#67B98A"/>
+            <ellipse cx="64" cy="22" rx="8" ry="3.5" transform="rotate(25 64 22)" fill="#67B98A"/>
+            <ellipse cx="57" cy="19" rx="8" ry="3.5" fill="#7BC48E"/>
+        </g>
+
+        <!-- 6. 可愛小熊戴黃帽貼紙 -->
+        <g id="sticker-bear-hat">
+            <circle cx="20" cy="20" r="8" fill="#7A5647"/>
+            <circle cx="52" cy="20" r="8" fill="#7A5647"/>
+            <circle cx="36" cy="38" r="20" fill="#8B6352"/>
+            <ellipse cx="29" cy="39" rx="2.5" ry="3" fill="#3B2B25"/>
+            <ellipse cx="43" cy="39" rx="2.5" ry="3" fill="#3B2B25"/>
+            <ellipse cx="24" cy="44" rx="3.5" ry="2" fill="#FF9EB5" opacity="0.8"/>
+            <ellipse cx="48" cy="44" rx="3.5" ry="2" fill="#FF9EB5" opacity="0.8"/>
+            <path d="M32,44 Q36,48 40,44" fill="none" stroke="#3B2B25" stroke-width="2" stroke-linecap="round"/>
+            <path d="M15,30 C17,15 55,15 57,30 Z" fill="#FFD166" stroke="#EAB308" stroke-width="2"/>
+        </g>
+    </defs>
+</svg>
+
 <div class="snow-layer" aria-hidden="true">
     <span v-for="flake in snowflakes" :key="flake.id" class="snowflake" :style="flake.style">❄</span>
 </div>
@@ -126,20 +198,20 @@
         </button>
     </div>
 
-    <!-- 頂部雪景公路 + 頭上有積雪的可愛濟州石頭爺爺 -->
+    <!-- 頂部雪景公路 + 參考圖同款可愛卡通風濟州石頭爺爺（頭頂積雪） + 週邊可愛貼紙 -->
     <div class="w-full h-[250px] relative overflow-hidden bg-[#D9ECFC] border-b-2 border-[#B6CFE7]">
-        <svg viewBox="0 0 480 250" class="w-full h-full object-cover" preserveAspectRatio="xMidYMid slice" aria-label="濟州雪景公路與頭上有積雪的可愛石頭爺爺">
+        <svg viewBox="0 0 480 250" class="w-full h-full object-cover" preserveAspectRatio="xMidYMid slice" aria-label="濟州雪景公路與頭上有積雪的可愛卡通石頭爺爺">
             <!-- 淺藍冬日天空 -->
             <rect x="0" y="0" width="480" height="250" fill="#DDF0FF"/>
             <!-- 遠處雪山 -->
-            <polygon points="0,120 85,68 175,120" fill="#FFFFFF"/>
-            <polygon points="115,120 215,62 315,120" fill="#EDF6FF"/>
-            <polygon points="260,120 365,70 480,122 480,120" fill="#FFFFFF"/>
+            <polygon points="0,122 85,68 175,122" fill="#FFFFFF"/>
+            <polygon points="115,122 215,62 315,122" fill="#EDF6FF"/>
+            <polygon points="260,122 365,70 480,122" fill="#FFFFFF"/>
 
             <!-- 左側雪白松樹林 -->
             <g fill="#FFFFFF" stroke="#B6CFE7" stroke-width="1.5">
-                <polygon points="18,132 42,76 66,132"/>
-                <polygon points="12,150 42,96 72,150"/>
+                <polygon points="16,132 40,76 64,132"/>
+                <polygon points="10,150 40,96 70,150"/>
                 <polygon points="56,136 78,86 100,136"/>
                 <polygon points="50,152 78,104 106,152"/>
                 <polygon points="94,132 114,92 134,132"/>
@@ -157,45 +229,19 @@
             <!-- 雪地底面 -->
             <path d="M0,122 Q240,114 480,122 L480,250 L0,250 Z" fill="#F2F8FF"/>
 
-            <!-- 蜿蜒雪景公路（參考雪景公路線條） -->
+            <!-- 蜿蜒雪景公路 -->
             <path d="M185,122 C205,145 145,175 110,250 L250,250 C255,195 235,155 225,122 Z" fill="#465873"/>
-            <!-- 公路兩側積雪邊緣 -->
             <path d="M181,122 C201,145 140,175 103,250 L111,250 C146,175 206,145 186,122 Z" fill="#FFFFFF"/>
             <path d="M224,122 C234,155 254,195 249,250 L256,250 C261,195 240,155 229,122 Z" fill="#FFFFFF"/>
-            <!-- 公路中央黃線 -->
             <path d="M205,122 C218,150 185,190 179,250" fill="none" stroke="#FBBF24" stroke-width="3" stroke-linecap="round"/>
 
-            <!-- 頭上有積雪的可愛濟州石頭爺爺（右側雪地） -->
-            <g transform="translate(332, 96)">
-                <!-- 底部影子 -->
-                <ellipse cx="42" cy="118" rx="34" ry="8" fill="#C9DBEF"/>
-                <!-- 石頭爺爺身體 -->
-                <path d="M18,52 C14,74 12,102 18,114 L66,114 C72,102 70,74 66,52 Z" fill="#8C96A8" stroke="#5B6578" stroke-width="2.5"/>
-                <!-- 石頭紋理小點 -->
-                <circle cx="26" cy="96" r="2" fill="#6D778A"/>
-                <circle cx="56" cy="88" r="2.2" fill="#6D778A"/>
-                <circle cx="48" cy="105" r="1.8" fill="#6D778A"/>
-                <!-- 可愛拱形帽／石頭頭部 -->
-                <path d="M20,54 C18,28 28,16 42,16 C56,16 66,28 64,54 Z" fill="#9AA4B6" stroke="#5B6578" stroke-width="2.5"/>
-                <!-- 頭頂蓬鬆積雪 -->
-                <path d="M18,32 C17,18 27,10 42,10 C56,10 66,18 65,32 C60,29 55,34 50,30 C45,35 39,29 34,33 C28,29 23,34 18,32 Z" fill="#FFFFFF" stroke="#B6CFE7" stroke-width="2"/>
-                <circle cx="28" cy="15" r="7" fill="#FFFFFF"/>
-                <circle cx="43" cy="13" r="8.5" fill="#FFFFFF"/>
-                <circle cx="56" cy="16" r="6.5" fill="#FFFFFF"/>
-                <!-- 可愛眼睛與圓鼻 -->
-                <circle cx="31" cy="40" r="3.3" fill="#2D3748"/>
-                <circle cx="53" cy="40" r="3.3" fill="#2D3748"/>
-                <circle cx="30" cy="39" r="1.2" fill="#FFFFFF"/>
-                <circle cx="52" cy="39" r="1.2" fill="#FFFFFF"/>
-                <!-- 粉嫩腮紅 -->
-                <ellipse cx="25" cy="46" rx="4" ry="2.2" fill="#F9A8D4" opacity="0.75"/>
-                <ellipse cx="59" cy="46" rx="4" ry="2.2" fill="#F9A8D4" opacity="0.75"/>
-                <!-- 石頭爺爺圓鼻與微笑 -->
-                <ellipse cx="42" cy="45" rx="5.5" ry="4" fill="#7D8799" stroke="#5B6578" stroke-width="1.8"/>
-                <path d="M35,54 Q42,60 49,54" fill="none" stroke="#2D3748" stroke-width="2.2" stroke-linecap="round"/>
-                <!-- 雙手放在肚子前 -->
-                <rect x="22" y="72" width="36" height="10" rx="5" fill="#9AA4B6" stroke="#5B6578" stroke-width="2"/>
-            </g>
+            <!-- 可愛卡通貼紙點綴：左上山茶花、左下柑橘、右上小熊 -->
+            <use href="#sticker-camellia" x="14" y="14" transform="scale(0.85)"/>
+            <use href="#sticker-hallabong" x="30" y="128"/>
+            <use href="#sticker-bear-hat" x="328" y="16"/>
+
+            <!-- 參考圖風格：頭上有積雪的可愛濟州石頭爺爺 -->
+            <use href="#sticker-dolhareubang-snow" x="355" y="72"/>
         </svg>
 
         <!-- 深藍半透明底 bar 讓白色標題清晰易讀 -->
@@ -220,16 +266,20 @@
                 </button>
             </div>
 
-            <!-- Open-Meteo 天氣卡片（淺藍系底 + 重點跳色 + 5 天不同顏色格子） -->
-            <div class="bg-white text-[#38465C] p-4 rounded-2xl shadow-sm border-2 border-[#B6CFE7] space-y-3">
-                <div class="flex items-center justify-between">
+            <!-- Open-Meteo 天氣卡片（加入漢拏峰雪山與山茶花可愛插圖 + 5 天不同顏色格子） -->
+            <div class="bg-white text-[#38465C] p-4 rounded-2xl shadow-sm border-2 border-[#B6CFE7] space-y-3 relative overflow-hidden">
+                <svg viewBox="0 0 70 58" class="w-14 h-12 absolute -top-1 right-2 opacity-90 pointer-events-none">
+                    <use href="#sticker-hallasan" x="0" y="0"/>
+                </svg>
+
+                <div class="flex items-center justify-between pr-12">
                     <div class="flex items-center gap-3">
                         <div class="text-3xl drop-shadow-sm flex flex-col items-center">
                             <span>{{ weatherData.icon }}</span>
                             <span class="text-[10px] mt-0.5 text-sky-600 font-bold">⛄❄</span>
                         </div>
                         <div>
-                            <div class="font-bold text-sm tracking-wide text-[#38465C] flex items-center gap-1.5">
+                            <div class="font-bold text-sm tracking-wide text-[#38465C] flex items-center gap-1.5 flex-wrap">
                                 <span>濟州島</span>
                                 <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">⛄ 雪景守護中</span>
                                 <button @click="fetchJejuWeather" class="text-[10px] bg-[#EBF4FF] px-2 py-0.5 rounded-full border border-[#B6CFE7] text-sky-700 hover:bg-[#C9DBEF] cursor-pointer font-bold">
@@ -259,8 +309,11 @@
             </div>
 
             <div class="space-y-4 mt-1">
-                <div v-if="currentDayEvents.length === 0" class="text-center py-10 text-sky-700 text-xs font-bold border-2 border-dashed border-[#B6CFE7] rounded-2xl bg-[#F2F8FF]">
-                    今天還沒有安排行程，點擊右下角「＋」開始新增吧！⛄
+                <div v-if="currentDayEvents.length === 0" class="text-center py-8 text-sky-800 text-xs font-bold border-2 border-dashed border-[#B6CFE7] rounded-2xl bg-[#F2F8FF] flex flex-col items-center gap-2">
+                    <svg viewBox="0 0 64 60" class="w-14 h-14">
+                        <use href="#sticker-camellia" x="0" y="0"/>
+                    </svg>
+                    <span>今天還沒有安排行程，點擊右下角「＋」開始新增吧！⛄</span>
                 </div>
 
                 <div v-for="(event, eIdx) in currentDayEvents" :key="event.id" class="relative">
@@ -270,7 +323,10 @@
 
                     <div v-if="eIdx === 0 && (selectedDayIndex === 0 || selectedDayIndex === days.length - 1) && event.category === '航班'" class="handbook-card border-[#B6CFE7] bg-white p-4 pt-6">
                         <div class="washi-tape">FLIGHT INFO ✈️</div>
-                        <div class="flex justify-between items-center border-b-2 border-dashed border-[#BEC3D2] pb-2 mb-3">
+                        <svg viewBox="0 0 70 60" class="w-11 h-10 absolute top-1 right-2 pointer-events-none">
+                            <use href="#sticker-bear-hat" x="0" y="0"/>
+                        </svg>
+                        <div class="flex justify-between items-center border-b-2 border-dashed border-[#BEC3D2] pb-2 mb-3 pr-10">
                             <span class="text-xs font-bold text-sky-800 bg-[#EBF4FF] px-2.5 py-0.5 rounded-md">
                                 <i class="fa-solid fa-plane-arrival"></i> {{ selectedDayIndex === 0 ? '第一天首站航班資訊' : '最後一天回程航班資訊' }}
                             </span>
@@ -317,7 +373,9 @@
                         <div class="flex gap-3 items-start">
                             <div class="w-24 h-24 bg-[#F2F8FF] rounded-xl overflow-hidden flex-shrink-0 border border-[#C9DBEF] flex items-center justify-center relative shadow-inner">
                                 <img v-if="event.image" :src="event.image" class="w-full h-full object-cover">
-                                <span v-else class="text-3xl">{{ getCategoryEmoji(event.category) }}</span>
+                                <svg v-else viewBox="0 0 88 122" class="w-16 h-20">
+                                    <use :href="eIdx % 2 === 0 ? '#sticker-dolhareubang-snow' : '#sticker-hallabong'" x="0" y="0"/>
+                                </svg>
                             </div>
 
                             <div class="flex-1 min-w-0 py-0.5">
@@ -365,10 +423,13 @@
             </button>
         </div>
 
-        <!-- 資訊 TAB（淺藍系底 + 重點跳色） -->
+        <!-- 資訊 TAB -->
         <div v-if="currentTab === 'info'" class="space-y-4">
-            <div class="handbook-card p-4 pt-6 bg-white">
+            <div class="handbook-card p-4 pt-6 bg-white relative">
                 <div class="washi-tape">EXCHANGE RATE 🪙</div>
+                <svg viewBox="0 0 64 58" class="w-10 h-9 absolute top-2 right-3 pointer-events-none">
+                    <use href="#sticker-hallabong" x="0" y="0"/>
+                </svg>
                 <div class="grid grid-cols-2 gap-3 mt-1">
                     <div>
                         <label class="text-[10px] text-sky-800 font-bold block mb-1">輸入外幣 (韓幣 KRW)</label>
@@ -409,7 +470,6 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
-                    <!-- 去程 -->
                     <div class="handbook-card p-3 bg-white relative overflow-hidden">
                         <div class="ticket-notch-left"></div><div class="ticket-notch-right"></div>
                         <div class="text-[10px] font-bold text-orange-600 border-b border-dashed border-[#BEC3D2] pb-1 mb-1.5 flex justify-between items-center">
@@ -437,7 +497,6 @@
                         </div>
                     </div>
 
-                    <!-- 回程 -->
                     <div class="handbook-card p-3 bg-white relative overflow-hidden">
                         <div class="ticket-notch-left"></div><div class="ticket-notch-right"></div>
                         <div class="text-[10px] font-bold text-emerald-700 border-b border-dashed border-[#BEC3D2] pb-1 mb-1.5 flex justify-between items-center">
@@ -468,9 +527,12 @@
             </div>
 
             <!-- 租車資訊 -->
-            <div class="handbook-card p-4 pt-6 bg-white">
+            <div class="handbook-card p-4 pt-6 bg-white relative">
                 <div class="washi-tape">RENTAL CAR INFO 🚗</div>
-                <div class="flex justify-end mb-1">
+                <svg viewBox="0 0 88 122" class="w-9 h-12 absolute top-2 right-3 pointer-events-none">
+                    <use href="#sticker-dolhareubang-snow" x="0" y="0"/>
+                </svg>
+                <div class="flex justify-end mb-1 pr-10">
                     <button @click="toggleEditRental" class="text-[11px] font-bold px-2.5 py-0.5 rounded-lg border border-[#B6CFE7] bg-[#EBF4FF] text-sky-800 hover:bg-[#C9DBEF] cursor-pointer">
                         <i class="fa-solid" :class="editingRental ? 'fa-check' : 'fa-pen'"></i> {{ editingRental ? '儲存' : '編輯' }}
                     </button>
@@ -522,9 +584,11 @@
 
                     <div class="w-full h-44 bg-[#F2F8FF] rounded-xl flex items-center justify-center text-slate-400 font-bold overflow-hidden border-2 border-dashed border-[#C9DBEF] relative shadow-inner">
                         <img v-if="hotel.img" :src="hotel.img" class="w-full h-full object-cover">
-                        <div v-else class="text-center p-4">
-                            <i class="fa-solid fa-image text-2xl mb-1 text-sky-400"></i>
-                            <div class="text-[11px]">上傳飯店精選大圖 📸</div>
+                        <div v-else class="text-center p-4 flex flex-col items-center">
+                            <svg viewBox="0 0 76 60" class="w-16 h-12 mb-1">
+                                <use href="#sticker-stonehouse" x="0" y="0"/>
+                            </svg>
+                            <div class="text-[11px] text-sky-800">上傳飯店精選大圖 📸</div>
                         </div>
                         <input type="file" accept="image/*" @change="triggerCropModal($event, hIdx, 'hotel')" class="absolute inset-0 opacity-0 cursor-pointer">
                     </div>
@@ -608,9 +672,11 @@
 
                     <div class="w-full h-32 bg-[#F2F8FF] overflow-hidden border-b-2 border-dashed border-[#C9DBEF] flex items-center justify-center relative shadow-inner group flex-shrink-0">
                         <img v-if="item.image" :src="item.image" class="w-full h-full object-cover object-center transition duration-300 group-hover:scale-105 pointer-events-none">
-                        <div v-else class="text-center text-slate-400 p-2 pointer-events-none">
-                            <i class="fa-solid fa-camera text-xl mb-1 text-sky-400"></i>
-                            <div class="text-[10px] font-bold">上傳商品照片</div>
+                        <div v-else class="text-center text-slate-400 p-2 pointer-events-none flex flex-col items-center">
+                            <svg viewBox="0 0 64 58" class="w-12 h-11 mb-0.5">
+                                <use :href="sIdx % 3 === 0 ? '#sticker-hallabong' : (sIdx % 3 === 1 ? '#sticker-camellia' : '#sticker-bear-hat')" x="0" y="0"/>
+                            </svg>
+                            <div class="text-[10px] font-bold text-sky-700">上傳商品照片</div>
                         </div>
 
                         <div class="absolute inset-0 z-10">
@@ -634,9 +700,15 @@
             </button>
         </div>
 
-        <!-- 花費 TAB（淺藍系底 + 重點跳色） -->
+        <!-- 花費 TAB -->
         <div v-if="currentTab === 'expenses'" class="space-y-4">
-            <div class="bg-[#F2F8FF] border-2 border-[#B6CFE7] p-5 rounded-3xl text-center shadow-sm">
+            <div class="bg-[#F2F8FF] border-2 border-[#B6CFE7] p-5 rounded-3xl text-center shadow-sm relative overflow-hidden">
+                <svg viewBox="0 0 88 122" class="w-10 h-14 absolute bottom-1 left-2 pointer-events-none">
+                    <use href="#sticker-dolhareubang-snow" x="0" y="0"/>
+                </svg>
+                <svg viewBox="0 0 64 58" class="w-11 h-10 absolute top-2 right-2 pointer-events-none">
+                    <use href="#sticker-hallabong" x="0" y="0"/>
+                </svg>
                 <div class="inline-block text-[10px] font-bold tracking-wider bg-sky-100 text-sky-800 px-3 py-0.5 rounded-full">目前累積總花費 (台幣 · 無條件進位) ⛄</div>
                 <div class="text-3xl font-bold mt-1.5 text-rose-500">NT$ {{ formatNumber(totalTwd) }}</div>
                 <div class="text-xs text-indigo-600 font-bold mt-0.5">韓幣總額: ₩{{ formatNumber(totalKrw) }}</div>
@@ -683,8 +755,11 @@
 
         <!-- 行李清單 TAB -->
         <div v-if="currentTab === 'luggage'" class="space-y-4">
-            <div class="handbook-card p-4 bg-[#F2F8FF] border-[#B6CFE7] pt-6">
+            <div class="handbook-card p-4 bg-[#F2F8FF] border-[#B6CFE7] pt-6 relative">
                 <div class="washi-tape bg-rose-500 text-white">⚠️ KOREA REGULATION</div>
+                <svg viewBox="0 0 70 60" class="w-11 h-10 absolute top-2 right-3 pointer-events-none">
+                    <use href="#sticker-bear-hat" x="0" y="0"/>
+                </svg>
                 <h4 class="font-bold text-xs text-[#38465C] mb-1.5 mt-1 flex items-center gap-1">
                     <i class="fa-solid fa-shield-halved text-rose-500"></i> 韓國旅遊最新入境規範與提醒
                 </h4>
@@ -694,8 +769,11 @@
                 </ul>
             </div>
 
-            <div v-for="cat in ['隨身背包', '手提行李', '托運行李']" :key="cat" class="handbook-card p-4 bg-white">
-                <div class="flex justify-between items-center mb-3">
+            <div v-for="(cat, cIdx) in ['隨身背包', '手提行李', '托運行李']" :key="cat" class="handbook-card p-4 bg-white relative">
+                <svg viewBox="0 0 64 58" class="w-9 h-8 absolute top-3 right-3 pointer-events-none opacity-85">
+                    <use :href="cIdx === 0 ? '#sticker-hallabong' : (cIdx === 1 ? '#sticker-camellia' : '#sticker-hallasan')" x="0" y="0"/>
+                </svg>
+                <div class="flex justify-between items-center mb-3 pr-10">
                     <h4 class="font-bold text-xs flex items-center gap-1.5 text-[#38465C]">
                         <i class="fa-solid" :class="cat === '隨身背包' ? 'fa-bag-shopping text-orange-400' : (cat === '手提行李' ? 'fa-suitcase text-emerald-500' : 'fa-plane-departure text-sky-500')"></i>
                         {{ cat }}
@@ -914,7 +992,6 @@ createApp({
         let longPressTimer = null;
         let isLongPressed = false;
 
-        // 未來 5 天氣格子各自使用不同顏色
         const forecastCardStyles = [
             'bg-[#EBF4FF] border-sky-300',
             'bg-emerald-50 border-emerald-300',
