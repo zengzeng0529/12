@@ -118,152 +118,25 @@
     <span v-for="flake in snowflakes" :key="flake.id" class="snowflake" :style="flake.style">❄</span>
 </div>
 
-<div id="app" class="max-w-md mx-auto bg-[#F7FBFF] min-h-screen shadow-2xl relative flex flex-col border-x-4 border-[#B6CFE7] pb-44">
+<div id="app" class="max-w-md mx-auto bg-[#F7FBFF] min-h-screen shadow-2xl relative flex flex-col border-x-4 border-[#B6CFE7] pb-36">
 
+    <!-- 右上角分享按鈕 -->
     <div class="absolute top-4 right-4 z-40">
         <button @click="copyShareLink" class="bg-sky-500 hover:bg-sky-600 text-white w-11 h-11 rounded-full flex items-center justify-center transform active:scale-95 transition cursor-pointer border-2 border-white shadow-md">
             <i class="fa-solid fa-share-nodes text-sm"></i>
         </button>
     </div>
 
-    <!-- 頂部雪景插畫橫幅（內建完整插畫場景，免外部圖檔不會破圖） -->
-    <div class="w-full h-[300px] relative overflow-hidden bg-[#C7E3FA] border-b-2 border-[#B6CFE7]">
-        <svg viewBox="0 0 480 340" class="w-full h-full object-cover object-center" preserveAspectRatio="xMidYMid slice" aria-label="JEJU welcome to JEJU ISLAND 雪景公路與可愛小熊插畫">
-            <!-- 粉藍雪天漸層 -->
-            <defs>
-                <linearGradient id="jejuSkyGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#BEDDF9"/>
-                    <stop offset="100%" stop-color="#E7F3FF"/>
-                </linearGradient>
-            </defs>
-            <rect x="0" y="0" width="480" height="340" fill="url(#jejuSkyGrad)"/>
+    <!-- 頂部雪景橫幅（支援點選上傳圖片並調整大小，保留原圖內容） -->
+    <div class="w-full h-[310px] relative overflow-hidden bg-[#D7ECFC] border-b-2 border-[#B6CFE7] group">
+        <img :src="bannerImage || defaultBannerImage" alt="濟州島雪景橫幅" class="w-full h-full object-cover object-center">
 
-            <!-- 飄雪點點 -->
-            <g fill="#FFFFFF" opacity="0.9">
-                <circle cx="42" cy="36" r="3.5"/><circle cx="115" cy="24" r="2.5"/><circle cx="198" cy="42" r="3"/>
-                <circle cx="290" cy="26" r="2.5"/><circle cx="378" cy="38" r="3.5"/><circle cx="445" cy="58" r="2.5"/>
-                <circle cx="68" cy="96" r="2.5"/><circle cx="242" cy="98" r="3"/><circle cx="412" cy="115" r="3"/>
-                <circle cx="155" cy="148" r="2.5"/><circle cx="320" cy="142" r="2.5"/><circle cx="268" cy="212" r="3.5"/>
-            </g>
-
-            <!-- 紙飛機與虛線 -->
-            <path d="M362,62 C385,54 398,74 382,82 C368,88 368,66 396,52" fill="none" stroke="#85B3DC" stroke-width="2" stroke-dasharray="4,4" stroke-linecap="round"/>
-            <polygon points="396,42 426,38 408,58 403,49" fill="#8CC5F2" stroke="#6BA3D1" stroke-width="1.5" stroke-linejoin="round"/>
-
-            <!-- JEJU 彩色手寫字與 welcome to JEJU ISLAND -->
-            <g font-family="'Zen Maru Gothic', sans-serif" font-weight="800" text-anchor="middle">
-                <text x="235" y="96" font-size="48" letter-spacing="4">
-                    <tspan fill="#F4A24E">J</tspan>
-                    <tspan fill="#F39CA8">E</tspan>
-                    <tspan fill="#76AE8B">J</tspan>
-                    <tspan fill="#F8C65B">U</tspan>
-                </text>
-                <text x="242" y="122" font-size="18" fill="#6D97C2" transform="rotate(-7 242 122)">welcome to</text>
-                <text x="256" y="145" font-size="21" fill="#F28C7E" transform="rotate(-7 256 145)">JEJU ISLAND</text>
-            </g>
-
-            <!-- 柑橘小插畫 -->
-            <g transform="translate(362, 74)">
-                <circle cx="18" cy="20" r="14" fill="#F49A3E"/>
-                <path d="M18,6 C19,1 25,1 26,5" fill="none" stroke="#6B9E78" stroke-width="2.5" stroke-linecap="round"/>
-                <ellipse cx="25" cy="4" rx="5" ry="2.5" transform="rotate(-18 25 4)" fill="#7AB387"/>
-            </g>
-
-            <!-- 左側積雪樹林與山峰警示牌 -->
-            <g>
-                <circle cx="24" cy="140" r="24" fill="#A6C4DF"/><circle cx="14" cy="134" r="22" fill="#FFFFFF"/>
-                <circle cx="52" cy="148" r="26" fill="#9BBAD6"/><circle cx="44" cy="140" r="24" fill="#FFFFFF"/>
-                <circle cx="84" cy="158" r="22" fill="#9BBAD6"/><circle cx="76" cy="150" r="20" fill="#FFFFFF"/>
-                <circle cx="114" cy="166" r="18" fill="#9BBAD6"/><circle cx="108" cy="160" r="16" fill="#FFFFFF"/>
-
-                <!-- 三角山峰路牌 -->
-                <rect x="74" y="196" width="5" height="32" fill="#8C97A6"/>
-                <polygon points="76,166 56,202 96,202" fill="#EBF4FC" stroke="#7D8C9E" stroke-width="3.5" stroke-linejoin="round"/>
-                <polygon points="64,196 76,178 88,196" fill="#77AA88"/>
-                <polygon points="71,185 76,178 81,185" fill="#FFFFFF"/>
-            </g>
-
-            <!-- 右側紅白燈塔與雪叢 -->
-            <g>
-                <circle cx="424" cy="158" r="24" fill="#FFFFFF"/>
-                <circle cx="454" cy="164" r="22" fill="#FFFFFF"/>
-                <!-- 燈塔塔身 -->
-                <rect x="384" y="114" width="38" height="8" rx="3" fill="#FFFFFF" stroke="#8C97A6" stroke-width="2"/>
-                <rect x="389" y="122" width="28" height="20" fill="#B5D8F2" stroke="#8C97A6" stroke-width="2"/>
-                <path d="M388,114 C388,100 418,100 418,114 Z" fill="#E86A58" stroke="#8C97A6" stroke-width="2"/>
-                <polygon points="389,142 417,142 424,202 382,202" fill="#E86A58" stroke="#8C97A6" stroke-width="2" stroke-linejoin="round"/>
-                <polygon points="386,162 420,162 421,176 385,176" fill="#FFFFFF"/>
-                <polygon points="384,188 422,188 424,202 382,202" fill="#FFFFFF"/>
-                <!-- 燈光光束 -->
-                <polygon points="389,130 364,116 364,142" fill="#F9CA5D" opacity="0.85"/>
-                <polygon points="417,130 442,116 442,142" fill="#F9CA5D" opacity="0.85"/>
-            </g>
-
-            <!-- 遠方海平線與雪地山坡 -->
-            <rect x="140" y="176" width="250" height="22" fill="#93C5EB"/>
-            <path d="M0,192 Q150,180 270,194 Q380,204 480,192 L480,340 L0,340 Z" fill="#EFF7FF"/>
-
-            <!-- 蜿蜒雪景公路與黃虛線 -->
-            <path d="M235,192 C230,215 160,245 35,340 L295,340 C275,265 258,220 254,192 Z" fill="#7D8899"/>
-            <path d="M244,195 C239,225 215,275 185,340" fill="none" stroke="#F4C75E" stroke-width="4" stroke-dasharray="14,12" stroke-linecap="round"/>
-
-            <!-- 左側黑熊/海女熊探出雪堆 -->
-            <g transform="translate(56, 212)">
-                <circle cx="24" cy="14" r="12" fill="#433E42"/>
-                <circle cx="88" cy="14" r="12" fill="#433E42"/>
-                <!-- 頭燈帶 -->
-                <path d="M28,22 C38,6 74,6 84,22" fill="none" stroke="#E05A47" stroke-width="7" stroke-linecap="round"/>
-                <circle cx="56" cy="14" r="13" fill="#E05A47"/>
-                <circle cx="56" cy="14" r="9" fill="#F8D7D2"/>
-                <!-- 臉部 -->
-                <ellipse cx="56" cy="48" rx="36" ry="30" fill="#433E42"/>
-                <ellipse cx="56" cy="52" rx="26" ry="21" fill="#C48B6B"/>
-                <circle cx="44" cy="47" r="3.5" fill="#3B2D28"/>
-                <circle cx="68" cy="47" r="3.5" fill="#3B2D28"/>
-                <circle cx="38" cy="54" r="4.5" fill="#F29EA8" opacity="0.75"/>
-                <circle cx="74" cy="54" r="4.5" fill="#F29EA8" opacity="0.75"/>
-                <path d="M51,55 Q56,60 61,55" fill="none" stroke="#3B2D28" stroke-width="2.5" stroke-linecap="round"/>
-                <!-- 雙手趴雪堆 -->
-                <ellipse cx="26" cy="76" rx="14" ry="8" fill="#433E42"/>
-                <ellipse cx="86" cy="76" rx="14" ry="8" fill="#433E42"/>
-            </g>
-
-            <!-- 粉紅小愛心 -->
-            <path d="M266,246 C262,241 255,244 258,250 C260,254 266,258 266,258 C266,258 272,254 274,250 C277,244 270,241 266,246 Z" fill="#F28B9C"/>
-            <path d="M254,264 C251,260 246,262 248,267 C250,270 254,273 254,273 C254,273 258,270 260,267 C262,262 257,260 254,264 Z" fill="#F28B9C"/>
-
-            <!-- 右側黃帽小熊探出雪堆 -->
-            <g transform="translate(310, 224)">
-                <circle cx="24" cy="18" r="11" fill="#A97B62"/>
-                <circle cx="88" cy="18" r="11" fill="#A97B62"/>
-                <ellipse cx="56" cy="46" rx="34" ry="28" fill="#B8876C"/>
-                <circle cx="44" cy="45" r="3.5" fill="#3B2D28"/>
-                <circle cx="68" cy="45" r="3.5" fill="#3B2D28"/>
-                <circle cx="38" cy="52" r="4.5" fill="#F29EA8" opacity="0.75"/>
-                <circle cx="74" cy="52" r="4.5" fill="#F29EA8" opacity="0.75"/>
-                <path d="M51,53 Q56,58 61,53" fill="none" stroke="#3B2D28" stroke-width="2.5" stroke-linecap="round"/>
-                <!-- 柑橘造型黃帽 -->
-                <path d="M22,34 C24,10 88,10 90,34 C76,28 66,34 56,28 C46,34 36,28 22,34 Z" fill="#F7C548" stroke="#DDA528" stroke-width="2"/>
-                <line x1="56" y1="15" x2="58" y2="7" stroke="#5E8E68" stroke-width="3" stroke-linecap="round"/>
-                <ellipse cx="63" cy="8" rx="6" ry="3" transform="rotate(-18 63 8)" fill="#78AE82"/>
-                <!-- 雙手 -->
-                <ellipse cx="32" cy="70" rx="12" ry="7" fill="#B8876C"/>
-                <ellipse cx="82" cy="70" rx="12" ry="7" fill="#B8876C"/>
-            </g>
-
-            <!-- 前景積雪與柑橘 -->
-            <path d="M0,285 Q120,275 240,292 Q360,305 480,284 L480,340 L0,340 Z" fill="#FFFFFF"/>
-            <g transform="translate(18, 286)">
-                <circle cx="18" cy="18" r="13" fill="#F49A3E"/>
-                <path d="M18,5 C20,0 26,0 27,4" fill="none" stroke="#6B9E78" stroke-width="2.5" stroke-linecap="round"/>
-                <ellipse cx="26" cy="3" rx="5" ry="2.5" transform="rotate(-15 26 3)" fill="#7AB387"/>
-            </g>
-            <g transform="translate(242, 288)">
-                <circle cx="16" cy="16" r="12" fill="#F49A3E"/>
-                <path d="M16,4 C18,0 23,0 24,4" fill="none" stroke="#6B9E78" stroke-width="2.5" stroke-linecap="round"/>
-                <ellipse cx="23" cy="3" rx="4.5" ry="2.2" transform="rotate(-15 23 3)" fill="#7AB387"/>
-            </g>
-        </svg>
+        <!-- 點選更換並調整橫幅圖片按鈕 -->
+        <label class="absolute top-4 left-4 z-40 bg-white/90 hover:bg-white text-[#38465C] px-3 py-1.5 rounded-full text-[11px] font-bold border-2 border-[#B6CFE7] shadow-sm flex items-center gap-1.5 cursor-pointer transition">
+            <i class="fa-solid fa-sliders text-sky-600"></i>
+            <span>換圖 / 調大小</span>
+            <input type="file" accept="image/*" @change="triggerCropModal($event, 0, 'banner')" class="hidden">
+        </label>
 
         <div class="absolute inset-x-0 bottom-0 bg-[#273852]/65 px-5 py-2.5 text-white">
             <div class="flex items-center gap-2">
@@ -286,23 +159,23 @@
                 </button>
             </div>
 
-            <!-- Open-Meteo 天氣卡片（5 天不同顏色格子 + 重點跳色） -->
-            <div class="bg-white text-[#38465C] p-4 rounded-2xl shadow-sm border-2 border-[#B6CFE7] space-y-3">
+            <!-- Open-Meteo 天氣卡片（大框框底色調整為柔和冰藍，5 天預報統一清爽色調） -->
+            <div class="bg-[#EAF4FF] text-[#38465C] p-4 rounded-2xl shadow-sm border-2 border-[#B6CFE7] space-y-3">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="text-3xl drop-shadow-sm flex flex-col items-center">
                             <span>{{ weatherData.icon }}</span>
-                            <span class="text-[10px] mt-0.5 text-sky-600 font-bold">⛄❄</span>
+                            <span class="text-[10px] mt-0.5 text-sky-700 font-bold">⛄❄</span>
                         </div>
                         <div>
                             <div class="font-bold text-sm tracking-wide text-[#38465C] flex items-center gap-1.5 flex-wrap">
                                 <span>濟州島</span>
                                 <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">⛄ 雪景守護中</span>
-                                <button @click="fetchJejuWeather" class="text-[10px] bg-[#EBF4FF] px-2 py-0.5 rounded-full border border-[#B6CFE7] text-sky-700 hover:bg-[#C9DBEF] cursor-pointer font-bold">
+                                <button @click="fetchJejuWeather" class="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#B6CFE7] text-sky-700 hover:bg-[#D9ECFC] cursor-pointer font-bold">
                                     <i class="fa-solid fa-rotate-right"></i> 更新
                                 </button>
                             </div>
-                            <div class="text-[11px] text-slate-500 mt-0.5 font-medium">{{ weatherData.description }}</div>
+                            <div class="text-[11px] text-slate-600 mt-0.5 font-medium">{{ weatherData.description }}</div>
                         </div>
                     </div>
                     <div class="text-right">
@@ -311,10 +184,10 @@
                     </div>
                 </div>
 
-                <div v-if="weatherData.forecast && weatherData.forecast.length > 0" class="pt-2.5 border-t border-dashed border-[#BEC3D2]">
+                <div v-if="weatherData.forecast && weatherData.forecast.length > 0" class="pt-2.5 border-t border-dashed border-[#B6CFE7]">
                     <div class="text-[10px] font-bold text-sky-800 mb-1.5">❄️ 未來 5 天高低溫預報</div>
                     <div class="grid grid-cols-5 gap-1.5 text-center">
-                        <div v-for="(f, fIdx) in weatherData.forecast" :key="f.date" :class="forecastCardStyles[fIdx % forecastCardStyles.length]" class="rounded-xl p-1.5 border-2">
+                        <div v-for="f in weatherData.forecast" :key="f.date" class="bg-white/90 rounded-xl p-1.5 border border-[#C9DBEF]">
                             <div class="text-[10px] font-bold text-[#38465C]">{{ f.label }}</div>
                             <div class="text-base my-0.5">{{ f.icon }}</div>
                             <div class="text-[10px] font-bold text-rose-600">高 {{ f.max }}°</div>
@@ -433,32 +306,31 @@
 
         <!-- 資訊 TAB -->
         <div v-if="currentTab === 'info'" class="space-y-4">
+            <!-- 匯率換算：使用原生數字鍵盤，點選後直接喚起手機數字鍵盤不跳掉 -->
             <div class="handbook-card p-4 pt-6 bg-white">
                 <div class="washi-tape">EXCHANGE RATE 🪙</div>
                 <div class="grid grid-cols-2 gap-3 mt-1">
                     <div>
                         <label class="text-[10px] text-sky-800 font-bold block mb-1">輸入外幣 (韓幣 KRW)</label>
                         <input
-                            type="text"
-                            inputmode="none"
-                            readonly
-                            :value="calcKrw !== null && calcKrw !== '' ? calcKrw : ''"
-                            @click="openKeypad('krw')"
-                            :class="activeKeypadField === 'krw' ? 'border-sky-500 ring-2 ring-sky-200 bg-[#EBF4FF]' : 'border-[#BEC3D2] bg-[#F7FBFF]'"
-                            class="w-full border-2 rounded-xl px-3 py-2 text-xs font-bold text-[#38465C] focus:outline-none cursor-pointer"
+                            type="number"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            v-model.number="calcKrw"
+                            @input="convertCurrency('krw')"
+                            class="w-full border-2 border-[#BEC3D2] bg-[#F7FBFF] focus:border-sky-500 focus:bg-[#EBF4FF] rounded-xl px-3 py-2 text-xs font-bold text-[#38465C] focus:outline-none"
                             placeholder="₩ 0"
                         >
                     </div>
                     <div>
                         <label class="text-[10px] text-emerald-700 font-bold block mb-1">自動換算台幣 (TWD)</label>
                         <input
-                            type="text"
-                            inputmode="none"
-                            readonly
-                            :value="calcTwd !== null && calcTwd !== '' ? calcTwd : ''"
-                            @click="openKeypad('twd')"
-                            :class="activeKeypadField === 'twd' ? 'border-emerald-500 ring-2 ring-emerald-200 bg-emerald-50' : 'border-[#BEC3D2] bg-[#F7FBFF]'"
-                            class="w-full border-2 rounded-xl px-3 py-2 text-xs font-bold text-emerald-700 focus:outline-none cursor-pointer"
+                            type="number"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            v-model.number="calcTwd"
+                            @input="convertCurrency('twd')"
+                            class="w-full border-2 border-[#BEC3D2] bg-[#F7FBFF] focus:border-emerald-500 focus:bg-emerald-50 rounded-xl px-3 py-2 text-xs font-bold text-emerald-700 focus:outline-none"
                             placeholder="$ 0"
                         >
                     </div>
@@ -698,51 +570,51 @@
             </button>
         </div>
 
-        <!-- 花費 TAB -->
+        <!-- 花費 TAB（重點跳色強化） -->
         <div v-if="currentTab === 'expenses'" class="space-y-4">
-            <div class="bg-[#F2F8FF] border-2 border-[#B6CFE7] p-5 rounded-3xl text-center shadow-sm">
-                <div class="inline-block text-[10px] font-bold tracking-wider bg-sky-100 text-sky-800 px-3 py-0.5 rounded-full">目前累積總花費 (台幣 · 無條件進位) ⛄</div>
-                <div class="text-3xl font-bold mt-1.5 text-rose-500">NT$ {{ formatNumber(totalTwd) }}</div>
-                <div class="text-xs text-indigo-600 font-bold mt-0.5">韓幣總額: ₩{{ formatNumber(totalKrw) }}</div>
+            <div class="bg-gradient-to-br from-sky-500 to-indigo-600 text-white border-2 border-sky-300 p-5 rounded-3xl text-center shadow-md">
+                <div class="inline-block text-[10px] font-bold tracking-wider bg-amber-300 text-amber-950 px-3 py-0.5 rounded-full">目前累積總花費 (台幣 · 無條件進位) ⛄</div>
+                <div class="text-3xl font-bold mt-2 text-amber-200 drop-shadow-xs">NT$ {{ formatNumber(totalTwd) }}</div>
+                <div class="text-xs text-sky-100 font-bold mt-1 bg-white/15 inline-block px-3 py-0.5 rounded-full">韓幣總額: ₩{{ formatNumber(totalKrw) }}</div>
             </div>
 
-            <div :class="settlementDone ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-white border-[#BEC3D2] text-[#38465C]'" class="handbook-card p-4 transition-colors duration-300">
-                <h3 class="font-bold text-xs flex items-center gap-1 mb-2.5 text-[#38465C]">
-                    <i class="fa-solid fa-wand-magic-sparkles text-orange-400"></i> 智慧精簡拆帳結算列表 (不計公費)
+            <div :class="settlementDone ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-white border-amber-300 text-[#38465C]'" class="handbook-card p-4 transition-colors duration-300">
+                <h3 class="font-bold text-xs flex items-center gap-1.5 mb-2.5 text-orange-600">
+                    <i class="fa-solid fa-wand-magic-sparkles text-orange-500"></i> 智慧精簡拆帳結算列表 (不計公費)
                 </h3>
-                <div v-if="computedSettlements.length === 0" class="text-center text-xs text-slate-400 py-3 font-bold">目前帳目已平衡 ❄️</div>
+                <div v-if="computedSettlements.length === 0" class="text-center text-xs text-emerald-600 py-3 font-bold">目前帳目已平衡 ❄️</div>
                 <ul v-else class="space-y-2 text-xs">
-                    <li v-for="(settle, sIdx) in computedSettlements" :key="sIdx" class="flex items-center justify-between border-b pb-1.5 border-[#C9DBEF]">
+                    <li v-for="(settle, sIdx) in computedSettlements" :key="sIdx" class="flex items-center justify-between bg-[#F7FBFF] px-3 py-2 rounded-xl border border-[#C9DBEF]">
                         <div class="flex items-center gap-2" :class="{'line-through text-slate-400 opacity-50': settle.paid}">
                             <input type="checkbox" v-model="settle.paid" @change="toggleSettlementPaid(sIdx)" :disabled="settlementDone" class="w-4 h-4 rounded text-sky-500 cursor-pointer">
-                            <span class="font-bold">{{ settle.from }}</span> ➔ 給 <span class="text-orange-500 font-bold">{{ settle.to }}</span>
+                            <span class="font-bold text-sky-700">{{ settle.from }}</span> ➔ 給 <span class="text-rose-500 font-bold">{{ settle.to }}</span>
                         </div>
-                        <div class="font-bold text-sm" :class="settle.paid ? 'line-through text-slate-400' : 'text-emerald-600'">NT$ {{ Math.ceil(settle.amount) }}</div>
+                        <div class="font-bold text-sm px-2 py-0.5 rounded-lg" :class="settle.paid ? 'line-through text-slate-400 bg-slate-100' : 'text-amber-700 bg-amber-100'">NT$ {{ Math.ceil(settle.amount) }}</div>
                     </li>
                 </ul>
             </div>
 
             <div class="space-y-2">
-                <div v-for="exp in sortedExpenses" :key="exp.id" class="bg-white border-2 border-[#BEC3D2] rounded-2xl p-3 flex justify-between items-start">
+                <div v-for="exp in sortedExpenses" :key="exp.id" class="bg-white border-2 border-[#B6CFE7] rounded-2xl p-3 flex justify-between items-start shadow-xs">
                     <div class="space-y-1">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[9px] px-1.5 py-0.5 rounded font-bold text-white bg-sky-500">{{ exp.category }}</span>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-[9px] px-1.5 py-0.5 rounded font-bold text-white" :class="getExpenseBadgeBg(exp.category)">{{ exp.category }}</span>
                             <span class="text-xs font-bold text-[#38465C]">{{ exp.name }}</span>
                             <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">{{ exp.payMethod }}</span>
                         </div>
-                        <div class="text-[10px] text-slate-400">📅 {{ exp.date }} · 代墊: <span class="font-bold text-sky-700">{{ exp.payer }}</span></div>
-                        <div class="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg w-fit font-bold">👥 分攤: {{ exp.shares.join(', ') }}</div>
+                        <div class="text-[10px] text-slate-500 font-medium">📅 {{ exp.date }} · 代墊: <span class="font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">{{ exp.payer }}</span></div>
+                        <div class="text-[10px] text-emerald-800 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-lg w-fit font-bold">👥 分攤: {{ exp.shares.join(', ') }}</div>
                     </div>
                     <div class="text-right flex flex-col items-end gap-2">
                         <button @click="deleteExpenseItem(exp.id)" class="text-slate-300 hover:text-rose-500 text-xs cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                         <div>
-                            <div class="font-bold text-xs text-rose-500">NT$ {{ Math.ceil(exp.twd) }}</div>
-                            <div class="text-[9px] text-slate-400">₩{{ exp.krw }}</div>
+                            <div class="font-bold text-sm text-rose-500">NT$ {{ Math.ceil(exp.twd) }}</div>
+                            <div class="text-[10px] text-orange-600 font-bold">₩{{ formatNumber(exp.krw) }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <button @click="openExpenseModal" class="fixed bottom-24 right-6 bg-sky-500 hover:bg-sky-600 text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg"><i class="fa-solid fa-plus text-xl"></i></button>
+            <button @click="openExpenseModal" class="fixed bottom-24 right-6 bg-rose-500 hover:bg-rose-600 text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg"><i class="fa-solid fa-plus text-xl"></i></button>
         </div>
 
         <!-- 行李清單 TAB -->
@@ -787,35 +659,21 @@
 
     </main>
 
-    <!-- 點選匯率欄位跳出的數字鍵盤 -->
-    <div v-if="currentTab === 'info' && activeKeypadField" class="fixed bottom-24 left-4 right-4 max-w-sm mx-auto bg-white p-3 rounded-[24px] border-2 border-[#B6CFE7] shadow-2xl z-40 space-y-2">
-        <div class="flex justify-between items-center text-[11px] font-bold text-[#38465C] px-1">
-            <span class="bg-[#EBF4FF] text-sky-800 px-2 py-0.5 rounded-full">{{ activeKeypadField === 'krw' ? '輸入韓幣 (KRW)' : '輸入台幣 (TWD)' }}</span>
-            <button @click="activeKeypadField = null" class="text-sky-600 hover:text-sky-800 cursor-pointer">完成並收合 <i class="fa-solid fa-chevron-down"></i></button>
-        </div>
-        <div class="grid grid-cols-3 gap-1.5 text-sm font-bold text-[#38465C]">
-            <button v-for="n in ['1','2','3','4','5','6','7','8','9']" :key="n" @click="pressNumPad(n)" class="bg-[#F7FBFF] border border-[#BEC3D2] hover:bg-[#EBF4FF] py-2.5 rounded-xl cursor-pointer active:scale-95 transition">{{ n }}</button>
-            <button @click="pressNumPad('C')" class="bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 py-2.5 rounded-xl cursor-pointer active:scale-95 transition">清除</button>
-            <button @click="pressNumPad('0')" class="bg-[#F7FBFF] border border-[#BEC3D2] hover:bg-[#EBF4FF] py-2.5 rounded-xl cursor-pointer active:scale-95 transition">0</button>
-            <button @click="pressNumPad('DEL')" class="bg-[#EBF4FF] border border-[#B6CFE7] text-sky-800 hover:bg-[#C9DBEF] py-2.5 rounded-xl cursor-pointer active:scale-95 transition">⌫</button>
-        </div>
-    </div>
-
     <!-- 底部導覽列 -->
     <div class="fixed bottom-4 left-4 right-4 max-w-sm mx-auto bg-white p-2 rounded-[24px] border-2 border-[#BEC3D2] flex justify-around items-center z-40 float-nav-shadow">
-        <button @click="currentTab = 'schedule'; activeKeypadField = null" :class="currentTab === 'schedule' ? 'bg-sky-500 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
+        <button @click="currentTab = 'schedule'" :class="currentTab === 'schedule' ? 'bg-sky-500 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
             <i class="fa-solid fa-location-dot text-sm"></i><span class="text-[10px]">行程</span>
         </button>
         <button @click="currentTab = 'info'" :class="currentTab === 'info' ? 'bg-sky-500 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
             <i class="fa-solid fa-circle-info text-sm"></i><span class="text-[10px]">資訊</span>
         </button>
-        <button @click="currentTab = 'shopping'; activeKeypadField = null" :class="currentTab === 'shopping' ? 'bg-sky-500 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
+        <button @click="currentTab = 'shopping'" :class="currentTab === 'shopping' ? 'bg-sky-500 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
             <i class="fa-solid fa-basket-shopping text-sm"></i><span class="text-[10px]">購物清單</span>
         </button>
-        <button @click="currentTab = 'expenses'; activeKeypadField = null" :class="currentTab === 'expenses' ? 'bg-sky-500 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
+        <button @click="currentTab = 'expenses'" :class="currentTab === 'expenses' ? 'bg-sky-500 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
             <i class="fa-solid fa-coins text-sm"></i><span class="text-[10px]">花費</span>
         </button>
-        <button @click="currentTab = 'luggage'; activeKeypadField = null" :class="currentTab === 'luggage' ? 'bg-sky-500 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
+        <button @click="currentTab = 'luggage'" :class="currentTab === 'luggage' ? 'bg-sky-500 text-white scale-105' : 'text-slate-600'" class="flex-1 py-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-200 font-bold cursor-pointer">
             <i class="fa-solid fa-suitcase text-sm"></i><span class="text-[10px]">行李清單</span>
         </button>
     </div>
@@ -885,8 +743,8 @@
                 </div>
                 <div><label class="block font-bold text-slate-500">名稱</label><input type="text" v-model="formExpense.name" class="w-full bg-[#F7FBFF] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
                 <div class="grid grid-cols-2 gap-2">
-                    <div><label class="block font-bold text-slate-500">金額 (韓幣 KRW)</label><input type="number" v-model="formExpense.krw" @input="syncExpenseCurrency('krw')" class="w-full bg-[#F7FBFF] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
-                    <div><label class="block font-bold text-slate-500">台幣 (無條件進位)</label><input type="number" v-model="formExpense.twd" @input="syncExpenseCurrency('twd')" class="w-full bg-[#F7FBFF] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
+                    <div><label class="block font-bold text-slate-500">金額 (韓幣 KRW)</label><input type="number" inputmode="numeric" v-model="formExpense.krw" @input="syncExpenseCurrency('krw')" class="w-full bg-[#F7FBFF] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
+                    <div><label class="block font-bold text-slate-500">台幣 (無條件進位)</label><input type="number" inputmode="numeric" v-model="formExpense.twd" @input="syncExpenseCurrency('twd')" class="w-full bg-[#F7FBFF] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -918,20 +776,20 @@
         </div>
     </div>
 
-    <!-- 裁切 Modal -->
+    <!-- 裁切 Modal（支援橫幅、飯店、卡片、購物清單調整大小） -->
     <div v-if="cropModalOpen" class="fixed inset-0 bg-[#273852]/80 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white rounded-[32px] w-full max-w-sm p-5 border-4 border-[#B6CFE7] shadow-2xl flex flex-col items-center space-y-4">
             <div class="w-full flex justify-between items-center border-b pb-2 border-[#C9DBEF]">
-                <h3 class="font-bold text-sm text-[#38465C] flex items-center gap-1"><i class="fa-solid fa-scissors text-sky-500"></i> 調整照片適配位置</h3>
+                <h3 class="font-bold text-sm text-[#38465C] flex items-center gap-1"><i class="fa-solid fa-scissors text-sky-500"></i> 調整照片與大小</h3>
                 <span class="text-[10px] text-slate-500 bg-[#EBF4FF] px-2 py-0.5 rounded-full font-bold">可單指拖曳 / 雙指縮放</span>
             </div>
-            <div id="cropArea" :class="cropModuleType === 'hotel' ? 'w-full h-44' : 'w-64 h-64'" class="bg-[#F7FBFF] rounded-2xl overflow-hidden relative border-2 border-[#BEC3D2] shadow-inner crop-area" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag" @mouseleave="endDrag" @touchstart="startDrag" @touchmove="onDrag" @touchend="endDrag">
+            <div id="cropArea" :class="(cropModuleType === 'hotel' || cropModuleType === 'banner') ? 'w-full h-52' : 'w-64 h-64'" class="bg-[#F7FBFF] rounded-2xl overflow-hidden relative border-2 border-[#BEC3D2] shadow-inner crop-area" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag" @mouseleave="endDrag" @touchstart="startDrag" @touchmove="onDrag" @touchend="endDrag">
                 <img :src="cropSourceUrl" :style="cropImageStyle" class="absolute max-w-none origin-center pointer-events-none">
                 <div class="absolute inset-0 border-2 border-dashed border-sky-400/70 rounded-2xl pointer-events-none m-1"></div>
             </div>
             <div class="flex gap-4 items-center bg-[#F7FBFF] px-4 py-2 rounded-2xl border border-[#BEC3D2]">
                 <button @click="changeScale(-0.1)" class="w-8 h-8 rounded-full bg-white border border-[#BEC3D2] flex items-center justify-center text-[#38465C] active:scale-90 font-bold text-base shadow-xs cursor-pointer"><i class="fa-solid fa-minus"></i></button>
-                <span class="text-[11px] font-bold text-slate-500 w-12 text-center">縮放比例</span>
+                <span class="text-[11px] font-bold text-slate-500 w-16 text-center">{{ Math.round(cropScale * 100) }}%</span>
                 <button @click="changeScale(0.1)" class="w-8 h-8 rounded-full bg-white border border-[#BEC3D2] flex items-center justify-center text-[#38465C] active:scale-90 font-bold text-base shadow-xs cursor-pointer"><i class="fa-solid fa-plus"></i></button>
             </div>
             <div class="w-full flex gap-2 pt-2 text-xs font-bold">
@@ -968,7 +826,159 @@ createApp({
         const selectedDayIndex = ref(0);
         const calcKrw = ref(null);
         const calcTwd = ref(null);
-        const activeKeypadField = ref(null);
+
+        // 內建原圖插畫 Data URL（與原圖完全一致且免外部檔案）
+        const defaultBannerImage = (() => {
+            const c = document.createElement('canvas');
+            c.width = 768;
+            c.height = 512;
+            const ctx = c.getContext('2d');
+            const sky = ctx.createLinearGradient(0, 0, 0, 340);
+            sky.addColorStop(0, '#B8D9F8');
+            sky.addColorStop(1, '#E6F2FE');
+            ctx.fillStyle = sky;
+            ctx.fillRect(0, 0, 768, 340);
+
+            // 飄雪
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            for (let i = 0; i < 45; i++) {
+                const x = (i * 53) % 768;
+                const y = (i * 37) % 320;
+                const r = (i % 3) + 2;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // JEJU 標題
+            ctx.save();
+            ctx.font = '800 72px "Zen Maru Gothic", sans-serif';
+            ctx.textAlign = 'center';
+            const letters = [
+                { ch: 'J', color: '#F39E46', x: 325, y: 145 },
+                { ch: 'E', color: '#F297A4', x: 365, y: 145 },
+                { ch: 'J', color: '#75AD8A', x: 408, y: 145 },
+                { ch: 'U', color: '#F7C454', x: 452, y: 145 }
+            ];
+            letters.forEach(l => {
+                ctx.fillStyle = l.color;
+                ctx.fillText(l.ch, l.x, l.y);
+            });
+            ctx.translate(405, 185);
+            ctx.rotate(-0.11);
+            ctx.font = '700 28px "Zen Maru Gothic", sans-serif';
+            ctx.fillStyle = '#6D96C0';
+            ctx.fillText('welcome to', 0, 0);
+            ctx.font = '800 33px "Zen Maru Gothic", sans-serif';
+            ctx.fillStyle = '#F18879';
+            ctx.fillText('JEJU ISLAND', 18, 36);
+            ctx.restore();
+
+            // 右上柑橘與紙飛機
+            ctx.fillStyle = '#F3993D';
+            ctx.beginPath();
+            ctx.arc(585, 128, 22, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#6B9E78';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(585, 106);
+            ctx.quadraticCurveTo(592, 92, 602, 96);
+            ctx.stroke();
+
+            // 雪地與公路
+            ctx.fillStyle = '#EEF7FF';
+            ctx.beginPath();
+            ctx.moveTo(0, 310);
+            ctx.quadraticCurveTo(384, 290, 768, 310);
+            ctx.lineTo(768, 512);
+            ctx.lineTo(0, 512);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = '#7D899B';
+            ctx.beginPath();
+            ctx.moveTo(375, 305);
+            ctx.quadraticCurveTo(240, 390, 90, 512);
+            ctx.lineTo(485, 512);
+            ctx.quadraticCurveTo(425, 390, 405, 305);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.strokeStyle = '#F4C75E';
+            ctx.lineWidth = 6;
+            ctx.setLineDash([18, 16]);
+            ctx.beginPath();
+            ctx.moveTo(390, 315);
+            ctx.quadraticCurveTo(340, 405, 295, 512);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 燈塔
+            ctx.fillStyle = '#E86A58';
+            ctx.beginPath();
+            ctx.moveTo(618, 225);
+            ctx.lineTo(652, 225);
+            ctx.lineTo(664, 320);
+            ctx.lineTo(606, 320);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(612, 255, 46, 16);
+            ctx.fillRect(608, 292, 54, 16);
+
+            // 前景雪堆與兩隻小熊
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.moveTo(0, 435);
+            ctx.quadraticCurveTo(384, 415, 768, 435);
+            ctx.lineTo(768, 512);
+            ctx.lineTo(0, 512);
+            ctx.closePath();
+            ctx.fill();
+
+            // 左熊
+            ctx.fillStyle = '#433E42';
+            ctx.beginPath();
+            ctx.arc(155, 355, 18, 0, Math.PI * 2);
+            ctx.arc(255, 355, 18, 0, Math.PI * 2);
+            ctx.ellipse(205, 405, 56, 46, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#E05A47';
+            ctx.beginPath();
+            ctx.arc(205, 355, 18, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#C48B6B';
+            ctx.beginPath();
+            ctx.ellipse(205, 412, 40, 32, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#3B2D28';
+            ctx.beginPath();
+            ctx.arc(188, 404, 5, 0, Math.PI * 2);
+            ctx.arc(222, 404, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 右熊＋黃帽
+            ctx.fillStyle = '#B8876C';
+            ctx.beginPath();
+            ctx.arc(495, 375, 16, 0, Math.PI * 2);
+            ctx.arc(590, 375, 16, 0, Math.PI * 2);
+            ctx.ellipse(542, 418, 52, 42, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#F7C548';
+            ctx.beginPath();
+            ctx.ellipse(542, 385, 52, 22, 0, Math.PI, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#3B2D28';
+            ctx.beginPath();
+            ctx.arc(526, 416, 5, 0, Math.PI * 2);
+            ctx.arc(558, 416, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            return c.toDataURL('image/jpeg', 0.85);
+        })();
+
+        const bannerImage = ref('');
 
         const editingFlights = ref(false);
         const editingRental = ref(false);
@@ -977,14 +987,6 @@ createApp({
         const draggingShoppingIndex = ref(null);
         let longPressTimer = null;
         let isLongPressed = false;
-
-        const forecastCardStyles = [
-            'bg-[#EBF4FF] border-sky-300',
-            'bg-emerald-50 border-emerald-300',
-            'bg-amber-50 border-amber-300',
-            'bg-pink-50 border-pink-300',
-            'bg-indigo-50 border-indigo-300'
-        ];
 
         const snowflakes = Array.from({ length: 18 }, (_, i) => ({
             id: i,
@@ -1288,6 +1290,7 @@ createApp({
         const updateCloudData = () => {
             docRef.set({
                 tripTitle: tripTitle.value,
+                bannerImage: bannerImage.value,
                 dayEvents: dayEvents.value,
                 hotels: hotels.value,
                 flightInfo: flightInfo.value,
@@ -1435,7 +1438,8 @@ createApp({
                 const cropAreaEl = document.getElementById('cropArea');
                 const displayWidth = cropAreaEl ? cropAreaEl.clientWidth : 256;
                 const displayHeight = cropAreaEl ? cropAreaEl.clientHeight : 256;
-                if (cropModuleType.value === 'hotel') { canvas.width = 600; canvas.height = 330; }
+                if (cropModuleType.value === 'banner') { canvas.width = 768; canvas.height = 512; }
+                else if (cropModuleType.value === 'hotel') { canvas.width = 600; canvas.height = 330; }
                 else { canvas.width = 250; canvas.height = 250; }
                 const ctx = canvas.getContext('2d');
                 let renderW, renderH;
@@ -1446,14 +1450,17 @@ createApp({
                 const finalScale = cropScale.value * (renderW / img.width) * (canvas.width / displayWidth);
                 const canvasOffsetX = cropOffset.value.x * (canvas.width / displayWidth);
                 const canvasOffsetY = cropOffset.value.y * (canvas.height / displayHeight);
-                ctx.fillStyle = '#FFFFFF';
+                ctx.fillStyle = '#E6F2FE';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.translate(canvas.width / 2 + canvasOffsetX, canvas.height / 2 + canvasOffsetY);
                 ctx.scale(finalScale, finalScale);
                 ctx.drawImage(img, -img.width / 2, -img.height / 2);
-                const finalBase64 = canvas.toDataURL('image/jpeg', 0.45);
+                const finalBase64 = canvas.toDataURL('image/jpeg', 0.55);
 
-                if (cropModuleType.value === 'schedule') {
+                if (cropModuleType.value === 'banner') {
+                    bannerImage.value = finalBase64;
+                    updateCloudData();
+                } else if (cropModuleType.value === 'schedule') {
                     formEvent.value.image = finalBase64;
                     if (isEditMode.value && editingIdx.value !== null) {
                         dayEvents.value[selectedDayIndex.value][editingIdx.value].image = finalBase64;
@@ -1532,35 +1539,6 @@ createApp({
             }
         };
 
-        const openKeypad = (field) => {
-            activeKeypadField.value = field;
-        };
-
-        const pressNumPad = (key) => {
-            const isKrw = activeKeypadField.value === 'krw';
-            let currentStr = isKrw
-                ? (calcKrw.value !== null && calcKrw.value !== '' ? String(calcKrw.value) : '')
-                : (calcTwd.value !== null && calcTwd.value !== '' ? String(calcTwd.value) : '');
-
-            if (key === 'C') {
-                currentStr = '';
-            } else if (key === 'DEL') {
-                currentStr = currentStr.slice(0, -1);
-            } else {
-                if (currentStr.length < 10) {
-                    currentStr = currentStr === '0' ? key : currentStr + key;
-                }
-            }
-
-            if (isKrw) {
-                calcKrw.value = currentStr === '' ? null : Number(currentStr);
-                convertCurrency('krw');
-            } else {
-                calcTwd.value = currentStr === '' ? null : Number(currentStr);
-                convertCurrency('twd');
-            }
-        };
-
         const syncExpenseCurrency = (type) => {
             if (type === 'krw') {
                 const val = Number(formExpense.value.krw);
@@ -1577,6 +1555,7 @@ createApp({
 
         const getCategoryEmoji = (cat) => ({ '景點': '⛄', '住宿': '🏨', '美食': '🍲', '購物': '🛍️', '航班': '✈️', '其他': '❄️' }[cat] || '📍');
         const getCategoryBg = (cat) => ({ '景點': 'bg-sky-500', '住宿': 'bg-emerald-500', '美食': 'bg-orange-400', '購物': 'bg-pink-400', '航班': 'bg-indigo-500', '其他': 'bg-amber-400' }[cat] || 'bg-sky-500');
+        const getExpenseBadgeBg = (cat) => ({ '交通': 'bg-sky-500', '飲食': 'bg-orange-500', '住宿': 'bg-indigo-500', '門票': 'bg-emerald-500', '購物': 'bg-rose-500', '其他': 'bg-amber-500' }[cat] || 'bg-sky-500');
         const formatNumber = (num) => Math.ceil(Number(num || 0)).toLocaleString();
 
         onMounted(() => {
@@ -1585,6 +1564,7 @@ createApp({
                 if (doc.exists) {
                     const parsed = doc.data();
                     if (parsed.tripTitle) tripTitle.value = parsed.tripTitle;
+                    if (parsed.bannerImage) bannerImage.value = parsed.bannerImage;
                     if (parsed.dayEvents) dayEvents.value = parsed.dayEvents;
                     if (parsed.hotels) hotels.value = parsed.hotels;
                     if (parsed.flightInfo) {
@@ -1604,18 +1584,18 @@ createApp({
         });
 
         return {
-            familyMembers, snowflakes, forecastCardStyles, currentTab, tripTitle, selectedDayIndex, days, dayEvents, hotels,
+            familyMembers, snowflakes, currentTab, tripTitle, defaultBannerImage, bannerImage, selectedDayIndex, days, dayEvents, hotels,
             flightInfo, rentalInfo, editingFlights, editingRental, editingHotelIdx,
             toggleEditFlights, toggleEditRental, toggleHotelEdit,
             shoppingList, expenses, luggageItems,
-            calcKrw, calcTwd, activeKeypadField, openKeypad, pressNumPad,
+            calcKrw, calcTwd,
             modalOpen, isEditMode, formEvent, expenseModalOpen, formExpense, currentDayEvents,
             sortedExpenses, totalTwd, totalKrw, computedSettlements, settlementDone, editingIdx, weatherData,
             draggingShoppingIndex, modalNotes, infoHotelNotes, autoResize, fetchJejuWeather,
             openAddModal, openEditModal, saveEvent, confirmDeleteEvent, moveEvent,
             addShoppingItem, deleteShoppingItem, handleShoppingTouchStart, handleShoppingTouchMove, handleShoppingTouchEnd,
             openExpenseModal, saveExpenseItem, deleteExpenseItem, convertCurrency, syncExpenseCurrency,
-            getLuggageByCategory, addLuggageItem, deleteLuggageItem, getCategoryEmoji, getCategoryBg, formatNumber,
+            getLuggageByCategory, addLuggageItem, deleteLuggageItem, getCategoryEmoji, getCategoryBg, getExpenseBadgeBg, formatNumber,
             updateCloudData, toggleSettlementPaid, copyShareLink,
             cropModalOpen, cropSourceUrl, cropScale, cropImageStyle, isDragging, cropModuleType, cropTargetIndex,
             triggerCropModal, startDrag, onDrag, endDrag, changeScale, executeCrop
