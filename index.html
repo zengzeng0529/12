@@ -310,6 +310,12 @@
         <div v-if="currentTab === 'info'" class="space-y-4">
             <div class="handbook-card p-4 pt-6 bg-white">
                 <div class="washi-tape">EXCHANGE RATE 🪙</div>
+                <div class="flex items-center justify-between text-[10px] text-sky-800 font-bold mb-2">
+                    <span>1 KRW ≈ {{ krwToTwdRate }} TWD（無條件進位）</span>
+                    <button @click="fetchDailyExchangeRate(true)" class="bg-[#EBF4FF] hover:bg-[#C9DBEF] text-sky-800 px-2 py-0.5 rounded-full border border-[#B6CFE7] cursor-pointer">
+                        <i class="fa-solid fa-rotate-right"></i> {{ rateLoading ? '更新中...' : '更新匯率' }}
+                    </button>
+                </div>
                 <div class="grid grid-cols-2 gap-3 mt-1">
                     <div>
                         <label class="text-[10px] text-sky-800 font-bold block mb-1">輸入外幣 (韓幣 KRW)</label>
@@ -335,6 +341,9 @@
                             placeholder="$ 0"
                         >
                     </div>
+                </div>
+                <div v-if="rateUpdatedLabel" class="text-[10px] text-slate-400 font-medium mt-2 text-right">
+                    {{ rateUpdatedLabel }}
                 </div>
             </div>
 
@@ -596,7 +605,7 @@
                             <input type="checkbox" v-model="settle.paid" @change="toggleSettlementPaid(sIdx)" :disabled="settlementDone" class="w-4 h-4 rounded text-sky-500 cursor-pointer">
                             <span class="font-bold text-sky-800">{{ settle.from }}</span> ➔ 給 <span class="text-[#E87A3E] font-bold">{{ settle.to }}</span>
                         </div>
-                        <div class="font-bold text-sm px-2.5 py-0.5 rounded-lg" :class="settle.paid ? 'line-through text-slate-400 bg-slate-100' : 'text-[#38465C] bg-[#FFE8D1] border border-[#F8C696]'">NT$ {{ Math.ceil(settle.amount) }}</div>
+                        <div class="font-bold text-sm px-2.5 py-0.5 rounded-lg" :class="settle.paid ? 'line-through text-slate-400 bg-slate-100' : 'text-[#38465C] bg-[#FFE8D1] border border-[#F8C696]'">NT$ {{ ceilInt(settle.amount) }}</div>
                     </li>
                 </ul>
             </div>
@@ -615,7 +624,7 @@
                     <div class="text-right flex flex-col items-end gap-2">
                         <button @click="deleteExpenseItem(exp.id)" class="text-slate-300 hover:text-rose-500 text-xs cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                         <div>
-                            <div class="font-bold text-sm text-[#E87A3E]">NT$ {{ Math.ceil(exp.twd) }}</div>
+                            <div class="font-bold text-sm text-[#E87A3E]">NT$ {{ ceilInt(exp.twd) }}</div>
                             <div class="text-[10px] text-sky-700 font-bold">₩{{ formatNumber(exp.krw) }}</div>
                         </div>
                     </div>
@@ -847,15 +856,75 @@ const JEJU_PLACES = [
     { keys: ['西歸浦市', '서귀포시'], lat: 33.2541, lng: 126.5601 }
 ];
 
+// 進位前先四捨五入到小數第 6 位避免浮點誤差，再無條件進位到整數
+const ceilRound6 = (num) => {
+    const val = Number(num);
+    if (!Number.isFinite(val) || val <= 0) return 0;
+    const rounded6 = Math.round(val * 1e6) / 1e6;
+    return Math.ceil(rounded6);
+};
+
 createApp({
     setup() {
-        const familyMembers = ['曾曾', '美津', '品翰', '小絜', '美玲'];
+        const familyMembers = ['曾曾', '美津', '品翰', '小絜', '美玲', '美雅'];
         const currentTab = ref('schedule');
         const tripTitle = ref('濟州島雪景之旅 ⛄');
         const titleInputRef = ref(null);
         const selectedDayIndex = ref(0);
         const calcKrw = ref(null);
         const calcTwd = ref(null);
+
+        // 韓幣 KRW -> 台幣 TWD 匯率（預設 1 KRW ≈ 0.0238 TWD，開啟頁面每日自動從 open.er-api.com 更新）
+        const krwToTwdRate = ref(0.0238);
+        const rateLoading = ref(false);
+        const rateUpdatedLabel = ref('');
+
+        const getTodayKey = () => {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        };
+
+        const fetchDailyExchangeRate = async (force = false) => {
+            const todayKey = getTodayKey();
+            const cacheKey = 'jeju_krw_twd_rate_cache';
+
+            if (!force) {
+                try {
+                    const cachedRaw = localStorage.getItem(cacheKey);
+                    if (cachedRaw) {
+                        const cached = JSON.parse(cachedRaw);
+                        if (cached.date === todayKey && Number(cached.rate) > 0) {
+                            krwToTwdRate.value = Number(cached.rate);
+                            rateUpdatedLabel.value = `今日匯率已同步 (${todayKey})`;
+                            return;
+                        }
+                    }
+                } catch (_) {}
+            }
+
+            rateLoading.value = true;
+            try {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 4000);
+                const res = await fetch('https://open.er-api.com/v6/latest/KRW', { signal: controller.signal });
+                clearTimeout(timer);
+                if (!res.ok) throw new Error('匯率請求失敗');
+                const data = await res.json();
+                const rate = Number(data?.rates?.TWD);
+                if (rate > 0) {
+                    const cleanRate = Math.round(rate * 1e6) / 1e6;
+                    krwToTwdRate.value = cleanRate;
+                    rateUpdatedLabel.value = `已更新 (${todayKey})`;
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify({ date: todayKey, rate: cleanRate }));
+                    } catch (_) {}
+                }
+            } catch (_) {
+                rateUpdatedLabel.value = `使用預設/快取匯率 (${todayKey})`;
+            } finally {
+                rateLoading.value = false;
+            }
+        };
 
         const focusTitleInput = () => {
             nextTick(() => {
@@ -1344,7 +1413,7 @@ createApp({
         const dayEvents = ref(JSON.parse(JSON.stringify(defaultDayEvents)));
         const hotels = ref(JSON.parse(JSON.stringify(defaultHotels)));
         const shoppingList = ref([{ id: 701, name: '濟州柑橘零食', image: '', purchased: false }]);
-        const expenses = ref([{ id: 901, category: '住宿', name: '住宿訂金', date: '2026-01-03', krw: 100000, twd: Math.ceil(100000 / 42), payer: '曾曾', shares: [...familyMembers], payMethod: '信用卡', note: '' }]);
+        const expenses = ref([{ id: 901, category: '住宿', name: '住宿訂金', date: '2026-01-03', krw: 100000, twd: ceilRound6(100000 * 0.0238), payer: '曾曾', shares: [...familyMembers], payMethod: '信用卡', note: '' }]);
         const luggageItems = ref([{ id: 501, category: '隨身背包', name: '護照、駕照與行動電源', qty: 1, checked: true }]);
         const cloudPaidSettlements = ref({});
 
@@ -1368,7 +1437,7 @@ createApp({
 
         const currentDayEvents = computed(() => dayEvents.value[selectedDayIndex.value] || []);
         const sortedExpenses = computed(() => [...expenses.value].sort((a, b) => new Date(b.date) - new Date(a.date)));
-        const totalTwd = computed(() => expenses.value.reduce((sum, e) => sum + Math.ceil(Number(e.twd || 0)), 0));
+        const totalTwd = computed(() => expenses.value.reduce((sum, e) => sum + ceilRound6(e.twd), 0));
         const totalKrw = computed(() => expenses.value.reduce((sum, e) => sum + Number(e.krw || 0), 0));
 
         const cropImageStyle = computed(() => ({
@@ -1385,7 +1454,7 @@ createApp({
 
             expenses.value.forEach(e => {
                 if (e.payer === '公費') return;
-                const amt = Math.ceil(Number(e.twd || 0));
+                const amt = ceilRound6(e.twd);
                 if (amt <= 0) return;
                 if (pool[e.payer] !== undefined) pool[e.payer] += amt;
                 const count = (e.shares || []).length;
@@ -1408,7 +1477,7 @@ createApp({
                 const settleAmt = Math.min(d.bal, c.bal);
                 const key = `${d.name}_to_${c.name}`;
                 const isPaid = cloudPaidSettlements.value[key] || false;
-                matrix.push({ from: d.name, to: c.name, amount: Math.ceil(settleAmt), paid: isPaid });
+                matrix.push({ from: d.name, to: c.name, amount: ceilRound6(settleAmt), paid: isPaid });
                 d.bal -= settleAmt;
                 c.bal -= settleAmt;
                 if (d.bal <= 0.1) i++;
@@ -1649,7 +1718,11 @@ createApp({
         };
         const saveExpenseItem = () => {
             formExpense.value.id = Date.now();
-            formExpense.value.twd = Math.ceil(Number(formExpense.value.twd || 0));
+            const krwVal = Number(formExpense.value.krw || 0);
+            const rawTwd = formExpense.value.twd !== null && formExpense.value.twd !== ''
+                ? Number(formExpense.value.twd)
+                : krwVal * krwToTwdRate.value;
+            formExpense.value.twd = ceilRound6(rawTwd);
             expenses.value.push({ ...formExpense.value });
             expenseModalOpen.value = false;
             updateCloudData();
@@ -1662,22 +1735,24 @@ createApp({
         };
 
         const convertCurrency = (type) => {
+            const rate = Number(krwToTwdRate.value) || 0.0238;
             if (type === 'krw') {
                 const val = Number(calcKrw.value);
-                calcTwd.value = val > 0 ? Math.ceil(val / 42) : null;
+                calcTwd.value = val > 0 ? ceilRound6(val * rate) : null;
             } else if (type === 'twd') {
                 const val = Number(calcTwd.value);
-                calcKrw.value = val > 0 ? Math.round(val * 42) : null;
+                calcKrw.value = val > 0 ? ceilRound6(val / rate) : null;
             }
         };
 
         const syncExpenseCurrency = (type) => {
+            const rate = Number(krwToTwdRate.value) || 0.0238;
             if (type === 'krw') {
                 const val = Number(formExpense.value.krw);
-                formExpense.value.twd = val > 0 ? Math.ceil(val / 42) : null;
+                formExpense.value.twd = val > 0 ? ceilRound6(val * rate) : null;
             } else if (type === 'twd') {
                 const val = Number(formExpense.value.twd);
-                formExpense.value.krw = val > 0 ? Math.round(val * 42) : null;
+                formExpense.value.krw = val > 0 ? ceilRound6(val / rate) : null;
             }
         };
 
@@ -1688,9 +1763,10 @@ createApp({
         const getCategoryEmoji = (cat) => ({ '景點': '⛄', '住宿': '🏨', '美食': '🍲', '購物': '🛍️', '航班': '✈️', '其他': '❄️' }[cat] || '📍');
         const getCategoryBg = (cat) => ({ '景點': 'bg-sky-500', '住宿': 'bg-emerald-500', '美食': 'bg-orange-400', '購物': 'bg-pink-400', '航班': 'bg-indigo-500', '其他': 'bg-amber-400' }[cat] || 'bg-sky-500');
         const getExpenseBadgeBg = (cat) => ({ '交通': 'bg-[#5B9BD5]', '飲食': 'bg-[#F49A3E]', '住宿': 'bg-[#6D97C2]', '門票': 'bg-[#76AE8B]', '購物': 'bg-[#F28C7E]', '其他': 'bg-[#E5A94C]' }[cat] || 'bg-[#5B9BD5]');
-        const formatNumber = (num) => Math.ceil(Number(num || 0)).toLocaleString();
+        const formatNumber = (num) => ceilRound6(num).toLocaleString();
 
         onMounted(() => {
+            fetchDailyExchangeRate(false);
             fetchJejuWeather();
             docRef.onSnapshot((doc) => {
                 if (doc.exists) {
@@ -1720,7 +1796,7 @@ createApp({
             flightInfo, rentalInfo, editingFlights, editingRental, editingHotelIdx,
             toggleEditFlights, toggleEditRental, toggleHotelEdit,
             shoppingList, expenses, luggageItems,
-            calcKrw, calcTwd,
+            calcKrw, calcTwd, krwToTwdRate, rateLoading, rateUpdatedLabel, fetchDailyExchangeRate,
             modalOpen, isEditMode, formEvent, expenseModalOpen, formExpense, currentDayEvents,
             sortedExpenses, totalTwd, totalKrw, computedSettlements, settlementDone, editingIdx, weatherData,
             draggingShoppingIndex, modalNotes, infoHotelNotes, autoResize, fetchJejuWeather,
@@ -1728,7 +1804,7 @@ createApp({
             openAddModal, openEditModal, saveEvent, confirmDeleteEvent, moveEvent,
             addShoppingItem, deleteShoppingItem, handleShoppingTouchStart, handleShoppingTouchMove, handleShoppingTouchEnd,
             openExpenseModal, saveExpenseItem, deleteExpenseItem, convertCurrency, syncExpenseCurrency,
-            getLuggageByCategory, addLuggageItem, deleteLuggageItem, getCategoryEmoji, getCategoryBg, getExpenseBadgeBg, formatNumber,
+            getLuggageByCategory, addLuggageItem, deleteLuggageItem, getCategoryEmoji, getCategoryBg, getExpenseBadgeBg, formatNumber, ceilInt: ceilRound6,
             updateCloudData, toggleSettlementPaid, copyShareLink,
             cropModalOpen, cropSourceUrl, cropScale, cropImageStyle, isDragging, cropModuleType, cropTargetIndex,
             triggerCropModal, startDrag, onDrag, endDrag, changeScale, executeCrop
