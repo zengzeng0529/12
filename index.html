@@ -320,11 +320,8 @@
         <div v-if="currentTab === 'info'" class="space-y-4">
             <div class="handbook-card p-4 pt-6 bg-white">
                 <div class="washi-tape">EXCHANGE RATE 🪙</div>
-                <div class="flex items-center justify-between text-[10px] text-sky-800 font-bold mb-2">
-                    <span>1 KRW ≈ {{ krwToTwdRate }} TWD（無條件進位）</span>
-                    <button @click="fetchDailyExchangeRate(true)" class="bg-[#EBF4FF] hover:bg-[#C9DBEF] text-sky-800 px-2 py-0.5 rounded-full border border-[#B6CFE7] cursor-pointer">
-                        <i class="fa-solid fa-rotate-right"></i> {{ rateLoading ? '更新中...' : '更新匯率' }}
-                    </button>
+                <div class="text-[11px] text-sky-800 font-bold mb-2">
+                    1 KRW ≈ {{ krwToTwdRate }} TWD
                 </div>
                 <div class="grid grid-cols-2 gap-3 mt-1">
                     <div>
@@ -351,9 +348,6 @@
                             placeholder="$ 0"
                         >
                     </div>
-                </div>
-                <div v-if="rateUpdatedLabel" class="text-[10px] text-slate-400 font-medium mt-2 text-right">
-                    {{ rateUpdatedLabel }}
                 </div>
             </div>
 
@@ -599,17 +593,9 @@
         <!-- 花費 TAB -->
         <div v-if="currentTab === 'expenses'" class="space-y-4">
             <div class="bg-gradient-to-b from-[#D7ECFC] to-[#EBF5FF] text-[#38465C] border-2 border-[#B6CFE7] p-5 rounded-3xl text-center shadow-sm space-y-2">
-                <div class="flex items-center justify-center gap-2 flex-wrap">
-                    <span class="inline-block text-[10px] font-bold tracking-wider bg-white text-sky-800 border border-[#B6CFE7] px-3 py-0.5 rounded-full">目前累積總花費 (台幣 · 無條件進位) ⛄</span>
-                    <button @click="fetchDailyExchangeRate(true)" class="text-[10px] font-bold bg-white hover:bg-[#EBF4FF] text-sky-800 border border-[#B6CFE7] px-2 py-0.5 rounded-full cursor-pointer">
-                        <i class="fa-solid fa-rotate-right"></i> {{ rateLoading ? '更新中...' : '更新匯率' }}
-                    </button>
-                </div>
+                <span class="inline-block text-[10px] font-bold tracking-wider bg-white text-sky-800 border border-[#B6CFE7] px-3 py-0.5 rounded-full">目前累積總花費 (台幣) ⛄</span>
                 <div class="text-3xl font-bold mt-1 text-[#E87A3E]">NT$ {{ formatNumber(totalTwd) }}</div>
                 <div class="text-xs text-sky-800 font-bold bg-white/85 border border-[#C9DBEF] inline-block px-3 py-0.5 rounded-full">韓幣總額: ₩{{ formatNumber(totalKrw) }}</div>
-                <div class="text-[10px] text-slate-600 font-medium">
-                    即時匯率 1 KRW ≈ {{ krwToTwdRate }} TWD（{{ rateUpdatedLabel || '每日自動更新' }}）
-                </div>
             </div>
 
             <div :class="settlementDone ? 'bg-[#E8F6EF] text-emerald-800 border-emerald-300' : 'bg-white border-[#B6CFE7] text-[#38465C]'" class="handbook-card p-4 transition-colors duration-300">
@@ -778,7 +764,7 @@
                 <div><label class="block font-bold text-slate-500">名稱</label><input type="text" v-model="formExpense.name" class="w-full bg-[#F7FBFF] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
                 <div class="grid grid-cols-2 gap-2">
                     <div><label class="block font-bold text-slate-500">金額 (韓幣 KRW)</label><input type="number" inputmode="numeric" v-model="formExpense.krw" @input="syncExpenseCurrency('krw')" class="w-full bg-[#F7FBFF] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
-                    <div><label class="block font-bold text-slate-500">台幣 (無條件進位)</label><input type="number" inputmode="numeric" v-model="formExpense.twd" @input="syncExpenseCurrency('twd')" class="w-full bg-[#F7FBFF] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
+                    <div><label class="block font-bold text-slate-500">台幣 (TWD)</label><input type="number" inputmode="numeric" v-model="formExpense.twd" @input="syncExpenseCurrency('twd')" class="w-full bg-[#F7FBFF] border-2 border-[#BEC3D2] p-2 rounded-xl font-bold focus:outline-none"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -909,56 +895,25 @@ createApp({
         const calcKrw = ref(null);
         const calcTwd = ref(null);
 
-        // 韓幣 KRW -> 台幣 TWD 匯率（開啟頁面每日自動從 open.er-api.com 更新）
+        // 韓幣 KRW -> 台幣 TWD 匯率（每次重新整理頁面皆自動向 open.er-api.com 抓取最新匯率）
         const krwToTwdRate = ref(0.0238);
-        const rateLoading = ref(false);
-        const rateUpdatedLabel = ref('');
 
-        const getTodayKey = () => {
-            const now = new Date();
-            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-        };
-
-        const fetchDailyExchangeRate = async (force = false) => {
-            const todayKey = getTodayKey();
-            const cacheKey = 'jeju_krw_twd_rate_cache';
-
-            if (!force) {
-                try {
-                    const cachedRaw = localStorage.getItem(cacheKey);
-                    if (cachedRaw) {
-                        const cached = JSON.parse(cachedRaw);
-                        if (cached.date === todayKey && Number(cached.rate) > 0) {
-                            krwToTwdRate.value = Number(cached.rate);
-                            rateUpdatedLabel.value = `今日匯率已同步 (${todayKey})`;
-                            return;
-                        }
-                    }
-                } catch (_) {}
-            }
-
-            rateLoading.value = true;
+        const fetchDailyExchangeRate = async () => {
             try {
                 const controller = new AbortController();
                 const timer = setTimeout(() => controller.abort(), 4000);
-                const res = await fetch('https://open.er-api.com/v6/latest/KRW', { signal: controller.signal });
+                const res = await fetch('https://open.er-api.com/v6/latest/KRW', {
+                    signal: controller.signal,
+                    cache: 'no-store'
+                });
                 clearTimeout(timer);
                 if (!res.ok) throw new Error('匯率請求失敗');
                 const data = await res.json();
                 const rate = Number(data?.rates?.TWD);
                 if (rate > 0) {
-                    const cleanRate = Math.round(rate * 1e6) / 1e6;
-                    krwToTwdRate.value = cleanRate;
-                    rateUpdatedLabel.value = `已更新 (${todayKey})`;
-                    try {
-                        localStorage.setItem(cacheKey, JSON.stringify({ date: todayKey, rate: cleanRate }));
-                    } catch (_) {}
+                    krwToTwdRate.value = Math.round(rate * 1e6) / 1e6;
                 }
-            } catch (_) {
-                rateUpdatedLabel.value = `使用預設/快取匯率 (${todayKey})`;
-            } finally {
-                rateLoading.value = false;
-            }
+            } catch (_) {}
         };
 
         const focusTitleInput = () => {
@@ -1804,7 +1759,7 @@ createApp({
         const formatNumber = (num) => ceilRound6(num).toLocaleString();
 
         onMounted(() => {
-            fetchDailyExchangeRate(false);
+            fetchDailyExchangeRate();
             fetchJejuWeather();
             docRef.onSnapshot((doc) => {
                 if (doc.exists) {
@@ -1838,7 +1793,7 @@ createApp({
             flightInfo, rentalInfo, editingFlights, editingRental, editingHotelIdx,
             toggleEditFlights, toggleEditRental, toggleHotelEdit,
             shoppingList, expenses, luggageItems,
-            calcKrw, calcTwd, krwToTwdRate, rateLoading, rateUpdatedLabel, fetchDailyExchangeRate,
+            calcKrw, calcTwd, krwToTwdRate,
             modalOpen, isEditMode, formEvent, expenseModalOpen, formExpense, currentDayEvents,
             sortedExpenses, totalTwd, totalKrw, computedSettlements, settlementDone, editingIdx, weatherData,
             draggingShoppingIndex, modalNotes, infoHotelNotes, autoResize, fetchJejuWeather,
