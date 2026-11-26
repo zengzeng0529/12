@@ -127,9 +127,9 @@
         </button>
     </div>
 
-    <!-- 頂部雪景橫幅 -->
+    <!-- 頂部雪景橫幅（雲端同步完成前不渲染圖片，避免重新整理殘影） -->
     <div class="w-full h-[310px] relative overflow-hidden bg-[#D7ECFC] border-b-2 border-[#B6CFE7]">
-        <img :src="bannerImage || defaultBannerImage" alt="濟州島雪景橫幅" class="w-full h-full object-cover object-center">
+        <img v-if="isCloudLoaded" :src="bannerImage || defaultBannerImage" alt="濟州島雪景橫幅" class="w-full h-full object-cover object-center">
 
         <div class="absolute inset-x-0 bottom-0 bg-[#273852]/65 px-5 py-2.5 text-white">
             <div class="flex items-center gap-2">
@@ -320,9 +320,6 @@
         <div v-if="currentTab === 'info'" class="space-y-4">
             <div class="handbook-card p-4 pt-6 bg-white">
                 <div class="washi-tape">EXCHANGE RATE 🪙</div>
-                <div class="text-[11px] text-sky-800 font-bold mb-2">
-                    1 KRW ≈ {{ krwToTwdRate }} TWD
-                </div>
                 <div class="grid grid-cols-2 gap-3 mt-1">
                     <div>
                         <label class="text-[10px] text-sky-800 font-bold block mb-1">輸入外幣 (韓幣 KRW)</label>
@@ -1765,7 +1762,7 @@ createApp({
                 if (doc.exists) {
                     const parsed = doc.data();
                     if (parsed.tripTitle) tripTitle.value = parsed.tripTitle;
-                    if (parsed.bannerImage) bannerImage.value = parsed.bannerImage;
+                    bannerImage.value = parsed.bannerImage || '';
                     if (parsed.dayEvents) dayEvents.value = parsed.dayEvents;
                     if (parsed.hotels) hotels.value = parsed.hotels;
                     if (parsed.flightInfo) {
