@@ -14,7 +14,6 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
     <style>
         body {
@@ -120,25 +119,6 @@
 </div>
 
 <div id="app" class="max-w-md mx-auto bg-[#F7FBFF] min-h-screen shadow-2xl relative flex flex-col border-x-4 border-[#B6CFE7] pb-36">
-
-    <!-- 首次進入選擇「我是誰」Modal -->
-    <div v-if="whoAmIModalOpen" class="fixed inset-0 bg-[#273852]/75 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
-        <div class="bg-white rounded-[32px] w-full max-w-sm p-5 border-4 border-[#B6CFE7] shadow-2xl space-y-4 text-center">
-            <div class="text-2xl">⛄❄️</div>
-            <h3 class="font-bold text-base text-[#38465C]">歡迎來到濟州島雪景之旅！</h3>
-            <p class="text-xs text-slate-500 font-medium">請先選擇「我是誰」，你的購物清單與行李清單會獨立保存在雲端：</p>
-            <div class="grid grid-cols-2 gap-2.5 pt-1">
-                <button
-                    v-for="member in familyMembers"
-                    :key="member"
-                    @click="selectCurrentUser(member)"
-                    class="py-2.5 px-3 rounded-2xl border-2 border-[#B6CFE7] bg-[#F7FBFF] hover:bg-sky-500 hover:text-white hover:border-sky-500 font-bold text-xs text-[#38465C] transition cursor-pointer shadow-xs"
-                >
-                    {{ member }}
-                </button>
-            </div>
-        </div>
-    </div>
 
     <!-- 右上角分享按鈕 -->
     <div class="absolute top-4 right-4 z-40">
@@ -554,41 +534,10 @@
             </div>
         </div>
 
-        <!-- 購物清單 TAB（Firebase Realtime Database 獨立路徑 + 唯讀切換） -->
-        <div v-if="currentTab === 'shopping'" class="space-y-3">
-            <div class="bg-white border-2 border-[#B6CFE7] rounded-2xl p-3 space-y-2 shadow-xs">
-                <div class="flex items-center justify-between gap-2 flex-wrap">
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-[#38465C]">
-                        <i class="fa-solid fa-user-check text-sky-500"></i>
-                        <span>我是：</span>
-                        <select v-model="currentUser" @change="onCurrentUserChange" class="bg-[#EBF4FF] text-sky-900 border border-[#B6CFE7] rounded-xl px-2 py-1 text-xs font-bold focus:outline-none cursor-pointer">
-                            <option v-for="m in familyMembers" :key="m" :value="m">{{ m }}</option>
-                        </select>
-                    </div>
-                    <button
-                        @click="toggleReadOnly"
-                        :class="readOnlyMode ? 'bg-amber-500 text-white border-amber-500' : 'bg-[#F7FBFF] text-sky-800 border-[#B6CFE7]'"
-                        class="text-[11px] font-bold px-2.5 py-1 rounded-xl border cursor-pointer transition flex items-center gap-1"
-                    >
-                        <i class="fa-solid" :class="readOnlyMode ? 'fa-eye' : 'fa-pen-to-square'"></i>
-                        {{ readOnlyMode ? '唯讀中' : '編輯模式' }}
-                    </button>
-                </div>
-
-                <div v-if="readOnlyMode" class="flex items-center justify-between gap-2 bg-amber-50 border border-amber-200 rounded-xl px-2.5 py-1.5 text-[11px] font-bold text-amber-800">
-                    <span>查看對象：</span>
-                    <select v-model="viewingUser" @change="bindUserRealtimeListeners(viewingUser)" class="bg-white border border-amber-300 rounded-lg px-2 py-0.5 text-xs font-bold text-amber-900 focus:outline-none cursor-pointer">
-                        <option v-for="m in familyMembers" :key="m" :value="m">{{ m }} 的清單</option>
-                    </select>
-                </div>
-                <div v-else class="text-[10px] text-sky-700 font-bold">
-                    目前路徑：users/{{ currentUser }}/shopping（僅修改自己的清單）
-                </div>
-            </div>
-
+        <!-- 購物清單 TAB -->
+        <div v-if="currentTab === 'shopping'" class="space-y-4">
             <div class="text-center text-[11px] text-sky-800 font-bold bg-[#EBF4FF] py-1 rounded-xl border border-[#B6CFE7]">
-                <span v-if="readOnlyMode">👀 目前為唯讀模式，正在查看「{{ viewingUser }}」的購物清單</span>
-                <span v-else>💡 提示：長按整個商品小卡片即可上下自由拖曳調整排序哦！</span>
+                💡 提示：長按整個商品小卡片即可上下自由拖曳調整排序哦！
             </div>
 
             <div class="grid grid-cols-2 gap-3 shopping-grid">
@@ -600,7 +549,7 @@
                      @touchend="handleShoppingTouchEnd($event)"
                      :class="['shopping-item-card', 'handbook-card', 'overflow-hidden', 'bg-white', 'flex', 'flex-col', 'relative', draggingShoppingIndex === sIdx ? 'is-dragging' : '']">
 
-                    <button v-if="!readOnlyMode" @click="deleteShoppingItem(item.id)" class="absolute top-2 right-2 w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[10px] cursor-pointer hover:bg-rose-600 z-30 transition">
+                    <button @click="deleteShoppingItem(sIdx)" class="absolute top-2 right-2 w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[10px] cursor-pointer hover:bg-rose-600 z-30 transition">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
 
@@ -608,45 +557,32 @@
                         <img v-if="item.image" :src="item.image" class="w-full h-full object-cover object-center transition duration-300 group-hover:scale-105 pointer-events-none">
                         <div v-else class="text-center text-slate-400 p-2 pointer-events-none">
                             <i class="fa-solid fa-camera text-xl mb-1 text-sky-400"></i>
-                            <div class="text-[10px] font-bold">{{ readOnlyMode ? '無商品照片' : '上傳商品照片' }}</div>
+                            <div class="text-[10px] font-bold">上傳商品照片</div>
                         </div>
 
-                        <div v-if="!readOnlyMode" class="absolute inset-0 z-10">
-                            <input type="file" accept="image/*" @change="triggerCropModal($event, item.id, 'shopping')" class="absolute inset-0 opacity-0 cursor-pointer">
+                        <div class="absolute inset-0 z-10">
+                            <input type="file" accept="image/*" @change="triggerCropModal($event, sIdx, 'shopping')" class="absolute inset-0 opacity-0 cursor-pointer">
                         </div>
                     </div>
 
                     <div class="p-2.5 flex flex-col justify-between flex-1 gap-2">
                         <div class="flex items-center gap-1 bg-[#F7FBFF] pr-1.5 rounded-lg border border-[#C9DBEF] focus-within:border-sky-400">
-                            <input
-                                type="text"
-                                v-model="item.name"
-                                :disabled="readOnlyMode"
-                                @change="updateShoppingNodeField(item.id, { name: item.name })"
-                                class="w-full text-xs font-bold bg-transparent p-1.5 focus:outline-none text-[#38465C] disabled:opacity-80"
-                                placeholder="⛄ 商品名稱..."
-                            >
-                            <label v-if="!readOnlyMode" title="更改商品照片" class="text-sky-600 hover:text-sky-800 cursor-pointer text-[11px] px-1">
+                            <input type="text" v-model="item.name" @change="updateCloudData" class="w-full text-xs font-bold bg-transparent p-1.5 focus:outline-none text-[#38465C]" placeholder="⛄ 商品名稱...">
+                            <label title="更改商品照片" class="text-sky-600 hover:text-sky-800 cursor-pointer text-[11px] px-1">
                                 <i class="fa-solid fa-pen"></i>
-                                <input type="file" accept="image/*" @change="triggerCropModal($event, item.id, 'shopping')" class="hidden">
+                                <input type="file" accept="image/*" @change="triggerCropModal($event, sIdx, 'shopping')" class="hidden">
                             </label>
                         </div>
                         <div class="flex items-center justify-center">
-                            <label class="flex items-center justify-center gap-1.5 text-[10px] font-bold select-none w-full py-1 rounded-xl transition-all duration-300" :class="[item.purchased ? 'bg-emerald-500 text-white line-through decoration-white decoration-2 shadow-inner' : 'bg-[#EBF4FF] text-sky-800 border border-[#B6CFE7]', readOnlyMode ? 'cursor-default' : 'cursor-pointer']">
-                                <input
-                                    type="checkbox"
-                                    v-model="item.purchased"
-                                    :disabled="readOnlyMode"
-                                    @change="updateShoppingNodeField(item.id, { purchased: item.purchased })"
-                                    class="w-3 h-3 rounded text-sky-500 border-slate-300 focus:ring-0 accent-sky-500 disabled:cursor-default"
-                                >
+                            <label class="flex items-center justify-center gap-1.5 text-[10px] font-bold cursor-pointer select-none w-full py-1 rounded-xl transition-all duration-300" :class="item.purchased ? 'bg-emerald-500 text-white line-through decoration-white decoration-2 shadow-inner' : 'bg-[#EBF4FF] text-sky-800 border border-[#B6CFE7]'">
+                                <input type="checkbox" v-model="item.purchased" @change="updateCloudData" class="w-3 h-3 rounded text-sky-500 border-slate-300 focus:ring-0 cursor-pointer accent-sky-500">
                                 <span>已購入</span>
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
-            <button v-if="!readOnlyMode" @click="addShoppingItem" class="fixed bottom-24 right-6 bg-sky-500 hover:bg-sky-600 text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg">
+            <button @click="addShoppingItem" class="fixed bottom-24 right-6 bg-sky-500 hover:bg-sky-600 text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg">
                 <i class="fa-solid fa-plus text-xl"></i>
             </button>
         </div>
@@ -698,38 +634,8 @@
             <button @click="openExpenseModal" class="fixed bottom-24 right-6 bg-[#F49A3E] hover:bg-[#E38629] text-white w-14 h-14 rounded-full flex items-center justify-center z-40 border-4 border-white transform active:scale-95 transition cursor-pointer shadow-lg"><i class="fa-solid fa-plus text-xl"></i></button>
         </div>
 
-        <!-- 行李清單 TAB（Firebase Realtime Database 獨立路徑 + 唯讀切換） -->
+        <!-- 行李清單 TAB -->
         <div v-if="currentTab === 'luggage'" class="space-y-4">
-            <div class="bg-white border-2 border-[#B6CFE7] rounded-2xl p-3 space-y-2 shadow-xs">
-                <div class="flex items-center justify-between gap-2 flex-wrap">
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-[#38465C]">
-                        <i class="fa-solid fa-user-check text-sky-500"></i>
-                        <span>我是：</span>
-                        <select v-model="currentUser" @change="onCurrentUserChange" class="bg-[#EBF4FF] text-sky-900 border border-[#B6CFE7] rounded-xl px-2 py-1 text-xs font-bold focus:outline-none cursor-pointer">
-                            <option v-for="m in familyMembers" :key="m" :value="m">{{ m }}</option>
-                        </select>
-                    </div>
-                    <button
-                        @click="toggleReadOnly"
-                        :class="readOnlyMode ? 'bg-amber-500 text-white border-amber-500' : 'bg-[#F7FBFF] text-sky-800 border-[#B6CFE7]'"
-                        class="text-[11px] font-bold px-2.5 py-1 rounded-xl border cursor-pointer transition flex items-center gap-1"
-                    >
-                        <i class="fa-solid" :class="readOnlyMode ? 'fa-eye' : 'fa-pen-to-square'"></i>
-                        {{ readOnlyMode ? '唯讀中' : '編輯模式' }}
-                    </button>
-                </div>
-
-                <div v-if="readOnlyMode" class="flex items-center justify-between gap-2 bg-amber-50 border border-amber-200 rounded-xl px-2.5 py-1.5 text-[11px] font-bold text-amber-800">
-                    <span>查看對象：</span>
-                    <select v-model="viewingUser" @change="bindUserRealtimeListeners(viewingUser)" class="bg-white border border-amber-300 rounded-lg px-2 py-0.5 text-xs font-bold text-amber-900 focus:outline-none cursor-pointer">
-                        <option v-for="m in familyMembers" :key="m" :value="m">{{ m }} 的清單</option>
-                    </select>
-                </div>
-                <div v-else class="text-[10px] text-sky-700 font-bold">
-                    目前路徑：users/{{ currentUser }}/luggage（僅修改自己的清單）
-                </div>
-            </div>
-
             <div class="handbook-card p-4 bg-[#F2F8FF] border-[#B6CFE7] pt-6">
                 <div class="washi-tape bg-rose-500 text-white">⚠️ KOREA REGULATION</div>
                 <h4 class="font-bold text-xs text-[#38465C] mb-1.5 mt-1 flex items-center gap-1">
@@ -747,34 +653,21 @@
                         <i class="fa-solid" :class="cat === '隨身背包' ? 'fa-bag-shopping text-orange-400' : (cat === '手提行李' ? 'fa-suitcase text-emerald-500' : 'fa-plane-departure text-sky-500')"></i>
                         {{ cat }}
                     </h4>
-                    <button v-if="!readOnlyMode" @click="addLuggageItem(cat)" class="text-[10px] bg-[#EBF4FF] text-sky-800 font-bold px-2 py-0.5 rounded-md border border-[#B6CFE7] cursor-pointer"><i class="fa-solid fa-plus"></i> 新增項目</button>
+                    <button @click="addLuggageItem(cat)" class="text-[10px] bg-[#EBF4FF] text-sky-800 font-bold px-2 py-0.5 rounded-md border border-[#B6CFE7] cursor-pointer"><i class="fa-solid fa-plus"></i> 新增項目</button>
                 </div>
                 <div class="space-y-2">
                     <div v-for="lug in getLuggageByCategory(cat)" :key="lug.id" class="flex items-center justify-between bg-[#F7FBFF] p-2 rounded-xl text-xs border border-[#C9DBEF]">
                         <div class="flex items-center gap-2 flex-1">
-                            <input
-                                type="checkbox"
-                                v-model="lug.checked"
-                                :disabled="readOnlyMode"
-                                @change="updateLuggageNodeField(lug.id, { checked: lug.checked })"
-                                class="w-4 h-4 rounded text-sky-500 cursor-pointer disabled:cursor-default"
-                            >
-                            <input
-                                type="text"
-                                v-model="lug.name"
-                                :disabled="readOnlyMode"
-                                @change="updateLuggageNodeField(lug.id, { name: lug.name })"
-                                class="bg-transparent font-bold text-[#38465C] focus:outline-none w-full disabled:opacity-80"
-                                placeholder="要帶些什麼？"
-                            >
+                            <input type="checkbox" v-model="lug.checked" @change="updateCloudData" class="w-4 h-4 rounded text-sky-500 cursor-pointer">
+                            <input type="text" v-model="lug.name" @change="updateCloudData" class="bg-transparent font-bold text-[#38465C] focus:outline-none w-full" placeholder="要帶些什麼？">
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="flex items-center bg-white border border-[#BEC3D2] rounded-lg text-[11px]">
-                                <button v-if="!readOnlyMode" @click="lug.qty > 1 ? (lug.qty--, updateLuggageNodeField(lug.id, { qty: lug.qty })) : null" class="px-1.5 py-0.5 font-bold text-sky-600 cursor-pointer">-</button>
-                                <span class="px-1.5 py-0.5 font-bold text-[#38465C] min-w-[12px] text-center">{{ lug.qty }}</span>
-                                <button v-if="!readOnlyMode" @click="lug.qty++, updateLuggageNodeField(lug.id, { qty: lug.qty })" class="px-1.5 py-0.5 font-bold text-sky-600 cursor-pointer">+</button>
+                                <button @click="lug.qty > 1 ? (lug.qty--, updateCloudData()) : null" class="px-1.5 py-0.5 font-bold text-sky-600 cursor-pointer">-</button>
+                                <span class="px-1 font-bold text-[#38465C] min-w-[12px] text-center">{{ lug.qty }}</span>
+                                <button @click="lug.qty++, updateCloudData()" class="px-1.5 py-0.5 font-bold text-sky-600 cursor-pointer">+</button>
                             </div>
-                            <button v-if="!readOnlyMode" @click="deleteLuggageItem(lug.id)" class="text-slate-300 hover:text-rose-500 cursor-pointer"><i class="fa-solid fa-trash text-xs"></i></button>
+                            <button @click="deleteLuggageItem(lug.id)" class="text-slate-300 hover:text-rose-500 cursor-pointer"><i class="fa-solid fa-trash text-xs"></i></button>
                         </div>
                     </div>
                 </div>
@@ -932,7 +825,6 @@ const firebaseConfig = {
   apiKey: "AIzaSyAnUpEhMEDA-VMFFDnC1B3jU",
   authDomain: "jeju1-32b28.firebaseapp.com",
   projectId: "jeju1-32b28",
-  databaseURL: "https://jeju1-32b28-default-rtdb.firebaseio.com",
   storageBucket: "jeju1-32b28.firebasestorage.app",
   messagingSenderId: "111349992047",
   appId: "1:111349992047:web:c1044e07f83d454482a197",
@@ -941,10 +833,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const rtdb = firebase.database();
 const docRef = db.collection("trips").doc("jeju_snow_family_1_3_1_6");
-
-const USER_STORAGE_KEY = 'jeju_trip_who_am_i_v1';
 
 // 已依 Naver Map 實際位置校準的濟州島景點／租車／機場／美食座標表
 const JEJU_PLACES = [
@@ -968,6 +857,7 @@ const JEJU_PLACES = [
     { keys: ['西歸浦市', '서귀포시'], lat: 33.2541, lng: 126.5601 }
 ];
 
+// 進位前先四捨五入到小數第 6 位避免浮點誤差，再無條件進位到整數
 const ceilRound6 = (num) => {
     const val = Number(num);
     if (!Number.isFinite(val) || val <= 0) return 0;
@@ -975,38 +865,9 @@ const ceilRound6 = (num) => {
     return Math.ceil(rounded6);
 };
 
-// 將圖片壓縮至寬度 600px 以內（等比縮小，不放大）
-const compressToMaxWidth600 = (dataUrl, quality = 0.72) => {
-    return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => {
-            const maxW = 600;
-            const scale = img.width > maxW ? (maxW / img.width) : 1;
-            const targetW = Math.max(1, Math.round(img.width * scale));
-            const targetH = Math.max(1, Math.round(img.height * scale));
-            const canvas = document.createElement('canvas');
-            canvas.width = targetW;
-            canvas.height = targetH;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, targetW, targetH);
-            ctx.drawImage(img, 0, 0, targetW, targetH);
-            resolve(canvas.toDataURL('image/jpeg', quality));
-        };
-        img.onerror = () => resolve(dataUrl);
-        img.src = dataUrl;
-    });
-};
-
 createApp({
     setup() {
         const familyMembers = ['曾曾', '美津', '品翰', '小絜', '美玲', '美雅'];
-        const savedUser = localStorage.getItem(USER_STORAGE_KEY);
-        const currentUser = ref(familyMembers.includes(savedUser) ? savedUser : '曾曾');
-        const viewingUser = ref(currentUser.value);
-        const readOnlyMode = ref(false);
-        const whoAmIModalOpen = ref(!familyMembers.includes(savedUser));
-
         const isCloudLoaded = ref(false);
         const currentTab = ref('schedule');
         const tripTitle = ref('濟州島雪景之旅 ⛄');
@@ -1019,6 +880,7 @@ createApp({
             { week: 'Day 4', date: '1/6' }
         ];
 
+        // 依今天日期（例如 1/4）自動跳轉到對應行程天數
         const detectTodayDayIndex = () => {
             const now = new Date();
             const todayStr = `${now.getMonth() + 1}/${now.getDate()}`;
@@ -1029,6 +891,8 @@ createApp({
         const selectedDayIndex = ref(detectTodayDayIndex());
         const calcKrw = ref(null);
         const calcTwd = ref(null);
+
+        // 韓幣 KRW -> 台幣 TWD 匯率（每次重新整理頁面皆自動向 open.er-api.com 抓取最新匯率）
         const krwToTwdRate = ref(0.0238);
 
         const fetchDailyExchangeRate = async () => {
@@ -1526,159 +1390,12 @@ createApp({
             { name: '濟州冬日住宿 (Day 3)', orderId: '', checkIn: '1/5 15:00', checkOut: '1/6 10:00', phone: '', address: '濟州特別自治道', img: '', note: '' }
         ];
 
-        const buildDefaultLuggageMap = () => ({
-            lug_1: { id: 'lug_1', category: '隨身背包', name: '護照與機票憑證', qty: 1, checked: false, order: 0 },
-            lug_2: { id: 'lug_2', category: '隨身背包', name: '行動電源（嚴禁托運）', qty: 1, checked: false, order: 1 },
-            lug_3: { id: 'lug_3', category: '隨身背包', name: '錢包、韓幣現金與信用卡', qty: 1, checked: false, order: 2 },
-            lug_4: { id: 'lug_4', category: '手提行李', name: '保暖外套 / 圍巾 / 手套', qty: 1, checked: false, order: 3 },
-            lug_5: { id: 'lug_5', category: '手提行李', name: '個人常備藥品與保濕用品', qty: 1, checked: false, order: 4 },
-            lug_6: { id: 'lug_6', category: '托運行李', name: '換洗衣物與發熱衣', qty: 1, checked: false, order: 5 },
-            lug_7: { id: 'lug_7', category: '托運行李', name: '盥洗用品與充電線組', qty: 1, checked: false, order: 6 }
-        });
-
         const dayEvents = ref(JSON.parse(JSON.stringify(defaultDayEvents)));
         const hotels = ref(JSON.parse(JSON.stringify(defaultHotels)));
-        const shoppingList = ref([]);
+        const shoppingList = ref([{ id: 701, name: '濟州柑橘零食', image: '', purchased: false }]);
         const expenses = ref([{ id: 901, category: '住宿', name: '住宿訂金', date: '2026-01-03', krw: 100000, twd: ceilRound6(100000 * 0.0238), payer: '曾曾', shares: [...familyMembers], payMethod: '信用卡', note: '' }]);
-        const luggageItems = ref([]);
+        const luggageItems = ref([{ id: 501, category: '隨身背包', name: '護照、駕照與行動電源', qty: 1, checked: true }]);
         const cloudPaidSettlements = ref({});
-
-        // Firebase Realtime Database 監聽器管理
-        let shoppingListenerRef = null;
-        let shoppingListenerCb = null;
-        let luggageListenerRef = null;
-        let luggageListenerCb = null;
-
-        const targetOwnerForRtdb = () => (readOnlyMode.value ? viewingUser.value : currentUser.value);
-
-        const selectCurrentUser = (member) => {
-            currentUser.value = member;
-            localStorage.setItem(USER_STORAGE_KEY, member);
-            whoAmIModalOpen.value = false;
-            if (!readOnlyMode.value) {
-                viewingUser.value = member;
-                bindUserRealtimeListeners(member);
-            }
-        };
-
-        const onCurrentUserChange = () => {
-            localStorage.setItem(USER_STORAGE_KEY, currentUser.value);
-            if (!readOnlyMode.value) {
-                viewingUser.value = currentUser.value;
-                bindUserRealtimeListeners(currentUser.value);
-            }
-        };
-
-        const toggleReadOnly = () => {
-            readOnlyMode.value = !readOnlyMode.value;
-            if (!readOnlyMode.value) {
-                viewingUser.value = currentUser.value;
-            }
-            bindUserRealtimeListeners(targetOwnerForRtdb());
-        };
-
-        const bindUserRealtimeListeners = (ownerName) => {
-            if (shoppingListenerRef && shoppingListenerCb) {
-                shoppingListenerRef.off('value', shoppingListenerCb);
-            }
-            if (luggageListenerRef && luggageListenerCb) {
-                luggageListenerRef.off('value', luggageListenerCb);
-            }
-
-            shoppingListenerRef = rtdb.ref(`users/${ownerName}/shopping`);
-            shoppingListenerCb = (snap) => {
-                const raw = snap.val();
-                if (!raw || typeof raw !== 'object') {
-                    shoppingList.value = [];
-                    return;
-                }
-                const list = Object.entries(raw).map(([key, val], idx) => ({
-                    id: val?.id || key,
-                    name: val?.name || '',
-                    image: val?.image || '',
-                    purchased: Boolean(val?.purchased),
-                    order: typeof val?.order === 'number' ? val.order : idx
-                }));
-                list.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-                shoppingList.value = list;
-            };
-            shoppingListenerRef.on('value', shoppingListenerCb);
-
-            luggageListenerRef = rtdb.ref(`users/${ownerName}/luggage`);
-            luggageListenerCb = (snap) => {
-                const raw = snap.val();
-                if (!raw || typeof raw !== 'object') {
-                    // 第一次進入該成員行李清單時自動建立預設項目
-                    const defaults = buildDefaultLuggageMap();
-                    luggageListenerRef.set(defaults);
-                    return;
-                }
-                const list = Object.entries(raw).map(([key, val], idx) => ({
-                    id: val?.id || key,
-                    category: val?.category || '隨身背包',
-                    name: val?.name || '',
-                    qty: Number(val?.qty) > 0 ? Number(val.qty) : 1,
-                    checked: Boolean(val?.checked),
-                    order: typeof val?.order === 'number' ? val.order : idx
-                }));
-                list.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-                luggageItems.value = list;
-            };
-            luggageListenerRef.on('value', luggageListenerCb);
-        };
-
-        // 購物清單單獨節點操作（只寫入自己的路徑）
-        const addShoppingItem = () => {
-            if (readOnlyMode.value) return;
-            const id = `shop_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-            const nextOrder = shoppingList.value.length > 0
-                ? Math.max(...shoppingList.value.map(i => i.order ?? 0)) + 1
-                : 0;
-            rtdb.ref(`users/${currentUser.value}/shopping/${id}`).set({
-                id,
-                name: '',
-                image: '',
-                purchased: false,
-                order: nextOrder
-            });
-        };
-
-        const updateShoppingNodeField = (itemId, patch) => {
-            if (readOnlyMode.value || !itemId) return;
-            rtdb.ref(`users/${currentUser.value}/shopping/${itemId}`).update(patch);
-        };
-
-        const deleteShoppingItem = (itemId) => {
-            if (readOnlyMode.value || !itemId) return;
-            rtdb.ref(`users/${currentUser.value}/shopping/${itemId}`).remove();
-        };
-
-        // 行李清單單獨節點操作（只寫入自己的路徑）
-        const addLuggageItem = (cat) => {
-            if (readOnlyMode.value) return;
-            const id = `lug_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-            const nextOrder = luggageItems.value.length > 0
-                ? Math.max(...luggageItems.value.map(i => i.order ?? 0)) + 1
-                : 0;
-            rtdb.ref(`users/${currentUser.value}/luggage/${id}`).set({
-                id,
-                category: cat,
-                name: '',
-                qty: 1,
-                checked: false,
-                order: nextOrder
-            });
-        };
-
-        const updateLuggageNodeField = (itemId, patch) => {
-            if (readOnlyMode.value || !itemId) return;
-            rtdb.ref(`users/${currentUser.value}/luggage/${itemId}`).update(patch);
-        };
-
-        const deleteLuggageItem = (itemId) => {
-            if (readOnlyMode.value || !itemId) return;
-            rtdb.ref(`users/${currentUser.value}/luggage/${itemId}`).remove();
-        };
 
         const modalOpen = ref(false);
         const isEditMode = ref(false);
@@ -1701,6 +1418,7 @@ createApp({
         const currentDayEvents = computed(() => dayEvents.value[selectedDayIndex.value] || []);
         const sortedExpenses = computed(() => [...expenses.value].sort((a, b) => new Date(b.date) - new Date(a.date)));
 
+        // 「花費」分頁總花費：依最新匯率計算每筆花費台幣，四捨五入到小數第 6 位後再無條件進位到整數加總
         const totalTwd = computed(() => {
             const rate = Number(krwToTwdRate.value) || 0.0238;
             return expenses.value.reduce((sum, e) => {
@@ -1768,7 +1486,9 @@ createApp({
                 hotels: hotels.value,
                 flightInfo: flightInfo.value,
                 rentalInfo: rentalInfo.value,
+                shoppingList: shoppingList.value,
                 expenses: expenses.value,
+                luggageItems: luggageItems.value,
                 cloudPaidSettlements: cloudPaidSettlements.value
             }, { merge: true }).then(() => {
                 triggerAllResizes();
@@ -1850,7 +1570,6 @@ createApp({
         };
 
         const triggerCropModal = (e, targetIdx, type = 'shopping') => {
-            if (type === 'shopping' && readOnlyMode.value) return;
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -1905,14 +1624,14 @@ createApp({
         const executeCrop = () => {
             const img = new Image();
             img.src = cropSourceUrl.value;
-            img.onload = async () => {
+            img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const cropAreaEl = document.getElementById('cropArea');
                 const displayWidth = cropAreaEl ? cropAreaEl.clientWidth : 256;
                 const displayHeight = cropAreaEl ? cropAreaEl.clientHeight : 256;
                 if (cropModuleType.value === 'banner') { canvas.width = 768; canvas.height = 512; }
                 else if (cropModuleType.value === 'hotel') { canvas.width = 600; canvas.height = 330; }
-                else { canvas.width = 400; canvas.height = 400; }
+                else { canvas.width = 250; canvas.height = 250; }
                 const ctx = canvas.getContext('2d');
                 let renderW, renderH;
                 const imgRatio = img.width / img.height;
@@ -1927,40 +1646,39 @@ createApp({
                 ctx.translate(canvas.width / 2 + canvasOffsetX, canvas.height / 2 + canvasOffsetY);
                 ctx.scale(finalScale, finalScale);
                 ctx.drawImage(img, -img.width / 2, -img.height / 2);
-
-                const rawBase64 = canvas.toDataURL('image/jpeg', 0.72);
-                const compressedBase64 = await compressToMaxWidth600(rawBase64, 0.72);
+                const finalBase64 = canvas.toDataURL('image/jpeg', 0.55);
 
                 if (cropModuleType.value === 'banner') {
-                    bannerImage.value = compressedBase64;
+                    bannerImage.value = finalBase64;
                     updateCloudData();
                 } else if (cropModuleType.value === 'schedule') {
-                    formEvent.value.image = compressedBase64;
+                    formEvent.value.image = finalBase64;
                     if (isEditMode.value && editingIdx.value !== null) {
-                        dayEvents.value[selectedDayIndex.value][editingIdx.value].image = compressedBase64;
+                        dayEvents.value[selectedDayIndex.value][editingIdx.value].image = finalBase64;
                         updateCloudData();
                     }
                 } else if (cropModuleType.value === 'hotel') {
-                    hotels.value[cropTargetIndex.value].img = compressedBase64;
+                    hotels.value[cropTargetIndex.value].img = finalBase64;
                     updateCloudData();
                 } else {
-                    const itemId = cropTargetIndex.value;
-                    updateShoppingNodeField(itemId, { image: compressedBase64 });
+                    shoppingList.value[cropTargetIndex.value].image = finalBase64;
+                    updateCloudData();
                 }
                 cropModalOpen.value = false;
             };
         };
 
+        const addShoppingItem = () => { shoppingList.value.push({ id: Date.now(), name: '', image: '', purchased: false }); updateCloudData(); };
+        const deleteShoppingItem = (idx) => { shoppingList.value.splice(idx, 1); updateCloudData(); };
+
         const handleShoppingTouchStart = (e, index) => {
-            if (readOnlyMode.value) return;
             if (e.target.closest('button') || e.target.closest('input') || e.target.closest('label')) return;
             isLongPressed = false;
             draggingShoppingIndex.value = index;
             longPressTimer = setTimeout(() => { isLongPressed = true; if (navigator.vibrate) navigator.vibrate(50); }, 500);
         };
-
         const handleShoppingTouchMove = (e) => {
-            if (readOnlyMode.value || draggingShoppingIndex.value === null) return;
+            if (draggingShoppingIndex.value === null) return;
             if (!isLongPressed) { clearTimeout(longPressTimer); draggingShoppingIndex.value = null; return; }
             e.preventDefault();
             const touch = e.touches[0];
@@ -1977,18 +1695,9 @@ createApp({
                 }
             }
         };
-
         const handleShoppingTouchEnd = () => {
             clearTimeout(longPressTimer);
-            if (!readOnlyMode.value && isLongPressed && draggingShoppingIndex.value !== null) {
-                // 只更新每個項目各自的 order 欄位，不整份覆寫節點
-                shoppingList.value.forEach((item, idx) => {
-                    item.order = idx;
-                    if (item.id) {
-                        rtdb.ref(`users/${currentUser.value}/shopping/${item.id}/order`).set(idx);
-                    }
-                });
-            }
+            if (isLongPressed && draggingShoppingIndex.value !== null) { updateCloudData(); }
             draggingShoppingIndex.value = null;
             isLongPressed = false;
         };
@@ -2038,6 +1747,8 @@ createApp({
         };
 
         const getLuggageByCategory = (cat) => luggageItems.value.filter(l => l.category === cat);
+        const addLuggageItem = (cat) => { luggageItems.value.push({ id: Date.now(), category: cat, name: '', qty: 1, checked: false }); updateCloudData(); };
+        const deleteLuggageItem = (id) => { luggageItems.value = luggageItems.value.filter(l => l.id !== id); updateCloudData(); };
 
         const getCategoryEmoji = (cat) => ({ '景點': '⛄', '住宿': '🏨', '美食': '🍲', '購物': '🛍️', '航班': '✈️', '其他': '❄️' }[cat] || '📍');
         const getCategoryBg = (cat) => ({ '景點': 'bg-sky-500', '住宿': 'bg-emerald-500', '美食': 'bg-orange-400', '購物': 'bg-pink-400', '航班': 'bg-indigo-500', '其他': 'bg-amber-400' }[cat] || 'bg-sky-500');
@@ -2047,8 +1758,6 @@ createApp({
         onMounted(() => {
             fetchDailyExchangeRate();
             fetchJejuWeather();
-            bindUserRealtimeListeners(targetOwnerForRtdb());
-
             docRef.onSnapshot((doc) => {
                 if (doc.exists) {
                     const parsed = doc.data();
@@ -2061,7 +1770,9 @@ createApp({
                         flightInfo.value.inbound = { ...flightInfo.value.inbound, ...(parsed.flightInfo.inbound || {}) };
                     }
                     if (parsed.rentalInfo) rentalInfo.value = { ...rentalInfo.value, ...parsed.rentalInfo };
+                    if (parsed.shoppingList) shoppingList.value = parsed.shoppingList;
                     if (parsed.expenses) expenses.value = parsed.expenses;
+                    if (parsed.luggageItems) luggageItems.value = parsed.luggageItems;
                     if (parsed.cloudPaidSettlements) cloudPaidSettlements.value = parsed.cloudPaidSettlements;
                     isCloudLoaded.value = true;
                     triggerAllResizes();
@@ -2075,9 +1786,7 @@ createApp({
         });
 
         return {
-            familyMembers, currentUser, viewingUser, readOnlyMode, whoAmIModalOpen,
-            selectCurrentUser, onCurrentUserChange, toggleReadOnly, bindUserRealtimeListeners,
-            isCloudLoaded, snowflakes, currentTab, tripTitle, titleInputRef, focusTitleInput, defaultBannerImage, bannerImage, selectedDayIndex, days, dayEvents, hotels,
+            familyMembers, isCloudLoaded, snowflakes, currentTab, tripTitle, titleInputRef, focusTitleInput, defaultBannerImage, bannerImage, selectedDayIndex, days, dayEvents, hotels,
             flightInfo, rentalInfo, editingFlights, editingRental, editingHotelIdx,
             toggleEditFlights, toggleEditRental, toggleHotelEdit,
             shoppingList, expenses, luggageItems,
@@ -2087,11 +1796,9 @@ createApp({
             draggingShoppingIndex, modalNotes, infoHotelNotes, autoResize, fetchJejuWeather,
             onTransitModeChange, recalculateSegment, getNaverRouteUrl,
             openAddModal, openEditModal, saveEvent, confirmDeleteEvent, moveEvent,
-            addShoppingItem, updateShoppingNodeField, deleteShoppingItem,
-            handleShoppingTouchStart, handleShoppingTouchMove, handleShoppingTouchEnd,
+            addShoppingItem, deleteShoppingItem, handleShoppingTouchStart, handleShoppingTouchMove, handleShoppingTouchEnd,
             openExpenseModal, saveExpenseItem, deleteExpenseItem, convertCurrency, syncExpenseCurrency,
-            getLuggageByCategory, addLuggageItem, updateLuggageNodeField, deleteLuggageItem,
-            getCategoryEmoji, getCategoryBg, getExpenseBadgeBg, formatNumber, ceilInt: ceilRound6,
+            getLuggageByCategory, addLuggageItem, deleteLuggageItem, getCategoryEmoji, getCategoryBg, getExpenseBadgeBg, formatNumber, ceilInt: ceilRound6,
             updateCloudData, toggleSettlementPaid, copyShareLink,
             cropModalOpen, cropSourceUrl, cropScale, cropImageStyle, isDragging, cropModuleType, cropTargetIndex,
             triggerCropModal, startDrag, onDrag, endDrag, changeScale, executeCrop
